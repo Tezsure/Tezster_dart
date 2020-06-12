@@ -19,6 +19,7 @@ dependencies:
   unorm_dart: ^0.1.2
   password_hash: ^2.0.0
   convert: ^2.1.1
+  http: ^0.12.1
 
 dev_dependencies:
   flutter_test:
