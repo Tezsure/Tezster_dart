@@ -24,6 +24,11 @@ dependencies:
   flutter:
     sdk: flutter
 
+  # tezster_dart:
+  #   git:
+  #     url: git@github.com:Rakshak1344/Tezster_dart.git
+  #     ref: master
+
   tezster_dart:
     path: ../
 

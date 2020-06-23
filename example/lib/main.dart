@@ -70,101 +70,120 @@ class _MyAppState extends State<MyApp> {
   request() async {
     String testNetServer = "https://testnet.tezster.tech";
 
-    dynamic response = await TezsterDart.performGetRequest(
+    //Working functions
+    dynamic response = await TezsterNodeReader.performGetRequest(
       server: testNetServer,
       command: "chains/main/blocks",
     );
     print("Response ===> $response");
 
-    dynamic getBlock = await TezsterDart.getBlock(
+    dynamic getBlock = await TezsterNodeReader.getBlock(
       server: testNetServer,
-      hash: "",
-      chainid: "",
+      hash: "head",
+      chainid: "NetXjD3HPJJjmcd",
     );
     print("GET-Block ===> $getBlock");
 
-    dynamic blockhead = await TezsterDart.getBlockHead(
+    dynamic blockhead = await TezsterNodeReader.getBlockHead(
       server: testNetServer,
     );
     print("Block-Head ===> $blockhead");
 
-    dynamic getAccForBlock = await TezsterDart.getAccountForBlock(
+    dynamic getCounterForAccount = await TezsterNodeReader.getCounterForAccount(
       server: testNetServer,
-      accountHash: "",
-      blockHash: "",
-      chainid: "",
+      accountHash: "tz1ZfFASQvmmz47ru5nn9GhX5oswCRVX5z1r",
+      chainid: "NetXjD3HPJJjmcd",
     );
-    print("GET-Acc-ForBlock ===> $getAccForBlock");
+    print("GET-Counter-ForAccount ===> $getCounterForAccount");
 
-    // dynamic getCounterForAccount = await TezsterDart.getCounterForAccount(
-    //   server: testNetServer,
-    //   accountHash: "",
-    //   chainid: "",
-    // );
-    // print("GET-Counter-ForAccount ===> $getCounterForAccount");
-
-    // dynamic getSpendableBalanceForAccount =
-    //     await TezsterDart.getSpendableBalanceForAccount(
-    //   server: testNetServer,
-    //   accountHash: "",
-    //   chainid: "",
-    // );
-    // print(
-    //     "GET-SpendableBalance-ForAccount ===> $getSpendableBalanceForAccount");
-
-    dynamic getAccountManagerForBlock =
-        await TezsterDart.getAccountManagerForBlock(
+    dynamic getMempoolOperation = await TezsterNodeReader.getMempoolOperation(
       server: testNetServer,
-      chainid: "",
-      accountHash: "",
-      block: "",
+      chainid: "NetXjD3HPJJjmcd",
+      operationGroupId: "opAPztkmYpEG754JGjkKi4snUTaa879fvgWfGFeDrdmTAbaoLNp",
     );
-    print("GET-Account-Manager-ForBlock ===> $getAccountManagerForBlock");
+    print("GET-MempoolOperation ===> $getMempoolOperation");
 
-    // dynamic isImplicitAndEmpty = await TezsterDart.isImplicitAndEmpty(
-    //   server: testNetServer,
-    //   accountHash: "",
-    // );
-    // print("Is-ImplicitAndEmpty ===> $isImplicitAndEmpty");
+    dynamic getSpendableBalanceForAccount =
+        await TezsterNodeReader.getSpendableBalanceForAccount(
+      server: testNetServer,
+      accountHash: "tz1ZfFASQvmmz47ru5nn9GhX5oswCRVX5z1r",
+      chainid: "NetXjD3HPJJjmcd",
+    );
+    print(
+        "GET-SpendableBalance-ForAccount ===> $getSpendableBalanceForAccount");
+
+    dynamic getBalance = await TezsterNodeReader.getBalance(
+      accountHash: "tz1ZfFASQvmmz47ru5nn9GhX5oswCRVX5z1r",
+      server: testNetServer,
+    );
+    print("Get-Balance ===> $getBalance");
+
+    dynamic getMempoolOperationsForAccount =
+        await TezsterNodeReader.getMempoolOperationsForAccount(
+      server: testNetServer,
+      chainid: "NetXjD3HPJJjmcd",
+      accountHash: "tz1Y8zdtVe2wWe7QdNTnAdwBceqYBCdA3Jj8",
+    );
+    print(
+        "GET-MempoolOperations-ForAccount ===> $getMempoolOperationsForAccount");
 
     dynamic isManagerKeyRevealedForAccount =
-        await TezsterDart.isManagerKeyRevealedForAccount(
+        await TezsterNodeReader.isManagerKeyRevealedForAccount(
       server: testNetServer,
-      accountHash: "",
+      accountHash: "tz1ZfFASQvmmz47ru5nn9GhX5oswCRVX5z1r",
     );
     print(
         "Is-ManagerKey-Revealed-ForAccount ===> $isManagerKeyRevealedForAccount");
 
-    dynamic getContractStorage = await TezsterDart.getContractStorage(
-      server: testNetServer,
-      accountHash: "",
-      block: "",
-      chainid: "",
-    );
-    print("GET-Contract-Storage ===> $getContractStorage");
+    //Not WORKING
+    // dynamic getAccForBlock = await TezsterNodeReader.getAccountForBlock(
+    //   server: testNetServer,
+    //   accountHash: "tz1ZfFASQvmmz47ru5nn9GhX5oswCRVX5z1r",
+    //   blockHash: "",
+    //   chainid: "NetXjD3HPJJjmcd",
+    // );
+    // print("GET-Acc-ForBlock ===> $getAccForBlock");
 
-    dynamic getValueForBigMapKey = await TezsterDart.getValueForBigMapKey(
-      server: testNetServer,
-      key: "",
-      block: "",
-      chainid: "",
-      index: 1,
-    );
-    print("GET-Value-ForBigMapKey ===> $getValueForBigMapKey");
+    // dynamic getAccountManagerForBlock =
+    //     await TezsterNodeReader.getAccountManagerForBlock(
+    //   server: testNetServer,
+    //   chainid: "NetXjD3HPJJjmcd",
+    //   accountHash: "tz1ZfFASQvmmz47ru5nn9GhX5oswCRVX5z1r",
+    //   block: "",
+    // );
+    // print("GET-Account-Manager-ForBlock ===> $getAccountManagerForBlock");
 
-    dynamic getMempoolOperation = await TezsterDart.getMempoolOperation(
-      server: testNetServer,
-      chainid: "",
-      operationGroupId: "",
-    );
-    print("GET-MempoolOperation ===> $getMempoolOperation");
+    // dynamic isImplicitAndEmpty = await TezsterNodeReader.isImplicitAndEmpty(
+    //   server: testNetServer,
+    //   accountHash: "tz1ZfFASQvmmz47ru5nn9GhX5oswCRVX5z1r",
+    // );
+    // print("Is-ImplicitAndEmpty ===> $isImplicitAndEmpty");
 
-    dynamic getMempoolOperationsForAccount =
-        await TezsterDart.getMempoolOperationsForAccount(
-      server: testNetServer,
-      chainid: "",
-    );
-    print("GET-MempoolOperations-ForAccount ===> $getMempoolOperationsForAccount");
+    // dynamic getContractStorage = await TezsterNodeReader.getContractStorage(
+    //   server: testNetServer,
+    //   accountHash: "tz1ZfFASQvmmz47ru5nn9GhX5oswCRVX5z1r",
+    //   block: "",
+    //   chainid: "NetXjD3HPJJjmcd",
+    // );
+    // print("GET-Contract-Storage ===> $getContractStorage");
+
+    // dynamic getValueForBigMapKey = await TezsterNodeReader.getValueForBigMapKey(
+    //   server: testNetServer,
+    //   key: "",
+    //   block: "",
+    //   chainid: "NetXjD3HPJJjmcd",
+    //   index: 1,
+    // );
+    // print("GET-Value-ForBigMapKey ===> $getValueForBigMapKey");
+  }
+
+  nodeWriter() {
+    TezsterNodeWriter.signOperationGroup(
+        derivationPath: "",
+        forgedOperation:
+            "713cb068fe3ac078351727eb5c34279e22b75b0cf4dc0a8d3d599e27031db136040cb9f9da085607c05cac1ca4c62a3f3cfb8146aa9b7f631e52f877a1d363474404da8130b0b940ee",
+        privateKey:
+            "edskRdVS5H9YCRAG8yqZkX2nUTbGcaDqjYgopkJwRuPUnYzCn3t9ZGksncTLYe33bFjq29pRhpvjQizCCzmugMGhJiXezixvdC");
   }
 
   @override
@@ -172,6 +191,7 @@ class _MyAppState extends State<MyApp> {
     super.initState();
     // example();
     request();
+    // nodeWriter();
   }
 
   @override
