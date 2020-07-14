@@ -26,8 +26,8 @@ dependencies:
 
   # tezster_dart:
   #   git:
-  #     url: git@github.com:Rakshak1344/Tezster_dart.git
-  #     ref: master
+  #     url: git@github.com:TechSatya/Tezster_dart.git
+  #     ref: dev
 
   tezster_dart:
     path: ../

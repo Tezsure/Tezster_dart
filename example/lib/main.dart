@@ -17,7 +17,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  example() async {
+  tezosWalletUtil() async {
     //Generate mnemonic
     String mnemonic = TezsterDart
         .generateMnemonic(); // strength is optional, by default it's 256 ==> Generates 24 words.
@@ -67,7 +67,7 @@ class _MyAppState extends State<MyApp> {
     //Accessing: private key ===> identityFundraiser[0] | public key ===> identityFundraiser[1] | public Key Hash ===> identityFundraiser[2] all of type string.
   }
 
-  request() async {
+  tezosNodeWriter() async {
     String testNetServer = "https://testnet.tezster.tech";
 
     //Working functions
@@ -135,7 +135,7 @@ class _MyAppState extends State<MyApp> {
     print(
         "Is-ManagerKey-Revealed-ForAccount ===> $isManagerKeyRevealedForAccount");
 
-    //Not WORKING
+//Yet to be tested
     // dynamic getAccForBlock = await TezsterNodeReader.getAccountForBlock(
     //   server: testNetServer,
     //   accountHash: "tz1ZfFASQvmmz47ru5nn9GhX5oswCRVX5z1r",
@@ -177,21 +177,29 @@ class _MyAppState extends State<MyApp> {
     // print("GET-Value-ForBigMapKey ===> $getValueForBigMapKey");
   }
 
-  nodeWriter() {
-    TezsterNodeWriter.signOperationGroup(
-        derivationPath: "",
+  nodeWriter() async {
+    List<dynamic> opGroup = await TezsterNodeWriter.signOperationGroup(
         forgedOperation:
             "713cb068fe3ac078351727eb5c34279e22b75b0cf4dc0a8d3d599e27031db136040cb9f9da085607c05cac1ca4c62a3f3cfb8146aa9b7f631e52f877a1d363474404da8130b0b940ee",
         privateKey:
             "edskRdVS5H9YCRAG8yqZkX2nUTbGcaDqjYgopkJwRuPUnYzCn3t9ZGksncTLYe33bFjq29pRhpvjQizCCzmugMGhJiXezixvdC");
+    print("bytes ===> ${opGroup[0]}");
+    print("Signature ===> ${opGroup[1]}");
+
+    TezsterNodeWriter.forgeOperations(
+      branch: "BKzEzxCwQcXBJNHCxGbnq9H8P3aV7EfFZaot54nShmF3YAgwHDj",
+    );
+
+    // TezsterNodeWriter.writeBranch(
+    //     "BKzEzxCwQcXBJNHCxGbnq9H8P3aV7EfFZaot54nShmF3YAgwHDj");
   }
 
   @override
   void initState() {
     super.initState();
-    // example();
-    request();
-    // nodeWriter();
+    // tezosWalletUtil();
+    // tezosNodeWriter();
+    nodeWriter();
   }
 
   @override
