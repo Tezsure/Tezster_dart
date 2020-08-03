@@ -4,6 +4,8 @@
 
 // NOTE: please get the tezster_dart package under pubspec.yaml before running the project
 
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:tezster_dart/tezster_dart.dart';
 
@@ -178,18 +180,40 @@ class _MyAppState extends State<MyApp> {
   }
 
   nodeWriter() async {
-    List<dynamic> opGroup = await TezsterNodeWriter.signOperationGroup(
-        forgedOperation:
-            "713cb068fe3ac078351727eb5c34279e22b75b0cf4dc0a8d3d599e27031db136040cb9f9da085607c05cac1ca4c62a3f3cfb8146aa9b7f631e52f877a1d363474404da8130b0b940ee",
-        privateKey:
-            "edskRdVS5H9YCRAG8yqZkX2nUTbGcaDqjYgopkJwRuPUnYzCn3t9ZGksncTLYe33bFjq29pRhpvjQizCCzmugMGhJiXezixvdC");
-    print("bytes ===> ${opGroup[0]}");
-    print("Signature ===> ${opGroup[1]}");
-
-    TezsterNodeWriter.forgeOperations(
-      branch: "BKzEzxCwQcXBJNHCxGbnq9H8P3aV7EfFZaot54nShmF3YAgwHDj",
+    // List<String> keys = await TezsterDart.getKeysFromMnemonic(
+    //   mnemonic:
+    //       "luxury bulb roast timber sense stove sugar sketch goddess host meadow decorate gather salmon funny person canoe daring machine network camp moment wrong dice",
+    // );
+    // print("keys ===> $keys");
+    Activation activation = Activation(
+      pkh: "tz1hhkSbaocSWm3wawZUuUdX57L3maSH16Pv",
+      secret: "9802d2dcc227576700acf963979792d0abf53340",
     );
 
+    Reveal reveal = Reveal(
+      gasLimit: "129",
+      storageLimit: "10",
+      counter: "213",
+      fee: "100",
+      publicKey: "edpkuLog552hecagkykJ3fTvop6grTMhfZY4TWbvchDWdYyxCHcrQL",
+      source: "tz1VwWdetdADCEMySCumYXWtvf9pZQV3CmE5",
+    );
+
+    String activationData = TezsterNodeWriter.forgeOperations(
+      branch: "BLjxPLCWUuFBewguqrojaHhgAcc8jLZneFkpnrVVcYn2zQz4pmW",
+      operation: activation,
+    );
+    print("activationData => $activationData");
+
+    String revealData = TezsterNodeWriter.forgeOperations(
+      branch: "BLjxPLCWUuFBewguqrojaHhgAcc8jLZneFkpnrVVcYn2zQz4pmW",
+      operation: reveal,
+    );
+    print("revealData => $revealData");
+
+    // var pubkey = TezsterNodeWriter.writePublicKey(
+    //     "edpkuLog552hecagkykJ3fTvop6grTMhfZY4TWbvchDWdYyxCHcrQL");
+    // print("pubkey ===> $pubkey");
     // TezsterNodeWriter.writeBranch(
     //     "BKzEzxCwQcXBJNHCxGbnq9H8P3aV7EfFZaot54nShmF3YAgwHDj");
   }

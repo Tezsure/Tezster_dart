@@ -7,6 +7,7 @@ import 'dart:core';
 import 'package:blake2b/blake2b_hash.dart';
 import 'package:crypto/crypto.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/gestures.dart';
 import 'package:password_hash/password_hash.dart';
 import 'helper/generateKeys.dart';
 import 'package:bip39/bip39.dart' as bip39;
