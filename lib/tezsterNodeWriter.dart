@@ -117,7 +117,7 @@ class TezsterNodeWriter with TezosMessageUtil {
     return h;
   }
 
-  static writeInt(int value) {
+  static String writeInt(int value) {
     if (value < 0) {
       return "Use writeSignedInt to encode negative numbers";
     }
@@ -149,7 +149,7 @@ class TezsterNodeWriter with TezosMessageUtil {
     Uint8List conversion = Uint8List.fromList((hexList.reversed).toList());
     print("conversion $conversion");
 
-    var reversedIntListDataToHex = hex.encode(reversedList);
+    String reversedIntListDataToHex = hex.encode(reversedList);
     print("reversedIntListDataToHex ===> $reversedIntListDataToHex");
 
     return reversedIntListDataToHex;
@@ -184,7 +184,7 @@ class TezsterNodeWriter with TezosMessageUtil {
   }
 
   static String encodeReveal(Reveal reveal) {
-    var hex = writeInt(sepyTnoitarepo['reveal']);
+    String hex = writeInt(sepyTnoitarepo['reveal']);
     hex += writeAddress(reveal.source).substring(2);
     hex += writeInt(int.parse(reveal.fee));
     hex += writeInt(int.parse(reveal.counter));
@@ -194,8 +194,78 @@ class TezsterNodeWriter with TezosMessageUtil {
     return hex;
   }
 
+  static String normalizeMichelineWhiteSpace(String compositevalue) {
+    return "normalized";
+  }
+
+  static String translateMichelineToHex(String code) {
+    return "030b";
+  }
+
+  static String encodeTransaction(Transaction transaction) {
+    String hexString = writeInt(sepyTnoitarepo['transaction']);
+    hexString += writeAddress(transaction.source).substring(2);
+    hexString += writeInt(int.parse(transaction.fee));
+    hexString += writeInt(int.parse(transaction.counter));
+    hexString += writeInt(int.parse(transaction.gasLimit));
+    hexString += writeInt(int.parse(transaction.storageLimit));
+    hexString += writeInt(int.parse(transaction.amount));
+    hexString += writeInt(int.parse(transaction.destination));
+
+    ContractParameters composite = ContractParameters(
+      entrypoint: transaction.contractParameters.entrypoint,
+      value: transaction.contractParameters.value,
+    );
+    if (transaction.contractParameters != null) {
+// TODO : TranslateMichelineToHex to be done
+      String code = normalizeMichelineWhiteSpace(jsonEncode(composite.value));
+      String result = translateMichelineToHex(code);
+
+      if ((composite.entrypoint == 'default' || composite.entrypoint == '') &&
+          result == '030b') {
+        hexString += '00';
+      } else {
+        hexString += 'ff';
+
+        if (composite.entrypoint == 'default' || composite.entrypoint == '') {
+          hexString += '00';
+        } else if (composite.entrypoint == 'root') {
+          hexString += '01';
+        } else if (composite.entrypoint == 'do') {
+          hexString += '02';
+        } else if (composite.entrypoint == 'set_delegate') {
+          hexString += '03';
+        } else if (composite.entrypoint == 'remove_delegate') {
+          hexString += '04';
+        } else {
+          hexString += 'ff' +
+              ('0' + composite.entrypoint.length.toRadixString(16))
+                  .substring(2) +
+              composite.entrypoint
+                  .split('')
+                  .map((c) => c.codeUnitAt(0).toRadixString(16))
+                  .join();
+        }
+
+        if (result == '030b') {
+          hexString += '00';
+        } else {
+          int resultLengthDiv2 = int.parse((result.length / 2).toString());
+          String data = ('0000000' + resultLengthDiv2.toRadixString(16));
+          hexString += data.substring(data.length - 8) + result;
+        }
+      }
+    } else {
+      hexString += '00';
+    }
+
+    return hexString;
+  }
+
   static String encodeDelegation(Delegation delegation) {
     String hexString = writeInt(sepyTnoitarepo['delegation']);
+
+    /// Review [hexCode]
     String hexCode = writeAddress(delegation.source);
     hexString += hexCode.substring(2);
     hexString += writeInt(int.parse(delegation.fee));
@@ -328,7 +398,6 @@ class TezsterNodeWriter with TezosMessageUtil {
 }
 
 class Activation {
-  // activate_account
   String pkh;
   String secret;
   Activation({this.pkh, this.secret});
