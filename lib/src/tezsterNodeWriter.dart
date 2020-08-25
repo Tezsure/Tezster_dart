@@ -1,6 +1,17 @@
-part of tezster_dart;
+import 'dart:convert';
+import 'dart:typed_data';
+import 'dart:async';
+import 'dart:core';
 
-class TezsterNodeWriter with TezosMessageUtil {
+import 'package:blake2b/blake2b_hash.dart';
+import 'package:flutter/material.dart';
+import 'package:bs58check/bs58check.dart' as bs58check;
+import 'package:flutter_sodium/flutter_sodium.dart';
+import 'package:convert/convert.dart';
+import 'package:http/http.dart' as http;
+import 'package:tezster_dart/tezster_dart.dart';
+
+class TezsterNodeWriter {
   static performPostRequest({
     String server,
     String command,
@@ -184,22 +195,47 @@ class TezsterNodeWriter with TezosMessageUtil {
   }
 
   static String encodeReveal(Reveal reveal) {
-    String hex = writeInt(sepyTnoitarepo['reveal']);
-    hex += writeAddress(reveal.source).substring(2);
-    hex += writeInt(int.parse(reveal.fee));
-    hex += writeInt(int.parse(reveal.counter));
-    hex += writeInt(int.parse(reveal.gasLimit));
-    hex += writeInt(int.parse(reveal.storageLimit));
-    hex += writePublicKey(reveal.publicKey);
-    return hex;
+    String hexString = writeInt(sepyTnoitarepo['reveal']);
+    hexString += writeAddress(reveal.source).substring(2);
+    hexString += writeInt(int.parse(reveal.fee));
+    hexString += writeInt(int.parse(reveal.counter));
+    hexString += writeInt(int.parse(reveal.gasLimit));
+    hexString += writeInt(int.parse(reveal.storageLimit));
+    hexString += writePublicKey(reveal.publicKey);
+    return hexString;
   }
 
+  /// TODO : This is pending [normalizeMichelineWhiteSpace] function
   static String normalizeMichelineWhiteSpace(String compositevalue) {
-    return "normalized";
+    return compositevalue
+        .replaceAll(RegExp('/ +/g'), ' ')
+        .replaceAll(RegExp(r'/\[{/g'), '[ {')
+        .replaceAll(RegExp('/}\]/g'), '} ]')
+        .replaceAll(RegExp('/},{/g'), '}, {')
+        .replaceAll(RegExp('/\]}/g'), '] }')
+        .replaceAll(RegExp('/":"/g'), '": "')
+        .replaceAll(RegExp(r'/":\[/g'), '": [')
+        .replaceAll(RegExp('/{"/g'), '{ "')
+        .replaceAll(RegExp('/"}/g'), '" }')
+        .replaceAll(RegExp('/,"/g'), ', "')
+        .replaceAll(RegExp('/","/g'), '", "')
+        .replaceAll(RegExp(r'/\[\[/g'), '[ [')
+        .replaceAll(RegExp('/\]\]/g'), '] ]')
+        .replaceAll(RegExp(r'/\["/g'), '\[ "')
+        .replaceAll(RegExp('/"\]/g'), '" \]')
+        .replaceAll(RegExp('/\[ +\]/g'), '\[\]')
+        .trim();
+    // return compositevalue.replace(RegExp(/ +/g), ' ');
+  }
+
+  static String prettyJson(Map<String, dynamic> json, {int indent = 4}) {
+    var spaces = ' ' * indent;
+    var encoder = JsonEncoder.withIndent(spaces);
+    return encoder.convert(json);
   }
 
   static String translateMichelineToHex(String code) {
-    return "030b";
+    return "";
   }
 
   static String encodeTransaction(Transaction transaction) {
@@ -212,12 +248,10 @@ class TezsterNodeWriter with TezosMessageUtil {
     hexString += writeInt(int.parse(transaction.amount));
     hexString += writeInt(int.parse(transaction.destination));
 
-    ContractParameters composite = ContractParameters(
-      entrypoint: transaction.contractParameters.entrypoint,
-      value: transaction.contractParameters.value,
-    );
     if (transaction.contractParameters != null) {
-// TODO : TranslateMichelineToHex to be done
+      ContractParameters composite = transaction.contractParameters;
+
+      // TODO : TranslateMichelineToHex to be done
       String code = normalizeMichelineWhiteSpace(jsonEncode(composite.value));
       String result = translateMichelineToHex(code);
 
@@ -259,6 +293,36 @@ class TezsterNodeWriter with TezosMessageUtil {
       hexString += '00';
     }
 
+    return hexString;
+  }
+
+  static String encodeOrigination(Origination origination) {
+    String hexString = writeInt(sepyTnoitarepo['origination']);
+    hexString = writeAddress(origination.source).substring(2);
+    hexString = writeInt(int.parse(origination.fee));
+    hexString = writeInt(int.parse(origination.counter));
+    hexString = writeInt(int.parse(origination.gasLimit));
+    hexString = writeInt(int.parse(origination.storageLimit));
+    hexString = writeInt(int.parse(origination.balance));
+
+    writeBoolean(bool value) => value ? "ff" : "00";
+
+    if (origination.delegate != null) {
+      hexString += writeBoolean(true);
+      hexString += writeAddress(origination.delegate).substring(2);
+    } else {
+      hexString += writeBoolean(false);
+    }
+
+    if (origination.script) {
+      List<String> parts = [];
+      parts.add(origination.script['code']);
+      parts.add(origination.script['storage']);
+
+      /// TODO : Pending to review [normalizeMichelineWhiteSpace] and [translateMichelineToHex].
+      // hexString +=
+      //     parts.
+    }
     return hexString;
   }
 
@@ -352,12 +416,10 @@ class TezsterNodeWriter with TezosMessageUtil {
 
   static encodeOperationValue(operation) {
     if (operation is Activation) {
-      return encodeActivation(
-        Activation(
-          pkh: operation.pkh,
-          secret: operation.secret,
-        ),
-      );
+      return encodeActivation(Activation(
+        pkh: operation.pkh,
+        secret: operation.secret,
+      ));
     } else if (operation is Reveal) {
       return encodeReveal(Reveal(
         source: operation.source,
@@ -368,9 +430,30 @@ class TezsterNodeWriter with TezosMessageUtil {
         storageLimit: operation.storageLimit,
       ));
     } else if (operation is Transaction) {
-      return 'transaction';
+      return encodeTransaction(Transaction(
+        amount: operation.amount,
+        counter: operation.counter,
+        destination: operation.destination,
+        contractParameters: operation.contractParameters,
+        fee: operation.fee,
+        gasLimit: operation.gasLimit,
+        source: operation.source,
+        storageLimit: operation.storageLimit,
+      ));
     } else if (operation is Origination) {
-      return 'origination';
+      return encodeOrigination(Origination(
+        source: operation.source,
+        balance: operation.balance,
+        counter: operation.counter,
+        fee: operation.fee,
+        gasLimit: operation.gasLimit,
+        storageLimit: operation.storageLimit,
+        delegate: operation.delegate,
+        delegatable: operation.delegatable,
+        managerPubkey: operation.managerPubkey,
+        script: operation.script,
+        spendable: operation.spendable,
+      ));
     } else if (operation is Delegation) {
       return encodeDelegation(Delegation(
         source: operation.source,
@@ -395,6 +478,102 @@ class TezsterNodeWriter with TezosMessageUtil {
     String branchHexString = hex.encode(branchUint8List);
     return branchHexString;
   }
+
+  /// TODO :  Send Transaction Operation
+  sendTransactionOperation({
+    String server,
+    KeyStore keyStore,
+    String to,
+    int amount,
+    int fee,
+    String derivationPath = '',
+  }) async {
+    dynamic counter = await TezsterNodeReader.getCounterForAccount(
+            server: server, accountHash: keyStore.publicKeyHash) +
+        1;
+    Transaction transaction = Transaction(
+      destination: to,
+      amount: amount.toString(),
+      storageLimit: 496.toString(),
+      gasLimit: 10600.toString(),
+      counter: counter.toString(),
+      fee: fee.toString(),
+      source: keyStore.publicKeyHash,
+    );
+
+    dynamic transactionOperation = await appendRevealOperation(
+      server: server,
+      keyStore: keyStore,
+      accountHash: keyStore.publicKeyHash,
+      accountOperationIndex: counter - 1,
+      transactions: transaction,
+    );
+
+    return transactionOperation;
+  }
+
+  sendOperation(String server, dynamic operations, dynamic keyStore,
+      String derivationPath) async {
+    var blockHead = await TezsterNodeReader.getBlockHead(server: server);
+    var forgedOperationGroup =
+        forgeOperations(branch: blockHead.hash, operation: operations);
+    var signedOpGroup = await signOperationGroup(
+      forgedOperation: forgedOperationGroup,
+      privateKey: keyStore.privateKey,
+      derivationPath: derivationPath,
+    );
+
+    /// TODO : Pending Task
+  }
+
+  appendRevealOperation({
+    @required String server,
+    @required dynamic keyStore,
+    @required String accountHash,
+    @required int accountOperationIndex,
+    @required dynamic transactions,
+  }) {
+    dynamic isKeyRevealed = TezsterNodeReader.isManagerKeyRevealedForAccount(
+        server: server, accountHash: accountHash);
+    int counter = accountOperationIndex + 1;
+
+    if (!isKeyRevealed) {
+      Reveal revealOp = Reveal(
+        source: accountHash,
+        fee: '0',
+        counter: counter.toString(),
+        gasLimit: '10600',
+        storageLimit: '0',
+        publicKey: keyStore.publicKey,
+      );
+
+      transactions.forEach((transaction, i) {
+        var c = accountOperationIndex + 2 + i;
+        transaction.counter = c.toString();
+      });
+
+      return [revealOp, ...transactions];
+    }
+    return transactions;
+  }
+}
+
+enum StoreType { mnemonic, fundraiser, hardware }
+
+class KeyStore {
+  String publicKey;
+  String privateKey;
+  String publicKeyHash;
+  String seed;
+  String derivationPath;
+  StoreType storeType = StoreType.mnemonic;
+  KeyStore(
+      {this.publicKey,
+      this.privateKey,
+      this.publicKeyHash,
+      this.seed,
+      this.derivationPath,
+      this.storeType});
 }
 
 class Activation {

@@ -4,8 +4,6 @@
 
 // NOTE: please get the tezster_dart package under pubspec.yaml before running the project
 
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:tezster_dart/tezster_dart.dart';
 
@@ -180,11 +178,6 @@ class _MyAppState extends State<MyApp> {
   }
 
   nodeWriter() async {
-    // List<String> keys = await TezsterDart.getKeysFromMnemonic(
-    //   mnemonic:
-    //       "luxury bulb roast timber sense stove sugar sketch goddess host meadow decorate gather salmon funny person canoe daring machine network camp moment wrong dice",
-    // );
-    // print("keys ===> $keys");
     Activation activation = Activation(
       pkh: "tz1hhkSbaocSWm3wawZUuUdX57L3maSH16Pv",
       secret: "9802d2dcc227576700acf963979792d0abf53340",
@@ -199,23 +192,113 @@ class _MyAppState extends State<MyApp> {
       source: "tz1VwWdetdADCEMySCumYXWtvf9pZQV3CmE5",
     );
 
-    String activationData = TezsterNodeWriter.forgeOperations(
-      branch: "BLjxPLCWUuFBewguqrojaHhgAcc8jLZneFkpnrVVcYn2zQz4pmW",
-      operation: activation,
+    Transaction transaction = Transaction(
+      contractParameters: ContractParameters(
+        entrypoint: "",
+        value: "",
+      ),
+      amount: "",
+      counter: "",
+      destination: "",
+      fee: "",
+      gasLimit: "",
+      source: "",
+      storageLimit: "",
     );
-    print("activationData => $activationData");
 
-    String revealData = TezsterNodeWriter.forgeOperations(
-      branch: "BLjxPLCWUuFBewguqrojaHhgAcc8jLZneFkpnrVVcYn2zQz4pmW",
-      operation: reveal,
+    Ballot ballot = Ballot(
+      period: 1,
+      proposal: "",
+      source: "",
+      vote: 0,
     );
-    print("revealData => $revealData");
 
+    // String activationData = TezsterNodeWriter.forgeOperations(
+    //   branch: "BLjxPLCWUuFBewguqrojaHhgAcc8jLZneFkpnrVVcYn2zQz4pmW",
+    //   operation: activation,
+    // );
+    // print("activationData => $activationData");
+
+    // String revealData = TezsterNodeWriter.forgeOperations(
+    //   branch: "BLjxPLCWUuFBewguqrojaHhgAcc8jLZneFkpnrVVcYn2zQz4pmW",
+    //   operation: reveal,
+    // );
+    // // print("revealData => $revealData");
+
+    // String transactionData = TezsterNodeWriter.forgeOperations(
+    //   branch: "BLjxPLCWUuFBewguqrojaHhgAcc8jLZneFkpnrVVcYn2zQz4pmW",
+    //   operation: transaction,
+    // );
+    // // print("transactionData ===> $transactionData");
+
+    // String ballotData = TezsterNodeWriter.forgeOperations(
+    //   branch: "BLjxPLCWUuFBewguqrojaHhgAcc8jLZneFkpnrVVcYn2zQz4pmW",
+    //   operation: ballot,
+    // );
+    // print("ballotData ===> $ballotData");
+
+    // String jsonDecod = jsonDecode(
+    //     '{"name":{"first":"foo","last":"bar"}, "age":31, "city":"New York"}');
+    // print(jsonDecod);
+
+    // String jsonData = TezsterNodeWriter.normalizeMichelineWhiteSpace(jsonDecod);
+    // print("JSONDATA ===> $jsonData");
+
+    // var jsonData =
+    //     '{"accounting":[{"firstName":"John","lastName":"Doe","age":23},{"firstName":"Mary","lastName":"Smith","age":32}],"sales":[{"firstName":"Sally","lastName":"Green","age":27},{"firstName":"Jim","lastName":"Galley","age":41}]}';
+
+    // String newJsonData =
+    //     TezsterNodeWriter.normalizeMichelineWhiteSpace(jsonData);
+    // print("newJsonData ==> $newJsonData");
+    // // String prettyJson(Map<String, dynamic> json, {int indent = 4}) {
+    // //   var spaces = ' ' * indent;
+    // //   var encoder = JsonEncoder.withIndent(spaces);
+    // //   return encoder.convert(json);
+    // // }
+
+    // print(TezsterNodeWriter.prettyJson({
+    //   "prim": "Right",
+    //   "args": [
+    //     {
+    //       "prim": "Left",
+    //       "args": [
+    //         {"prim": "Unit"}
+    //       ]
+    //     }
+    //   ]
+    // }));
+
+    // print("newJsonData ===> $newJsonData");
     // var pubkey = TezsterNodeWriter.writePublicKey(
     //     "edpkuLog552hecagkykJ3fTvop6grTMhfZY4TWbvchDWdYyxCHcrQL");
     // print("pubkey ===> $pubkey");
     // TezsterNodeWriter.writeBranch(
     //     "BKzEzxCwQcXBJNHCxGbnq9H8P3aV7EfFZaot54nShmF3YAgwHDj");
+
+    // {
+    //   "destination": "KT1LRre6w4EgkCRLwUugQLEdRGPvJdTmx3Ae",
+    //   "amount": "10",
+    //   "storage_limit": "1000",
+    //   "gas_limit": "100000",
+    //   "counter": "606113",
+    //   "fee": "100000",
+    //   "source": "tz1NN5QooJWkW44KFfrXqLRaxEa5Wxw3f9FF",
+    //   "kind": "transaction",
+    //   "parameters": {
+    //     "entrypoint": "default",
+    // "value": {
+    //   "prim": "Right",
+    //   "args": [
+    //     {
+    //       "prim": "Left",
+    //       "args": [
+    //         {"prim": "Unit"}
+    //       ]
+    //     }
+    //   ]
+    // }
+    //   }
+    // }
   }
 
   @override

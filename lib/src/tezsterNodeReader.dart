@@ -1,4 +1,6 @@
-part of tezster_dart;
+import 'dart:convert';
+
+import 'package:http/http.dart' as http;
 
 class TezsterNodeReader {
   static dynamic performGetRequest({
@@ -189,8 +191,8 @@ class TezsterNodeReader {
     applied.forEach((g) {
       if (g["contents"][0]["source"] == accountHash ||
           g["contents"][0]["destination"] == accountHash) {
-    //print("G ===> ${g["contents"]}");
-        data.insertAll(0,g["contents"]);
+        //print("G ===> ${g["contents"]}");
+        data.insertAll(0, g["contents"]);
       }
     });
     return data;
