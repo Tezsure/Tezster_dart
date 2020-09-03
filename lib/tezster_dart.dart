@@ -3,6 +3,7 @@ library tezster_dart;
 export 'src/tezster_dart.dart';
 export 'src/tezsterNodeReader.dart';
 export 'src/tezsterNodeWriter.dart';
+export 'src/tezsterSendOperation.dart';
 
 // import 'dart:async';
 // import 'dart:convert';

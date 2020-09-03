@@ -27,10 +27,12 @@ class TezsterNodeReader {
       server: server,
       command: "chains/$chainid/blocks/$hash",
     );
+
+    // print(response['hash']);
     return response;
   }
 
-  static dynamic getBlockHead({
+  static Future<dynamic> getBlockHead({
     String server,
   }) async {
     assert(server != null);
@@ -71,11 +73,13 @@ class TezsterNodeReader {
     String chainid = "main",
   }) async {
     dynamic account = await performGetRequest(
-        server: server,
-        command: "chains/$chainid/blocks/head/context/contracts/$accountHash");
+      server: server,
+      command: "chains/$chainid/blocks/head/context/contracts/$accountHash",
+    );
     return int.parse(account["balance"], radix: 10);
   }
 
+  /// Testing is Done [getAccountManagerForBlock]
   static dynamic getAccountManagerForBlock({
     String server,
     String block,
@@ -115,16 +119,21 @@ class TezsterNodeReader {
       return false;
   }
 
-  static dynamic isManagerKeyRevealedForAccount({
+  /// Testing done [isManagerKeyRevealedForAccount]
+  static Future<bool> isManagerKeyRevealedForAccount({
     String server,
     String accountHash,
   }) async {
-    dynamic managerKey = await getAccountManagerForBlock(
+    bool isRevealed;
+    String managerKey = await getAccountManagerForBlock(
       server: server,
       block: "head",
       accountHash: accountHash,
     );
-    return managerKey.toString().length > 0 ? true : false;
+    managerKey == null ? isRevealed = false : isRevealed = true;
+
+    return isRevealed;
+    // return managerKey.length > 0 ? true : false;
   }
 
   static dynamic getContractStorage({

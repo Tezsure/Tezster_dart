@@ -85,6 +85,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.1.3"
+  ed25519:
+    dependency: transitive
+    description:
+      name: ed25519
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.0.1"
   fixnum:
     dependency: transitive
     description:

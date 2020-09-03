@@ -127,13 +127,11 @@ class _MyAppState extends State<MyApp> {
     print(
         "GET-MempoolOperations-ForAccount ===> $getMempoolOperationsForAccount");
 
-    dynamic isManagerKeyRevealedForAccount =
-        await TezsterNodeReader.isManagerKeyRevealedForAccount(
-      server: testNetServer,
-      accountHash: "tz1ZfFASQvmmz47ru5nn9GhX5oswCRVX5z1r",
+    bool isRevealed = await TezsterNodeReader.isManagerKeyRevealedForAccount(
+      server: "https://testnet.tezster.tech/",
+      accountHash: 'tz1KqTpEZ7Yob7QbPE4Hy4Wo8fHG8LhKxZSx',
     );
-    print(
-        "Is-ManagerKey-Revealed-ForAccount ===> $isManagerKeyRevealedForAccount");
+    print("isRevealed ===> $isRevealed");
 
 //Yet to be tested
     // dynamic getAccForBlock = await TezsterNodeReader.getAccountForBlock(
@@ -212,6 +210,39 @@ class _MyAppState extends State<MyApp> {
       source: "",
       vote: 0,
     );
+
+    var sendOP = TezsterSendOperation.sendTransactionOperation(
+      server: 'https://testnet.tezster.tech/',
+      amount: 10,
+      fee: 2,
+      to: 'tz1PrMATKhpXz81CnEZL2sudhVmhbz8W7Lm5',
+      derivationPath: "",
+      keyStore: KeyStore(
+        publicKey: 'edpkuBknW28nW72KG6RoHtYW7p12T6GKc7nAbwYX5m8Wd9sDVC9yav',
+        privateKey:
+            'edskRuR1azSfboG86YPTyxrQgosh5zChf5bVDmptqLTb5EuXAm9rsnDYfTKhq7rDQujdn5WWzwUMeV3agaZ6J2vPQT58jJAJPi',
+        publicKeyHash: 'tz1KqTpEZ7Yob7QbPE4Hy4Wo8fHG8LhKxZSx',
+        seed: '',
+        storeType: StoreType.mnemonic,
+      ),
+    );
+    print("sendOP ===> $sendOP");
+
+    //Sign operation with public-Key and forged operation
+    // List<String> signOpGrp = await TezsterDart.signOperationGroup(
+    //   privateKey:
+    //       "edskRdVS5H9YCRAG8yqZkX2nUTbGcaDqjYgopkJwRuPUnYzCn3t9ZGksncTLYe33bFjq29pRhpvjQizCCzmugMGhJiXezixvdC",
+    //   forgedOperation:
+    //       "713cb068fe3ac078351727eb5c34279e22b75b0cf4dc0a8d3d599e27031db136040cb9f9da085607c05cac1ca4c62a3f3cfb8146aa9b7f631e52f877a1d363474404da8130b0b940ee",
+    // );
+    // print("signOpGrp ==> $signOpGrp");
+
+    // dynamic getBlock = await TezsterNodeReader.getBlock(
+    //   server: 'https://testnet.tezster.tech/',
+    //   hash: "head",
+    //   chainid: "NetXjD3HPJJjmcd",
+    // );
+    // print("GET-Block ===> $getBlock");
 
     // String activationData = TezsterNodeWriter.forgeOperations(
     //   branch: "BLjxPLCWUuFBewguqrojaHhgAcc8jLZneFkpnrVVcYn2zQz4pmW",

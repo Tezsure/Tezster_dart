@@ -48,23 +48,30 @@ class TezsterNodeWriter {
   }
 
   static String _readSignatureWithHint(Uint8List payload, String hint) {
-    String encodedPayoad = hex.encode(payload);
+    List<int> intConversionPayload = List.from(payload);
+    String encodedPayoad = hex.encode(intConversionPayload);
     String concatEncodedPayload = '09f5cd8612' + encodedPayoad;
     String encodedPayoadToHexString =
         hex.encode(concatEncodedPayload.codeUnits);
     Uint8List finlaListForBS58CHECK = hex.decode(encodedPayoadToHexString);
+    print(finlaListForBS58CHECK);
     if (hint == 'edsig') {
-      return bs58check.encode(finlaListForBS58CHECK);
+      String bs58checkVal = bs58check.encode(finlaListForBS58CHECK);
+      var encodedHex = hex.encode(bs58checkVal.codeUnits);
+      print(encodedHex);
+      return bs58checkVal;
     } else {
       throw {"message": "Unrecognized key hint, '$hint'"};
     }
   }
 
   static Future<Uint8List> _signDetach(Uint8List message, Uint8List sk) async {
+    print("message ===> $message");
+    print("sk ===> $sk");
     return Sodium.cryptoSignDetached(message, sk);
   }
 
-  static signOperationGroup({
+  static Future<SignedOperationGroup> signOperationGroup({
     String forgedOperation,
     String derivationPath,
     String privateKey,
@@ -82,11 +89,14 @@ class TezsterNodeWriter {
     // print("hashedWatermarkedOpBytes ===> ${hashedWatermarkedOpBytes.length}");
     Uint8List privateKeyBytes = _writeKeyWithHint(privateKey, "edsk");
     // print("bs58List ===> $privateKeyBytes");
+
     Uint8List opSignature =
         await _signDetach(hashedWatermarkedOpBytes, privateKeyBytes);
-    // print("opSignature ===> $opSignature");
+    print("opSignature ===> $opSignature");
 
     String hexString = _readSignatureWithHint(opSignature, 'edsig');
+    // var data = hex.decode(hexString);
+    // print(data);
     // print("hexString ===> $hexString");
 
     List listforgedOperation = hex.decode(forgedOperation);
@@ -95,7 +105,7 @@ class TezsterNodeWriter {
     List signedOpBytes = uint8ListforgedOperation + opSignature;
     // print("signedOpBytes ===> $signedOpBytes");
 
-    return [signedOpBytes, hexString];
+    return SignedOperationGroup(bytes: signedOpBytes, signature: hexString);
   }
 
   // FORGED OPERATION GROUP
@@ -246,7 +256,7 @@ class TezsterNodeWriter {
     hexString += writeInt(int.parse(transaction.gasLimit));
     hexString += writeInt(int.parse(transaction.storageLimit));
     hexString += writeInt(int.parse(transaction.amount));
-    hexString += writeInt(int.parse(transaction.destination));
+    // hexString += writeInt(int.parse(transaction.destination));
 
     if (transaction.contractParameters != null) {
       ContractParameters composite = transaction.contractParameters;
@@ -408,7 +418,7 @@ class TezsterNodeWriter {
     dynamic operation,
   }) {
     String encoded = _writeBranch(branch);
-    // print("encoded ===> $encoded");
+    print("encoded ===> $encoded");
     encoded += encodeOperationValue(operation);
     // print("encoded ===> $newEncode");
     return encoded;
@@ -480,7 +490,7 @@ class TezsterNodeWriter {
   }
 
   /// TODO :  Send Transaction Operation
-  sendTransactionOperation({
+  static sendTransactionOperation({
     String server,
     KeyStore keyStore,
     String to,
@@ -501,6 +511,7 @@ class TezsterNodeWriter {
       source: keyStore.publicKeyHash,
     );
 
+    /// [appendRevealOperation]
     dynamic transactionOperation = await appendRevealOperation(
       server: server,
       keyStore: keyStore,
@@ -508,32 +519,91 @@ class TezsterNodeWriter {
       accountOperationIndex: counter - 1,
       transactions: transaction,
     );
+    print("transactionOperation ===> ${transactionOperation.source}");
 
-    return transactionOperation;
+    return sendOperation(
+        server, transactionOperation, keyStore, derivationPath);
   }
 
-  sendOperation(String server, dynamic operations, dynamic keyStore,
+  static sendOperation(String server, dynamic operations, KeyStore keyStore,
       String derivationPath) async {
     var blockHead = await TezsterNodeReader.getBlockHead(server: server);
+    print("blockHead ===> ${blockHead['hash']}");
     var forgedOperationGroup =
-        forgeOperations(branch: blockHead.hash, operation: operations);
-    var signedOpGroup = await signOperationGroup(
+        forgeOperations(branch: blockHead['hash'], operation: operations);
+    SignedOperationGroup signedOpGroup = await signOperationGroup(
       forgedOperation: forgedOperationGroup,
       privateKey: keyStore.privateKey,
       derivationPath: derivationPath,
     );
+    print("signedOpGroup ===> ${signedOpGroup.signature}");
+
+    var injectedOperation =
+        await injectOperation(server: server, signedOpGroup: signedOpGroup);
+
+    var appliedOp = await preapplyOperation(
+      server: server,
+      branch: blockHead['hash'],
+      protocol: blockHead['protocol'],
+      keyStore: keyStore,
+      signedOpGroup: signedOpGroup,
+    );
+    print("appliedOp ===> $appliedOp");
+    // server, blockHead.hash, blockHead.protocol, operations, signedOpGroup);
 
     /// TODO : Pending Task
+    return {"results": appliedOp[0], "operationGroupID": injectedOperation};
   }
 
-  appendRevealOperation({
+  static Future<dynamic> injectOperation({
+    String server,
+    SignedOperationGroup signedOpGroup,
+    String chainid = 'main',
+  }) {
+    var signedOpByteHex = hex.encode(signedOpGroup.bytes);
+    print("signedOpByteHex ===> $signedOpByteHex");
+    var response = performPostRequest(
+      server: server,
+      command: "injection/operation?chain=$chainid",
+      payload: signedOpByteHex,
+    );
+    print("response ===> $response");
+    return response;
+  }
+
+  static preapplyOperation({
+    String server,
+    String branch,
+    String protocol,
+    KeyStore keyStore,
+    SignedOperationGroup signedOpGroup,
+    String chainid = 'main',
+  }) async {
+    List payload = [
+      {
+        "protocol": protocol,
+        "branch": branch,
+        "contents": keyStore,
+        "signature": signedOpGroup.signature
+      }
+    ];
+    var response = await performPostRequest(
+      server: server,
+      command: "chains/$chainid/blocks/head/helpers/preapply/operations",
+      payload: json.encode(payload),
+    );
+
+    return response;
+  }
+
+  static appendRevealOperation({
     @required String server,
     @required dynamic keyStore,
     @required String accountHash,
     @required int accountOperationIndex,
     @required dynamic transactions,
-  }) {
-    dynamic isKeyRevealed = TezsterNodeReader.isManagerKeyRevealedForAccount(
+  }) async {
+    bool isKeyRevealed = await TezsterNodeReader.isManagerKeyRevealedForAccount(
         server: server, accountHash: accountHash);
     int counter = accountOperationIndex + 1;
 
@@ -567,13 +637,40 @@ class KeyStore {
   String seed;
   String derivationPath;
   StoreType storeType = StoreType.mnemonic;
-  KeyStore(
-      {this.publicKey,
-      this.privateKey,
-      this.publicKeyHash,
-      this.seed,
-      this.derivationPath,
-      this.storeType});
+  KeyStore({
+    this.publicKey,
+    this.privateKey,
+    this.publicKeyHash,
+    this.seed,
+    this.derivationPath,
+    this.storeType,
+  });
+
+  KeyStore.fromJson(Map<String, dynamic> json) {
+    publicKey = json['publicKey'];
+    privateKey = json['privateKey'];
+    publicKeyHash = json['publicKeyHash'];
+    seed = json['seed'];
+    derivationPath = json['derivationPath'];
+    storeType = json['storeType'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['publicKey'] = this.publicKey;
+    data['privateKey'] = this.privateKey;
+    data['publicKeyHash'] = this.publicKeyHash;
+    data['seed'] = this.seed;
+    data['derivationPath'] = this.derivationPath;
+    data['storeType'] = this.storeType;
+    return data;
+  }
+}
+
+class SignedOperationGroup {
+  List bytes;
+  String signature;
+  SignedOperationGroup({this.bytes, this.signature});
 }
 
 class Activation {

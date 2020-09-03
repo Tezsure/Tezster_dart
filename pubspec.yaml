@@ -22,6 +22,7 @@ dependencies:
   convert: ^2.1.1
   http: ^0.12.1
   js: ^0.6.2
+  ed25519: ^0.0.1
 
 dev_dependencies:
   flutter_test:
