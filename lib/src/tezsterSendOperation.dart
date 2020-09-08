@@ -166,7 +166,7 @@ class TezsterSendOperation {
     hexString += writeInt(int.parse(transaction.gasLimit));
     hexString += writeInt(int.parse(transaction.storageLimit));
     hexString += writeInt(int.parse(transaction.amount));
-    // hexString += writeInt(int.parse(transaction.destination));
+    hexString += writeAddress(transaction.destination);
 
     if (transaction.contractParameters != null) {
       ContractParameters composite = transaction.contractParameters;
@@ -279,18 +279,18 @@ class TezsterSendOperation {
     );
     print("signedOpGroup ===> ${signedOpGroup.signature}");
 
-    var injectedOperation =
-        await injectOperation(server: server, signedOpGroup: signedOpGroup);
-    print("injectedOperation ===> $injectedOperation");
     var appliedOp = await preapplyOperation(
       server: server,
       branch: blockHead['hash'],
       protocol: blockHead['protocol'],
-      keyStore: keyStore,
+      transaction: operations,
       signedOpGroup: signedOpGroup,
     );
-    print("appliedOp ===> $appliedOp");
-    // server, blockHead.hash, blockHead.protocol, operations, signedOpGroup);
+    print("appliedOp ===> ${appliedOp.body.toString()}");
+
+    var injectedOperation =
+        await injectOperation(server: server, signedOpGroup: signedOpGroup);
+    print("injectedOperation ===> $injectedOperation");
 
     /// TODO : Pending Task
     /// "results": appliedOp[0],
@@ -306,28 +306,57 @@ class TezsterSendOperation {
     assert(privateKey != null);
 
     String watermarkedForgedOperationBytesHex = '03' + forgedOperation;
-    List<int> hexStringToListOfInt =
-        hex.decode(watermarkedForgedOperationBytesHex);
-    Uint8List hashedWatermarkedOpBytes =
-        Blake2bHash.hashWithDigestSize(256, hexStringToListOfInt);
-    Uint8List privateKeyBytes = bs58check.decode(privateKey);
-    List<int> pkB = List.from(privateKeyBytes);
-    pkB.removeRange(0, 4);
-    Uint8List finalPKb = Uint8List.fromList(pkB);
-    Uint8List value = await Sodium.cryptoSignDetached(
-      hashedWatermarkedOpBytes,
-      finalPKb,
-      useBackgroundThread: false,
-    );
-    String opSignatureHex = hex.encode(value);
-    String hexStringToEncode = '09f5cd8612' + opSignatureHex;
-    Uint8List hexDeco = hex.decode(hexStringToEncode);
-    String hexSignature = bs58check.encode(hexDeco);
-    String signedOpBytes = forgedOperation + opSignatureHex;
-    List signedOpBytestoList = hex.decode(signedOpBytes);
-    return SignedOperationGroup(
-        bytes: signedOpBytestoList, signature: hexSignature);
 
+    /// converting String to HexString [waterMarkHexIntList]
+    List<int> waterMarkHexIntList =
+        hex.decode(watermarkedForgedOperationBytesHex);
+
+    /// converting List [waterMarkHexIntList] to Uint8List [waterMarkHexUint8List]
+    Uint8List waterMarkHexUint8List = Uint8List.fromList(waterMarkHexIntList);
+
+    Uint8List hashedWatermarkedOpBytes =
+        await _simpleHash(waterMarkHexUint8List, 32);
+    Uint8List privateKeyBytes = _writeKeyWithHint(privateKey, "edsk");
+    print("bs58List ===> $privateKeyBytes");
+    Uint8List opSignature = await Sodium.cryptoSignDetached(
+        hashedWatermarkedOpBytes, privateKeyBytes);
+    print("opSignature ===> $opSignature");
+
+    String hexSignature = _readSignatureWithHint(opSignature, 'edsig');
+    print("hexString ===> $hexSignature");
+
+    List<int> forgedOperationListInt = hex.decode(forgedOperation);
+    Uint8List forgedOperationUint8List =
+        Uint8List.fromList(forgedOperationListInt);
+
+    List<int> signedOpBytes = forgedOperationUint8List + opSignature;
+
+    return SignedOperationGroup(bytes: signedOpBytes, signature: hexSignature);
+
+// Trial 2
+    // List<int> hexStringToListOfInt =
+    //     hex.decode(watermarkedForgedOperationBytesHex);
+    // Uint8List hashedWatermarkedOpBytes =
+    //     Blake2bHash.hashWithDigestSize(256, hexStringToListOfInt);
+    // Uint8List privateKeyBytes = bs58check.decode(privateKey);
+    // List<int> pkB = List.from(privateKeyBytes);
+    // pkB.removeRange(0, 4);
+    // Uint8List finalPKb = Uint8List.fromList(pkB);
+    // Uint8List value = await Sodium.cryptoSignDetached(
+    //   hashedWatermarkedOpBytes,
+    //   finalPKb,
+    //   useBackgroundThread: false,
+    // );
+    // String opSignatureHex = hex.encode(value);
+    // String hexStringToEncode = '09f5cd8612' + opSignatureHex;
+    // Uint8List hexDeco = hex.decode(hexStringToEncode);
+    // String hexSignature = bs58check.encode(hexDeco);
+    // String signedOpBytes = forgedOperation + opSignatureHex;
+    // List signedOpBytestoList = hex.decode(signedOpBytes);
+    // return SignedOperationGroup(
+    //     bytes: signedOpBytestoList, signature: hexSignature);
+
+    /// Trial 1
     // String watermarkedForgedOperationBytesHex = "03" + forgedOperation;
     // String stringToHexString =
     //     hex.encode(watermarkedForgedOperationBytesHex.codeUnits);
@@ -338,7 +367,7 @@ class TezsterSendOperation {
     // print("hashedWatermarkedOpBytes ===> $hashedWatermarkedOpBytes");
     // print("hashedWatermarkedOpBytes ===> ${hashedWatermarkedOpBytes.length}");
     // Uint8List privateKeyBytes = _writeKeyWithHint(privateKey, "edsk");
-    // // print("bs58List ===> $privateKeyBytes");
+    // print("bs58List ===> $privateKeyBytes");
 
     // Uint8List opSignature =
     //     await _signDetach(hashedWatermarkedOpBytes, privateKeyBytes);
@@ -360,23 +389,34 @@ class TezsterSendOperation {
     String server,
     String branch,
     String protocol,
-    KeyStore keyStore,
+    Transaction transaction,
     SignedOperationGroup signedOpGroup,
     String chainid = 'main',
   }) async {
-    print(json.encode(keyStore.toJson()).toString());
     List payload = [
       {
         "protocol": protocol,
         "branch": branch,
-        "contents": [keyStore.toJson()],
+        "contents": [
+          {
+            "kind": "transaction",
+            "source": transaction.source,
+            "fee": transaction.fee,
+            "counter": transaction.counter,
+            "gas_limit": transaction.gasLimit,
+            "storage_limit": transaction.storageLimit,
+            "amount": transaction.amount,
+            "destination": transaction.destination,
+          }
+        ],
         "signature": signedOpGroup.signature
       }
     ];
+    print(json.encode(payload).toString());
     var response = await performPostRequest(
       server: server,
       command: "chains/$chainid/blocks/head/helpers/preapply/operations",
-      payload: json.encode(payload),
+      payload: payload,
     );
 
     return response;
@@ -431,39 +471,42 @@ class TezsterSendOperation {
   }
 }
 
-// static Uint8List _simpleHash(Uint8List payload, int digestSize) {
-//   return Blake2bHash.hashWithDigestSize(digestSize, payload);
-// }
+Future<Uint8List> _simpleHash(Uint8List payload, int digestSize) async {
+  return await Sodium.cryptoGenerichash(digestSize, payload, null);
+  // return Blake2bHash.hashWithDigestSize(digestSize, payload);
+}
 
-// static Uint8List _writeKeyWithHint(String key, String hint) {
-//   if (hint == "edsk" || hint == "edpk") {
-//     return bs58check.decode(key).sublist(0, 64);
-//   } else {
-//     throw {"message": "Unrecognized key hint, '$hint'"};
-//   }
-// }
+Uint8List _writeKeyWithHint(String key, String hint) {
+  if (hint == "edsk" || hint == "edpk") {
+    return bs58check.decode(key).sublist(4);
+  } else {
+    throw {"message": "Unrecognized key hint, '$hint'"};
+  }
+}
 
 // static Future<Uint8List> _signDetach(Uint8List message, Uint8List sk) async {
 //   return Sodium.cryptoSignDetached(message, sk);
 // }
 
-// static String _readSignatureWithHint(Uint8List payload, String hint) {
-//   List<int> intConversionPayload = List.from(payload);
-//   String encodedPayoad = hex.encode(intConversionPayload);
-//   // String concatEncodedPayload = '09f5cd8612' + encodedPayoad;
-//   String concatEncodedPayload = '09f5cd8612';
+String _readSignatureWithHint(Uint8List payload, String hint) {
+  // String encodedPayoadToHexString =
+  //     hex.encode(concatEncodedPayload.codeUnits);
+  // Uint8List finlaListForBS58CHECK = hex.decode(concatEncodedPayload);
+  // Uint8List finlaListForBS58CHECK = hex.decode(encodedPayoadToHexString);
 
-//   // String encodedPayoadToHexString =
-//   //     hex.encode(concatEncodedPayload.codeUnits);
-//   Uint8List finlaListForBS58CHECK = hex.decode(concatEncodedPayload);
-//   // Uint8List finlaListForBS58CHECK = hex.decode(encodedPayoadToHexString);
+  // print(finlaListForBS58CHECK);
+  if (hint == 'edsig') {
+    List<int> intConversionPayload = List.from(payload);
+    String encodedPayoad = hex.encode(intConversionPayload);
+    // String concatEncodedPayload = '09f5cd8612' + encodedPayoad;
+    String concatEncodedPayload = '09f5cd8612' + encodedPayoad;
 
-//   print(finlaListForBS58CHECK);
-//   if (hint == 'edsig') {
-//     String bs58checkVal = bs58check.encode(finlaListForBS58CHECK);
+    List<int> hexPayloadListInt = hex.decode(concatEncodedPayload);
+    Uint8List finalHexPayloadUint8ListInt =
+        Uint8List.fromList(hexPayloadListInt);
 
-//     return bs58checkVal;
-//   } else {
-//     throw {"message": "Unrecognized key hint, '$hint'"};
-//   }
-// }
+    return bs58check.encode(finalHexPayloadUint8ListInt);
+  } else {
+    throw {"message": "Unrecognized key hint, '$hint'"};
+  }
+}

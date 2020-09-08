@@ -218,10 +218,10 @@ class _MyAppState extends State<MyApp> {
       to: 'tz1PrMATKhpXz81CnEZL2sudhVmhbz8W7Lm5',
       derivationPath: "",
       keyStore: KeyStore(
-        publicKey: 'edpkuBknW28nW72KG6RoHtYW7p12T6GKc7nAbwYX5m8Wd9sDVC9yav',
+        publicKey: 'edpktyB3RAiSjcwxtH6rroVgZmwDUGRtEJt1cjj4yk67munxciGcn7',
         privateKey:
-            'edskRuR1azSfboG86YPTyxrQgosh5zChf5bVDmptqLTb5EuXAm9rsnDYfTKhq7rDQujdn5WWzwUMeV3agaZ6J2vPQT58jJAJPi',
-        publicKeyHash: 'tz1KqTpEZ7Yob7QbPE4Hy4Wo8fHG8LhKxZSx',
+            'edskRdeVDqUZtg6MXc8rpR8cQ9yEHCjGxjMtFQGmqYbYXQcDzuefUX2mh7AYunnwqaYf4oNGMT1Y9w9xvL2aZjth3GdriJFPQ5',
+        publicKeyHash: 'tz1MXeJCqZMam9698kyQapZNkQ1Bvdfu8uza',
         seed: '',
         storeType: StoreType.mnemonic,
       ),

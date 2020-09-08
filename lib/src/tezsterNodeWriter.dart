@@ -668,7 +668,7 @@ class KeyStore {
 }
 
 class SignedOperationGroup {
-  List bytes;
+  List<int> bytes;
   String signature;
   SignedOperationGroup({this.bytes, this.signature});
 }
