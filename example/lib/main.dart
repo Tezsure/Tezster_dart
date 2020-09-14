@@ -212,21 +212,29 @@ class _MyAppState extends State<MyApp> {
     );
 
     var sendOP = TezsterSendOperation.sendTransactionOperation(
-      server: 'https://testnet.tezster.tech/',
-      amount: 10,
-      fee: 2,
-      to: 'tz1PrMATKhpXz81CnEZL2sudhVmhbz8W7Lm5',
+      server: 'https://testnet.tezster.tech',
+      amount: 1000000,
+      fee: 100000,
+      to: 'tz1fX6A2miVXjNyReg2dpt2TsXLkZ4w7zRGa',
       derivationPath: "",
       keyStore: KeyStore(
-        publicKey: 'edpktyB3RAiSjcwxtH6rroVgZmwDUGRtEJt1cjj4yk67munxciGcn7',
+        publicKey: 'edpkv3azzeq9vL869TujYhdQY5FKiQH4CGwJEzqG7m6PoX7VEpdPc9',
         privateKey:
-            'edskRdeVDqUZtg6MXc8rpR8cQ9yEHCjGxjMtFQGmqYbYXQcDzuefUX2mh7AYunnwqaYf4oNGMT1Y9w9xvL2aZjth3GdriJFPQ5',
-        publicKeyHash: 'tz1MXeJCqZMam9698kyQapZNkQ1Bvdfu8uza',
+            'edskS5owtVaAtWifnCNo8tUpAw2535AXEDY4RXBRV1NHbQ58RDdpaWz2KyrvFXE4SuCTbHU8exUecW33GRqkAfLeNLBS5sPyoi',
+        publicKeyHash: 'tz1hcXqtiMYFhvuirD4guE7ts4yDuCAmtD95',
         seed: '',
         storeType: StoreType.mnemonic,
       ),
     );
     print("sendOP ===> $sendOP");
+
+    // {
+    //   sk:
+    //     'edskRuR1azSfboG86YPTyxrQgosh5zChf5bVDmptqLTb5EuXAm9rsnDYfTKhq7rDQujdn5WWzwUMeV3agaZ6J2vPQT58jJAJPi',
+    //   pk: 'edpkuBknW28nW72KG6RoHtYW7p12T6GKc7nAbwYX5m8Wd9sDVC9yav',
+    //   pkh: 'tz1KqTpEZ7Yob7QbPE4Hy4Wo8fHG8LhKxZSx',
+    //   label: 'bootstrap1',
+    // }
 
     //Sign operation with public-Key and forged operation
     // List<String> signOpGrp = await TezsterDart.signOperationGroup(

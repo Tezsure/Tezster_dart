@@ -39,8 +39,10 @@ class TezsterSendOperation {
   }
 
   static String _writeBranch(String branch) {
-    Uint8List branchUint8List = bs58check.decode(branch).sublist(2);
-    String branchHexString = hex.encode(branchUint8List);
+    Uint8List branchUint8List = bs58check.decode(branch);
+    branchUint8List.sublist(2);
+    List<int> branchListInt = List.from(branchUint8List);
+    String branchHexString = hex.encode(branchListInt);
     return branchHexString;
   }
 
@@ -112,10 +114,11 @@ class TezsterSendOperation {
 
     List reversedList = (hexList.reversed).toList();
 
-    Uint8List conversion = Uint8List.fromList((hexList.reversed).toList());
+    Uint8List conversion = Uint8List.fromList(reversedList);
     print("conversion $conversion");
 
-    String reversedIntListDataToHex = hex.encode(reversedList);
+    // String reversedIntListDataToHex = hex.encode(reversedList);
+    String reversedIntListDataToHex = hex.encode(conversion);
     print("reversedIntListDataToHex ===> $reversedIntListDataToHex");
 
     return reversedIntListDataToHex;
@@ -140,6 +143,7 @@ class TezsterSendOperation {
   };
 
   static String writeAddress(String address) {
+    print("address ===> $address");
     Uint8List uintBsList = bs58check.decode(address).sublist(3);
     // List<int> bsList = List.from(uintBsList);
     String hexString = hex.encode(uintBsList);
@@ -241,6 +245,7 @@ class TezsterSendOperation {
     dynamic counter = await TezsterNodeReader.getCounterForAccount(
             server: server, accountHash: keyStore.publicKeyHash) +
         1;
+    print("counter ===> $counter");
 
     Transaction transaction = Transaction(
       destination: to,
@@ -256,6 +261,7 @@ class TezsterSendOperation {
     dynamic transactionOperation = await appendRevealOperation(
       server: server,
       keyStore: keyStore,
+      // accountHash: "tz1LoKbFyYHTkCnj9mgRKFb9g8pP4Lr3zniP",
       accountHash: keyStore.publicKeyHash,
       accountOperationIndex: counter - 1,
       transactions: transaction,
@@ -272,6 +278,7 @@ class TezsterSendOperation {
     print("blockHead ===> ${blockHead['hash']}");
     var forgedOperationGroup =
         forgeOperations(branch: blockHead['hash'], operation: operations);
+    print("forgedOperationGroup ==>  $forgedOperationGroup");
     SignedOperationGroup signedOpGroup = await signOperationGroup(
       forgedOperation: forgedOperationGroup,
       privateKey: keyStore.privateKey,
@@ -317,6 +324,7 @@ class TezsterSendOperation {
     Uint8List hashedWatermarkedOpBytes =
         await _simpleHash(waterMarkHexUint8List, 32);
     Uint8List privateKeyBytes = _writeKeyWithHint(privateKey, "edsk");
+
     print("bs58List ===> $privateKeyBytes");
     Uint8List opSignature = await Sodium.cryptoSignDetached(
         hashedWatermarkedOpBytes, privateKeyBytes);
@@ -489,16 +497,9 @@ Uint8List _writeKeyWithHint(String key, String hint) {
 // }
 
 String _readSignatureWithHint(Uint8List payload, String hint) {
-  // String encodedPayoadToHexString =
-  //     hex.encode(concatEncodedPayload.codeUnits);
-  // Uint8List finlaListForBS58CHECK = hex.decode(concatEncodedPayload);
-  // Uint8List finlaListForBS58CHECK = hex.decode(encodedPayoadToHexString);
-
-  // print(finlaListForBS58CHECK);
   if (hint == 'edsig') {
     List<int> intConversionPayload = List.from(payload);
     String encodedPayoad = hex.encode(intConversionPayload);
-    // String concatEncodedPayload = '09f5cd8612' + encodedPayoad;
     String concatEncodedPayload = '09f5cd8612' + encodedPayoad;
 
     List<int> hexPayloadListInt = hex.decode(concatEncodedPayload);
