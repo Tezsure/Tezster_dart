@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:ffi';
 import 'dart:typed_data';
 
 import 'package:blake2b/blake2b_hash.dart';
@@ -222,16 +223,27 @@ class TezsterSendOperation {
   }
 
   static encodeOperationValue(operation) {
-    return encodeTransaction(Transaction(
-      amount: operation.amount,
-      counter: operation.counter,
-      destination: operation.destination,
-      contractParameters: operation.contractParameters,
-      fee: operation.fee,
-      gasLimit: operation.gasLimit,
-      source: operation.source,
-      storageLimit: operation.storageLimit,
-    ));
+    if (operation is Reveal) {
+      return encodeReveal(Reveal(
+        source: operation.source,
+        fee: operation.fee,
+        counter: operation.counter,
+        gasLimit: operation.gasLimit,
+        storageLimit: operation.storageLimit,
+        publicKey: operation.publicKey,
+      ));
+    } else if (operation is Transaction) {
+      return encodeTransaction(Transaction(
+        amount: operation.amount,
+        counter: operation.counter,
+        destination: operation.destination,
+        contractParameters: operation.contractParameters,
+        fee: operation.fee,
+        gasLimit: operation.gasLimit,
+        source: operation.source,
+        storageLimit: operation.storageLimit,
+      ));
+    }
   }
 
   static sendTransactionOperation({
@@ -266,6 +278,7 @@ class TezsterSendOperation {
       accountOperationIndex: counter - 1,
       transactions: transaction,
     );
+
     print("transactionOperation ===> ${transactionOperation.source}");
 
     return sendOperation(
@@ -279,6 +292,9 @@ class TezsterSendOperation {
     var forgedOperationGroup =
         forgeOperations(branch: blockHead['hash'], operation: operations);
     print("forgedOperationGroup ==>  $forgedOperationGroup");
+    // var revealforgedOperationGroup =
+    //     forgeOperations(branch: blockHead['head'], operation: revealOp);
+    // print("revealforgedOperationGroup ===> $revealforgedOperationGroup");
     SignedOperationGroup signedOpGroup = await signOperationGroup(
       forgedOperation: forgedOperationGroup,
       privateKey: keyStore.privateKey,
@@ -291,6 +307,7 @@ class TezsterSendOperation {
       branch: blockHead['hash'],
       protocol: blockHead['protocol'],
       transaction: operations,
+      keyStore: keyStore,
       signedOpGroup: signedOpGroup,
     );
     print("appliedOp ===> ${appliedOp.body.toString()}");
@@ -322,10 +339,12 @@ class TezsterSendOperation {
     Uint8List waterMarkHexUint8List = Uint8List.fromList(waterMarkHexIntList);
 
     Uint8List hashedWatermarkedOpBytes =
-        await _simpleHash(waterMarkHexUint8List, 32);
+        await _simpleHash(waterMarkHexUint8List, 256);
     Uint8List privateKeyBytes = _writeKeyWithHint(privateKey, "edsk");
+    print("bs58List ===> ${privateKeyBytes.length}");
 
-    print("bs58List ===> $privateKeyBytes");
+    // Uint8List hashedWatermarkedOpBytesstring = await _simpleHash(privateKeyBytes,256);
+
     Uint8List opSignature = await Sodium.cryptoSignDetached(
         hashedWatermarkedOpBytes, privateKeyBytes);
     print("opSignature ===> $opSignature");
@@ -398,14 +417,39 @@ class TezsterSendOperation {
     String branch,
     String protocol,
     Transaction transaction,
+    KeyStore keyStore,
     SignedOperationGroup signedOpGroup,
     String chainid = 'main',
   }) async {
+    // Reveal revealOp = Reveal(
+    //   counter: transaction.counter.toString(),
+    //   fee: "0",
+    //   gasLimit: 10600.toString(),
+    //   source: keyStore.publicKeyHash,
+    //   storageLimit: "0",
+    //   publicKey: keyStore.publicKey,
+    // );
+    // dynamic counter = await TezsterNodeReader.getCounterForAccount(
+    //         server: server, accountHash: keyStore.publicKeyHash) +
+    //     1;
+    // print("counter ===> $counter");
+
+    // var counterVal = int.parse(counter);
+
     List payload = [
       {
         "protocol": protocol,
         "branch": branch,
         "contents": [
+          // {
+          //   "kind": "reveal",
+          //   "source": keyStore.publicKeyHash,
+          //   "fee": "0",
+          //   "counter": counter.toString(),
+          //   "gas_limit": 10600.toString(),
+          //   "storage_limit": "0",
+          //   "public_key": keyStore.publicKey
+          // },
           {
             "kind": "transaction",
             "source": transaction.source,
@@ -447,6 +491,32 @@ class TezsterSendOperation {
     return response;
   }
 
+  static writePublicKey(String publicKey) {
+    String _decodeAndAdd(String number) {
+      Uint8List publicKeyList = bs58check.decode(publicKey).sublist(4);
+      return number + hex.encode(publicKeyList);
+    }
+
+    if (publicKey.startsWith("edpk")) {
+      return _decodeAndAdd("00");
+    } else if (publicKey.startsWith("sppk")) {
+      return _decodeAndAdd("01");
+    } else if (publicKey.startsWith("p2pk")) {
+      return _decodeAndAdd("02");
+    }
+  }
+
+  static String encodeReveal(Reveal reveal) {
+    String hexString = writeInt(sepyTnoitarepo['reveal']);
+    hexString += writeAddress(reveal.source).substring(2);
+    hexString += writeInt(int.parse(reveal.fee));
+    hexString += writeInt(int.parse(reveal.counter));
+    hexString += writeInt(int.parse(reveal.gasLimit));
+    hexString += writeInt(int.parse(reveal.storageLimit));
+    hexString += writePublicKey(reveal.publicKey);
+    return hexString;
+  }
+
   static appendRevealOperation({
     String server,
     dynamic keyStore,
@@ -480,13 +550,25 @@ class TezsterSendOperation {
 }
 
 Future<Uint8List> _simpleHash(Uint8List payload, int digestSize) async {
-  return await Sodium.cryptoGenerichash(digestSize, payload, null);
-  // return Blake2bHash.hashWithDigestSize(digestSize, payload);
+  // return await Sodium.cryptoGenerichash(digestSize, payload, null);
+  return Blake2bHash.hashWithDigestSize(digestSize, payload);
 }
 
 Uint8List _writeKeyWithHint(String key, String hint) {
   if (hint == "edsk" || hint == "edpk") {
-    return bs58check.decode(key).sublist(4);
+    print("key ===> $key");
+    var bs58CheckDecodced = bs58check.decode(key);
+    print("bs58CheckDecodced ===> $bs58CheckDecodced");
+    print(
+        "bs58check.encode(bs58CheckDecodced) ===> ${bs58check.encode(bs58CheckDecodced)}");
+    print(
+        "hex.encode(bs58CheckDecodced) ===> ${hex.encode(bs58CheckDecodced)}");
+    var data = hex.encode(bs58CheckDecodced).substring(8);
+    print("data ===> $data");
+    var decodedData = hex.decode(data);
+    Uint8List bs58String = Uint8List.fromList(decodedData);
+    print("bs58String ===> $bs58String");
+    return bs58String;
   } else {
     throw {"message": "Unrecognized key hint, '$hint'"};
   }
@@ -500,8 +582,7 @@ String _readSignatureWithHint(Uint8List payload, String hint) {
   if (hint == 'edsig') {
     List<int> intConversionPayload = List.from(payload);
     String encodedPayoad = hex.encode(intConversionPayload);
-    String concatEncodedPayload = '09f5cd8612' + encodedPayoad;
-
+    String concatEncodedPayload = '09f5cd8612' + encodedPayoad; 
     List<int> hexPayloadListInt = hex.decode(concatEncodedPayload);
     Uint8List finalHexPayloadUint8ListInt =
         Uint8List.fromList(hexPayloadListInt);

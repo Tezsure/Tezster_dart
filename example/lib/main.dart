@@ -215,15 +215,15 @@ class _MyAppState extends State<MyApp> {
       server: 'https://testnet.tezster.tech',
       amount: 1000000,
       fee: 100000,
-      to: 'tz1fX6A2miVXjNyReg2dpt2TsXLkZ4w7zRGa',
-      derivationPath: "",
+      to: 'tz1a4UNywaxaAfh2LRBP2UugQTeCVcLCn5Sa',
+      derivationPath: '',
       keyStore: KeyStore(
-        publicKey: 'edpkv3azzeq9vL869TujYhdQY5FKiQH4CGwJEzqG7m6PoX7VEpdPc9',
+        publicKey: 'edpkvaUDxsbgxQwXKFph4SUz7HawNnKMG2ESHcTPkYkQXwKRdpz5tm',
         privateKey:
-            'edskS5owtVaAtWifnCNo8tUpAw2535AXEDY4RXBRV1NHbQ58RDdpaWz2KyrvFXE4SuCTbHU8exUecW33GRqkAfLeNLBS5sPyoi',
-        publicKeyHash: 'tz1hcXqtiMYFhvuirD4guE7ts4yDuCAmtD95',
+            'edskRoBCkDEhPzHHoXH5wtSf2LZGVe9z2AiLGNdvY7QFXVJxN62ZvW9LThG3vzMVgcuesDRDr5VSGPQqEW5ky3Te6eNfAbX8eh',
+        publicKeyHash: 'tz1Sr4tBA28P2QsEM7zpVUM41PSza5R1hFEz',
         seed: '',
-        storeType: StoreType.mnemonic,
+        storeType: StoreType.fundraiser,
       ),
     );
     print("sendOP ===> $sendOP");
