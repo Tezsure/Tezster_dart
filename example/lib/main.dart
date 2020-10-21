@@ -343,9 +343,9 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    // tezosWalletUtil();
+    tezosWalletUtil();
     // tezosNodeWriter();
-    nodeWriter();
+    // nodeWriter();
   }
 
   @override
