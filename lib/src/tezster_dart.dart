@@ -26,12 +26,7 @@ class TezsterDart {
     assert(mnemonic != null);
     Uint8List seed = bip39.mnemonicToSeed(mnemonic);
     Uint8List seedLength32 = seed.sublist(0, 32);
-    // Map<dynamic, dynamic> keys =
-    //     await Sodium.cryptoSignSeedKeypair(seedLength32);
     KeyPair keyPair = Sodium.cryptoSignSeedKeypair(seedLength32);
-    // keyPair.pk
-    // Uint8List sk = keys['sk'];
-    // Uint8List pk = keys['pk'];
     String skKey = GenerateKeys.readKeysWithHint(keyPair.sk, '2bf64e07');
     String pkKey = GenerateKeys.readKeysWithHint(keyPair.pk, '0d0f25d9');
     String pkKeyHash = GenerateKeys.computeKeyHash(keyPair.pk);
@@ -82,7 +77,6 @@ class TezsterDart {
     Uint8List value = Sodium.cryptoSignDetached(
       hashedWatermarkedOpBytes,
       finalPKb,
-      // useBackgroundThread: false,
     );
     String opSignatureHex = hex.encode(value);
     String hexStringToEncode = '09f5cd8612' + opSignatureHex;
@@ -113,8 +107,6 @@ class TezsterDart {
     String p = "mnemonic" + normString;
     Uint8List seed = PBKDF2(hashAlgorithm: sha512).generateKey(m, p, 2048, 32);
     KeyPair keyPair = Sodium.cryptoSignSeedKeypair(seed);
-    // Uint8List sk = keys['sk'];
-    // Uint8List pk = keys['pk'];
     String skKey = GenerateKeys.readKeysWithHint(keyPair.sk, '2bf64e07');
     String pkKey = GenerateKeys.readKeysWithHint(keyPair.pk, '0d0f25d9');
     String pkKeyHash = GenerateKeys.computeKeyHash(keyPair.pk);
