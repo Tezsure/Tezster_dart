@@ -17,7 +17,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  example() async {
+  tezosWalletUtil() async {
     //Generate mnemonic
     String mnemonic = TezsterDart
         .generateMnemonic(); // strength is optional, by default it's 256 ==> Generates 24 words.
@@ -67,111 +67,10 @@ class _MyAppState extends State<MyApp> {
     //Accessing: private key ===> identityFundraiser[0] | public key ===> identityFundraiser[1] | public Key Hash ===> identityFundraiser[2] all of type string.
   }
 
-  request() async {
-    String testNetServer = "https://testnet.tezster.tech";
-
-    dynamic response = await TezsterDart.performGetRequest(
-      server: testNetServer,
-      command: "chains/main/blocks",
-    );
-    print("Response ===> $response");
-
-    dynamic getBlock = await TezsterDart.getBlock(
-      server: testNetServer,
-      hash: "",
-      chainid: "",
-    );
-    print("GET-Block ===> $getBlock");
-
-    dynamic blockhead = await TezsterDart.getBlockHead(
-      server: testNetServer,
-    );
-    print("Block-Head ===> $blockhead");
-
-    dynamic getAccForBlock = await TezsterDart.getAccountForBlock(
-      server: testNetServer,
-      accountHash: "",
-      blockHash: "",
-      chainid: "",
-    );
-    print("GET-Acc-ForBlock ===> $getAccForBlock");
-
-    // dynamic getCounterForAccount = await TezsterDart.getCounterForAccount(
-    //   server: testNetServer,
-    //   accountHash: "",
-    //   chainid: "",
-    // );
-    // print("GET-Counter-ForAccount ===> $getCounterForAccount");
-
-    // dynamic getSpendableBalanceForAccount =
-    //     await TezsterDart.getSpendableBalanceForAccount(
-    //   server: testNetServer,
-    //   accountHash: "",
-    //   chainid: "",
-    // );
-    // print(
-    //     "GET-SpendableBalance-ForAccount ===> $getSpendableBalanceForAccount");
-
-    dynamic getAccountManagerForBlock =
-        await TezsterDart.getAccountManagerForBlock(
-      server: testNetServer,
-      chainid: "",
-      accountHash: "",
-      block: "",
-    );
-    print("GET-Account-Manager-ForBlock ===> $getAccountManagerForBlock");
-
-    // dynamic isImplicitAndEmpty = await TezsterDart.isImplicitAndEmpty(
-    //   server: testNetServer,
-    //   accountHash: "",
-    // );
-    // print("Is-ImplicitAndEmpty ===> $isImplicitAndEmpty");
-
-    dynamic isManagerKeyRevealedForAccount =
-        await TezsterDart.isManagerKeyRevealedForAccount(
-      server: testNetServer,
-      accountHash: "",
-    );
-    print(
-        "Is-ManagerKey-Revealed-ForAccount ===> $isManagerKeyRevealedForAccount");
-
-    dynamic getContractStorage = await TezsterDart.getContractStorage(
-      server: testNetServer,
-      accountHash: "",
-      block: "",
-      chainid: "",
-    );
-    print("GET-Contract-Storage ===> $getContractStorage");
-
-    dynamic getValueForBigMapKey = await TezsterDart.getValueForBigMapKey(
-      server: testNetServer,
-      key: "",
-      block: "",
-      chainid: "",
-      index: 1,
-    );
-    print("GET-Value-ForBigMapKey ===> $getValueForBigMapKey");
-
-    dynamic getMempoolOperation = await TezsterDart.getMempoolOperation(
-      server: testNetServer,
-      chainid: "",
-      operationGroupId: "",
-    );
-    print("GET-MempoolOperation ===> $getMempoolOperation");
-
-    dynamic getMempoolOperationsForAccount =
-        await TezsterDart.getMempoolOperationsForAccount(
-      server: testNetServer,
-      chainid: "",
-    );
-    print("GET-MempoolOperations-ForAccount ===> $getMempoolOperationsForAccount");
-  }
-
   @override
   void initState() {
     super.initState();
-    // example();
-    request();
+    tezosWalletUtil();
   }
 
   @override
