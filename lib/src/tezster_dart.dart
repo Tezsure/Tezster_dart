@@ -2,6 +2,7 @@ library tezster_dart;
 
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'dart:typed_data';
 import 'dart:core';
 import 'package:convert/convert.dart';
@@ -12,6 +13,7 @@ import 'package:bip39/bip39.dart' as bip39;
 import 'package:bs58check/bs58check.dart' as bs58check;
 import "package:unorm_dart/unorm_dart.dart" as unorm;
 import 'package:flutter_sodium/flutter_sodium.dart';
+import 'package:http/http.dart' as http;
 
 import 'package:tezster_dart/helper/generateKeys.dart';
 
@@ -111,5 +113,15 @@ class TezsterDart {
     String pkKey = GenerateKeys.readKeysWithHint(keyPair.pk, '0d0f25d9');
     String pkKeyHash = GenerateKeys.computeKeyHash(keyPair.pk);
     return [skKey, pkKey, pkKeyHash];
+  }
+
+  static Future<String> getBalance(String publicKeyHash, String rpc) async {
+    assert(publicKeyHash != null);
+    assert(rpc != null);
+    String _url =
+        "$rpc/chains/main/blocks/head/context/contracts/$publicKeyHash/balance";
+    http.Response response = await http.get(_url);
+    if (response.statusCode != 200) throw HttpException(response.body);
+    return response.body;
   }
 }
