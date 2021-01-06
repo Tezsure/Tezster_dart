@@ -28,4 +28,19 @@ class GenerateKeys {
     String base58String = bs58check.encode(convertingHexStringToListOfInt);
     return base58String;
   }
+
+  static Uint8List writeKeyWithHint(
+    String key,
+    String hint,
+  ) {
+    if (hint == 'edsk' ||
+        hint == 'edpk' ||
+        hint == 'sppk' ||
+        hint == 'p2pk' ||
+        hint == '2bf64e07' ||
+        hint == '0d0f25d9') {
+      return bs58check.decode(key).sublist(4);
+    } else
+      throw Exception("Unrecognized key hint, '$hint'");
+  }
 }
