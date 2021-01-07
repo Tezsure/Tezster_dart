@@ -55,4 +55,49 @@ void main() {
         TezsterDart.writeKeyWithHint(keyStore.secretKey, 'edsk'));
     print(signer);
   });
+
+  test('send-Transaction-Operation', () async {
+    var keyStore = KeyStoreModel(
+      publicKey: 'edpkuh9tUmMMVKJVqG4bJxNLsCob6y8wXycshi6Pn11SQ5hx7SAVjf',
+      secretKey:
+          'edskRs9KBdoU675PBVyHdM3fqixemkykm7hgHeXAYKUjdoVn3Aev8dP11p47zc4iuWJsefSP4t2vdHPoQisQC3DjZY3ZbbSP9Y',
+      publicKeyHash: 'tz1LRibbLEEWpaXb4aKrXXgWPvx9ue9haAAV',
+    );
+
+    var signer = await TezsterDart.createSigner(
+        TezsterDart.writeKeyWithHint(keyStore.secretKey, 'edsk'));
+    print(signer);
+    const server = 'https://testnet.tezster.tech';
+
+    var result = await TezsterDart.sendTransactionOperation(
+      server,
+      signer,
+      keyStore,
+      'tz1LRibbLEEWpaXb4aKrXXgWPvx9ue9haAAV',
+      500000,
+      1500,
+    );
+    expect(true,
+        result['operationGroupID'] != null && result['operationGroupID'] != '');
+  });
+
+  test('send-Delegation-Operation', () async {
+    var keyStore = KeyStoreModel(
+      publicKey: 'edpkunM8fmwNb8NqcKZ1WiBrZQqvuN1NRY3FrSRer9HEySaPAkqgqt',
+      secretKey:
+          'edskRjFXdYtHUrkLh7cs6b8EQigNi5uFGYxSsC3CgpvaA86Xcvo4TxrcmK155jY3c9hyxaQK8s8cfFXscEUFwdTjhFLf3P5LVX',
+      publicKeyHash: 'tz1csxCjsefVvKzWWAvhkoVn3M67wxaozGGs',
+    );
+
+    var signer = await TezsterDart.createSigner(
+        TezsterDart.writeKeyWithHint(keyStore.secretKey, 'edsk'));
+    print(signer);
+    const server = 'https://testnet.tezster.tech';
+
+    var result = await TezsterDart.sendDelegationOperation(server, signer,
+        keyStore, 'tz1RUGhq8sQpfGu1W2kf7MixqWX7oxThBFLr', 10000);
+
+    expect(true,
+        result['operationGroupID'] != null && result['operationGroupID'] != '');
+  });
 }

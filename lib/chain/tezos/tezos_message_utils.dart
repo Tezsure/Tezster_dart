@@ -97,4 +97,8 @@ class TezosMessageUtils {
       throw Exception('Unrecognized signature hint, "$hint"');
     }
   }
+
+  static String writeBoolean(bool b) {
+    return b ? "ff" : "00";
+  }
 }

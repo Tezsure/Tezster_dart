@@ -5,6 +5,7 @@ class TezosMessageCodec {
   static String encodeOperation(OperationModel message) {
     if (message.kind == 'transaction') return encodeTransaction(message);
     if (message.kind == 'reveal') return encodeReveal(message);
+    if (message.kind == 'delegation') return encodeDelegation(message);
   }
 
   static String encodeTransaction(OperationModel message) {
@@ -28,6 +29,22 @@ class TezosMessageCodec {
     hex += TezosMessageUtils.writeInt(message.gasLimit);
     hex += TezosMessageUtils.writeInt(message.storageLimit);
     hex += TezosMessageUtils.writePublicKey(message.publicKey);
+    return hex;
+  }
+
+  static String encodeDelegation(OperationModel delegation) {
+    var hex = TezosMessageUtils.writeInt(110);
+    hex += TezosMessageUtils.writeAddress(delegation.source).substring(2);
+    hex += TezosMessageUtils.writeInt(int.parse(delegation.fee));
+    hex += TezosMessageUtils.writeInt(delegation.counter);
+    hex += TezosMessageUtils.writeInt(delegation.gasLimit);
+    hex += TezosMessageUtils.writeInt(delegation.storageLimit);
+    if (delegation.delegate != null && delegation.delegate.isNotEmpty) {
+      hex += TezosMessageUtils.writeBoolean(true);
+      hex += TezosMessageUtils.writeAddress(delegation.delegate).substring(2);
+    } else {
+      hex += TezosMessageUtils.writeBoolean(false);
+    }
     return hex;
   }
 }

@@ -11,6 +11,7 @@ import 'package:password_hash/password_hash.dart';
 import 'package:bip39/bip39.dart' as bip39;
 import 'package:bs58check/bs58check.dart' as bs58check;
 import 'package:tezster_dart/chain/tezos/tezos_node_writer.dart';
+import 'package:tezster_dart/helper/constants.dart';
 import 'package:tezster_dart/helper/http_helper.dart';
 import 'package:tezster_dart/src/soft-signer/soft_signer.dart';
 import 'package:tezster_dart/tezster_dart.dart';
@@ -152,5 +153,20 @@ class TezsterDart {
 
     return await TezosNodeWriter.sendTransactionOperation(
         server, signer, keyStore, to, amount, fee);
+  }
+
+  static sendDelegationOperation(String server, SoftSigner signer,
+      KeyStoreModel keyStore, String delegate, int fee,
+      {offset = 54}) async {
+    assert(server != null);
+    assert(signer != null);
+    assert(keyStore != null);
+    assert(keyStore.publicKeyHash != null);
+    assert(keyStore.publicKey != null);
+    assert(keyStore.secretKey != null);
+    assert(offset != null);
+    if (fee == null || fee == 0) fee = TezosConstants.DefaultDelegationFee;
+    return await TezosNodeWriter.sendDelegationOperation(
+        server, signer, keyStore, delegate, fee, offset);
   }
 }

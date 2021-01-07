@@ -32,6 +32,24 @@ class TezosNodeWriter {
     return sendOperation(server, operations, signer, offset);
   }
 
+  static sendDelegationOperation(String server, SoftSigner signer,
+      KeyStoreModel keyStore, String delegate, int fee, offset) async {
+    var counter = await TezosNodeReader.getCounterForAccount(
+            server, keyStore.publicKeyHash) +
+        1;
+    OperationModel delegation = new OperationModel(
+      counter: counter,
+      kind: 'delegation',
+      fee: fee.toString(),
+      source: keyStore.publicKeyHash,
+      delegate: delegate,
+    );
+
+    var operations = await appendRevealOperation(server, keyStore.publicKey,
+        keyStore.publicKeyHash, counter - 1, [delegation]);
+    return sendOperation(server, operations, signer, offset);
+  }
+
   static Future<List<OperationModel>> appendRevealOperation(
       String server,
       String publicKey,
@@ -100,6 +118,7 @@ class TezosNodeWriter {
       }
     ];
     print("signedOpGroup['signature'] ===> ${signedOpGroup['signature']}");
+    print("parameters ===> ${jsonEncode(payload)}");
     var response = await HttpHelper.performPostRequest(server,
         'chains/$chainid/blocks/head/helpers/preapply/operations', payload);
     var json;
