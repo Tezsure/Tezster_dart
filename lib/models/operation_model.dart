@@ -11,6 +11,7 @@ class OperationModel {
   String kind;
   String publicKey;
   String delegate;
+  Map<String, Object> script;
 
   OperationModel({
     this.destination,
@@ -23,6 +24,7 @@ class OperationModel {
     this.storageLimit = TezosConstants.DefaultTransactionStorageLimit,
     this.publicKey,
     this.delegate,
+    this.script,
   }) {
     if (kind == 'delegation') {
       gasLimit = TezosConstants.DefaultDelegationGasLimit;
@@ -30,7 +32,7 @@ class OperationModel {
     }
   }
 
-  Map<String, String> toJson() => kind == 'delegation'
+  Map<String, Object> toJson() => kind == 'delegation'
       ? {
           'counter': counter.toString(),
           'delegate': delegate,
@@ -41,14 +43,26 @@ class OperationModel {
           'storage_limit':
               TezosConstants.DefaultDelegationStorageLimit.toString(),
         }
-      : {
-          'destination': destination,
-          'amount': amount,
-          'storage_limit': storageLimit.toString(),
-          'gas_limit': gasLimit.toString(),
-          'counter': counter.toString(),
-          'fee': fee,
-          'source': source,
-          'kind': kind,
-        };
+      : kind == 'origination'
+          ? {
+              'kind': kind,
+              'source': source,
+              'fee': fee,
+              'counter': counter.toString(),
+              'gas_limit': gasLimit.toString(),
+              'storage_limit': storageLimit.toString(),
+              'balance': amount,
+              'delegate': delegate,
+              'script': script,
+            }
+          : {
+              'destination': destination,
+              'amount': amount,
+              'storage_limit': storageLimit.toString(),
+              'gas_limit': gasLimit.toString(),
+              'counter': counter.toString(),
+              'fee': fee,
+              'source': source,
+              'kind': kind,
+            };
 }

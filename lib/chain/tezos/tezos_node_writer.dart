@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:convert/convert.dart';
+import 'package:tezster_dart/chain/tezos/tezos_language_util.dart';
 import 'package:tezster_dart/chain/tezos/tezos_message_codec.dart';
 import 'package:tezster_dart/chain/tezos/tezos_message_utils.dart';
 import 'package:tezster_dart/chain/tezos/tezos_node_reader.dart';
@@ -10,6 +11,7 @@ import 'package:tezster_dart/helper/http_helper.dart';
 import 'package:tezster_dart/models/key_store_model.dart';
 import 'package:tezster_dart/models/operation_model.dart';
 import 'package:tezster_dart/src/soft-signer/soft_signer.dart';
+import 'package:tezster_dart/types/tezos/tezos_chain_types.dart';
 
 class TezosNodeWriter {
   static Future<Map<String, Object>> sendTransactionOperation(String server,
@@ -47,6 +49,38 @@ class TezosNodeWriter {
 
     var operations = await appendRevealOperation(server, keyStore.publicKey,
         keyStore.publicKeyHash, counter - 1, [delegation]);
+    return sendOperation(server, operations, signer, offset);
+  }
+
+  static sendContractOriginationOperation(
+      String server,
+      SoftSigner signer,
+      KeyStoreModel keyStore,
+      int amount,
+      String delegate,
+      int fee,
+      int storageLimit,
+      int gasLimit,
+      String code,
+      String storage,
+      TezosParameterFormat codeFormat,
+      int offset) async {
+    var counter = await TezosNodeReader.getCounterForAccount(
+            server, keyStore.publicKeyHash) +
+        1;
+    var operation = constructContractOriginationOperation(
+        keyStore,
+        amount,
+        delegate,
+        fee,
+        storageLimit,
+        gasLimit,
+        code,
+        storage,
+        codeFormat,
+        counter);
+    var operations = await appendRevealOperation(server, keyStore.publicKey,
+        keyStore.publicKeyHash, counter - 1, [operation]);
     return sendOperation(server, operations, signer, offset);
   }
 
@@ -202,5 +236,42 @@ class TezosNodeWriter {
     response = response.toString().replaceAll('"', '');
     // parseRPCError(response);
     return response;
+  }
+
+  static OperationModel constructContractOriginationOperation(
+      KeyStoreModel keyStore,
+      int amount,
+      String delegate,
+      int fee,
+      int storageLimit,
+      int gasLimit,
+      String code,
+      String storage,
+      TezosParameterFormat codeFormat,
+      int counter) {
+    var parsedCode;
+    var parsedStorage;
+    print("using code Format ==> ${codeFormat.toString()}");
+    if (codeFormat == TezosParameterFormat.Michelson) {
+      parsedCode =
+          jsonDecode(TezosLanguageUtil.translateMichelsonToMicheline(code));
+    } else if (codeFormat == TezosParameterFormat.Micheline) {
+      parsedCode = jsonDecode(code);
+      parsedStorage = jsonDecode(storage);
+    }
+    return OperationModel(
+      kind: 'origination',
+      source: keyStore.publicKeyHash,
+      fee: fee.toString(),
+      counter: counter,
+      gasLimit: gasLimit,
+      storageLimit: storageLimit,
+      amount: amount.toString(),
+      delegate: delegate,
+      script: {
+        'code': parsedCode,
+        'storage': parsedStorage,
+      },
+    );
   }
 }

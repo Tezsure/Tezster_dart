@@ -123,6 +123,20 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  fs_extensions:
+    dependency: transitive
+    description:
+      name: fs_extensions
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.0.10"
+  guard:
+    dependency: transitive
+    description:
+      name: guard
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.4"
   hex:
     dependency: transitive
     description:
@@ -130,6 +144,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.1.2"
+  l_cli:
+    dependency: transitive
+    description:
+      name: l_cli
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.2"
   matcher:
     dependency: transitive
     description:
@@ -219,6 +240,13 @@ packages:
       relative: true
     source: path
     version: "1.0.1"
+  tokenizer:
+    dependency: transitive
+    description:
+      name: tokenizer
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.0.1"
   typed_data:
     dependency: transitive
     description:

@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:tezster_dart/chain/tezos/tezos_language_util.dart';
 import 'package:tezster_dart/chain/tezos/tezos_message_utils.dart';
 import 'package:tezster_dart/models/operation_model.dart';
 
@@ -6,6 +9,7 @@ class TezosMessageCodec {
     if (message.kind == 'transaction') return encodeTransaction(message);
     if (message.kind == 'reveal') return encodeReveal(message);
     if (message.kind == 'delegation') return encodeDelegation(message);
+    if (message.kind == 'origination') return encodeOrigination(message);
   }
 
   static String encodeTransaction(OperationModel message) {
@@ -45,6 +49,34 @@ class TezosMessageCodec {
     } else {
       hex += TezosMessageUtils.writeBoolean(false);
     }
+    return hex;
+  }
+
+  static String encodeOrigination(OperationModel origination) {
+    var hex = TezosMessageUtils.writeInt(109);
+    hex += TezosMessageUtils.writeAddress(origination.source).substring(2);
+    hex += TezosMessageUtils.writeInt(int.parse(origination.fee));
+    hex += TezosMessageUtils.writeInt(origination.counter);
+    hex += TezosMessageUtils.writeInt(origination.gasLimit);
+    hex += TezosMessageUtils.writeInt(origination.storageLimit);
+    hex += TezosMessageUtils.writeInt(int.parse(origination.amount));
+
+    if (origination.delegate != null) {
+      hex += TezosMessageUtils.writeBoolean(true);
+      hex += TezosMessageUtils.writeAddress(origination.delegate).substring(2);
+    } else {
+      hex += TezosMessageUtils.writeBoolean(false);
+    }
+    if (origination.script != null) {
+      // var parts = [];
+      // parts.add(origination.script['code']);
+      // parts.add(origination.script['storage']);
+      // hex += parts
+      //     .map((e) =>
+      //         TezosLanguageUtil.normalizeMichelineWhiteSpace(jsonEncode(e)))
+      //     .map((e) => TezosLanguageUtil.translateMichelineToHex(e));
+    }
+
     return hex;
   }
 }
