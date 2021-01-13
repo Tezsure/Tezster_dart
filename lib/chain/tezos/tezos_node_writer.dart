@@ -143,25 +143,7 @@ class TezosNodeWriter {
                 '$previousValue${element['kind']} : ${element['id']}, ');
       } else if (arr.length == 1 &&
           arr[0]['contents'].length == 1 &&
-          arr[0]['contents'][0]['kind'].toString() == "activate_account") {
-      } else {
-        // errors = arr.map((r) => r['contents']).map((o) {
-        //   o
-        //       .map((c) => c['metadata']['operation_result'])
-        //       .addAll(o.expand((c) =>
-        //               c['metadata']['internal_operation_results'] != null
-        //                   ? c['metadata']['internal_operation_results']
-        //                   : null)
-        //             ..toList()
-        //           // ..filter((c) => !!c)
-        //           // ..map((c) => c['result']).toList(),
-        //           )
-        //       .map((r) => parseRPCOperationResult(r))
-        //       .toList()
-        //       // .where((i) => i.length > 0)
-        //       .join(', ');
-        // }).join(', ');
-      }
+          arr[0]['contents'][0]['kind'].toString() == "activate_account") {}
     } catch (err) {
       if (json.toString().startsWith('Failed to parse the request body: ')) {
         errors = json.toString().toString().substring(34);
