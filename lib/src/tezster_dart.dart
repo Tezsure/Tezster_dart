@@ -10,6 +10,11 @@ import 'package:crypto/crypto.dart';
 import 'package:password_hash/password_hash.dart';
 import 'package:bip39/bip39.dart' as bip39;
 import 'package:bs58check/bs58check.dart' as bs58check;
+import 'package:tezster_dart/chain/tezos/tezos_node_writer.dart';
+import 'package:tezster_dart/helper/constants.dart';
+import 'package:tezster_dart/helper/http_helper.dart';
+import 'package:tezster_dart/src/soft-signer/soft_signer.dart';
+import 'package:tezster_dart/tezster_dart.dart';
 import "package:unorm_dart/unorm_dart.dart" as unorm;
 import 'package:flutter_sodium/flutter_sodium.dart';
 
@@ -111,5 +116,57 @@ class TezsterDart {
     String pkKey = GenerateKeys.readKeysWithHint(keyPair.pk, '0d0f25d9');
     String pkKeyHash = GenerateKeys.computeKeyHash(keyPair.pk);
     return [skKey, pkKey, pkKeyHash];
+  }
+
+  static Future<String> getBalance(String publicKeyHash, String rpc) async {
+    assert(publicKeyHash != null);
+    assert(rpc != null);
+    var response = await HttpHelper.performGetRequest(rpc,
+        'chains/main/blocks/head/context/contracts/$publicKeyHash/balance');
+    return response.toString();
+  }
+
+  static Uint8List writeKeyWithHint(key, hint) {
+    assert(key != null);
+    assert(hint != null);
+    return GenerateKeys.writeKeyWithHint(key, hint);
+  }
+
+  static createSigner(Uint8List secretKey, {int validity = 60}) {
+    assert(secretKey != null);
+    return SoftSigner.createSigner(secretKey, validity);
+  }
+
+  static sendTransactionOperation(String server, SoftSigner signer,
+      KeyStoreModel keyStore, String to, int amount, int fee,
+      {int offset = 54}) async {
+    assert(server != null);
+    assert(signer != null);
+    assert(keyStore != null);
+    assert(keyStore.publicKeyHash != null);
+    assert(keyStore.publicKey != null);
+    assert(keyStore.secretKey != null);
+    assert(to != null);
+    assert(amount != null);
+    assert(fee != null);
+    assert(offset != null);
+
+    return await TezosNodeWriter.sendTransactionOperation(
+        server, signer, keyStore, to, amount, fee);
+  }
+
+  static sendDelegationOperation(String server, SoftSigner signer,
+      KeyStoreModel keyStore, String delegate, int fee,
+      {offset = 54}) async {
+    assert(server != null);
+    assert(signer != null);
+    assert(keyStore != null);
+    assert(keyStore.publicKeyHash != null);
+    assert(keyStore.publicKey != null);
+    assert(keyStore.secretKey != null);
+    assert(offset != null);
+    if (fee == null || fee == 0) fee = TezosConstants.DefaultDelegationFee;
+    return await TezosNodeWriter.sendDelegationOperation(
+        server, signer, keyStore, delegate, fee, offset);
   }
 }

@@ -1,3 +1,10 @@
+# [2.0.0]
+
+* Dependencies update.
+* Added Get Balance.
+* Added Transfer Balance.
+* Added Delegate an Account.
+
 # [1.0.1]
 
 * Dependencies update.
