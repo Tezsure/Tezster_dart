@@ -66,6 +66,11 @@ class _MyAppState extends State<MyApp> {
     //identityFundraiser ===> [privateKey, publicKey, publicKeyHash]
     //Accessing: private key ===> identityFundraiser[0] | public key ===> identityFundraiser[1] | public Key Hash ===> identityFundraiser[2] all of type string.
 
+    // Get Balance
+    String balance =
+        await TezsterDart.getBalance('tz1c....ozGGs', 'your rpc server');
+    print("Accoutn Balance ===> $balance");
+
     var server = '';
 
     var keyStore = KeyStoreModel(

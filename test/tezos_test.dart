@@ -53,7 +53,6 @@ void main() {
 
     var signer = await TezsterDart.createSigner(
         TezsterDart.writeKeyWithHint(keyStore.secretKey, 'edsk'));
-    print(signer);
   });
 
   test('send-Transaction-Operation', () async {
