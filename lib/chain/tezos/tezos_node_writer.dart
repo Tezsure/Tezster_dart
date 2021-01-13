@@ -94,7 +94,7 @@ class TezosNodeWriter {
         server, blockHash, blockHead['protocol'], operations, opPair);
     var injectedOperation = await injectOperation(server, opPair);
 
-    return {'results': appliedOp[0], 'operationGroupID': injectedOperation};
+    return {'appliedOp': appliedOp[0], 'operationGroupID': injectedOperation};
   }
 
   static String forgeOperations(

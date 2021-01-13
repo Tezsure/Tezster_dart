@@ -94,8 +94,13 @@ void main() {
     print(signer);
     const server = 'https://testnet.tezster.tech';
 
-    var result = await TezsterDart.sendDelegationOperation(server, signer,
-        keyStore, 'tz1RUGhq8sQpfGu1W2kf7MixqWX7oxThBFLr', 10000);
+    var result = await TezsterDart.sendDelegationOperation(
+      server,
+      signer,
+      keyStore,
+      'tz1RUGhq8sQpfGu1W2kf7MixqWX7oxThBFLr',
+      10000,
+    );
 
     expect(true,
         result['operationGroupID'] != null && result['operationGroupID'] != '');

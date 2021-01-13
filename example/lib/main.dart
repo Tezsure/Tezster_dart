@@ -65,6 +65,42 @@ class _MyAppState extends State<MyApp> {
     print("identityFundraiser ===> $identityFundraiser");
     //identityFundraiser ===> [privateKey, publicKey, publicKeyHash]
     //Accessing: private key ===> identityFundraiser[0] | public key ===> identityFundraiser[1] | public Key Hash ===> identityFundraiser[2] all of type string.
+
+    var server = '';
+
+    var keyStore = KeyStoreModel(
+      publicKey: 'edpkvQtuhdZQmjdjVfaY9Kf4hHfrRJYugaJErkCGvV3ER1S7XWsrrj',
+      secretKey:
+          'edskRgu8wHxjwayvnmpLDDijzD3VZDoAH7ZLqJWuG4zg7LbxmSWZWhtkSyM5Uby41rGfsBGk4iPKWHSDniFyCRv3j7YFCknyHH',
+      publicKeyHash: 'tz1QSHaKpTFhgHLbqinyYRjxD5sLcbfbzhxy',
+    );
+
+    //Send transaction
+    var transactionSigner = await TezsterDart.createSigner(
+        TezsterDart.writeKeyWithHint(keyStore.secretKey, 'edsk'));
+    var transactionResult = await TezsterDart.sendTransactionOperation(
+      server,
+      transactionSigner,
+      keyStore,
+      'tz1RVcUP9nUurgEJMDou8eW3bVDs6qmP5Lnc',
+      500000,
+      1500,
+    );
+    print("Applied operation ===> $transactionResult['appliedOp']");
+    print("Operation groupID ===> $transactionResult['operationGroupID']");
+
+    //Send delegation
+    var delegationSigner = await TezsterDart.createSigner(
+        TezsterDart.writeKeyWithHint(keyStore.secretKey, 'edsk'));
+    var delegationResult = await TezsterDart.sendDelegationOperation(
+      server,
+      delegationSigner,
+      keyStore,
+      'tz1RVcUP9nUurgEJMDou8eW3bVDs6qmP5Lnc',
+      10000,
+    );
+    print("Applied operation ===> $delegationResult['appliedOp']");
+    print("Operation groupID ===> $delegationResult['operationGroupID']");
   }
 
   @override

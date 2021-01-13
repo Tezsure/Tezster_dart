@@ -14,11 +14,14 @@ Tezos is a decentralized blockchain that governs itself by establishing a true d
 ### Features
 
 * Tezos wallet utilities.
+  * Get balance.
   * Generate mnemonics.
   * Generate keys from mnemonic.
   * Generate keys from mnemonics and passphrase.
   * Sign Operation Group.
   * Unlock fundraiser identity.
+  * Send transaction.
+  * Send delegation.
   
 ### Getting started
 
@@ -31,6 +34,12 @@ import 'package:tezster_dart/tezster_dart.dart';
 ```
 
 ### Usage
+
+* Get balance from publicKeyHash
+
+``` dart
+String balance = await TezsterDart.getBalance('tz1c....ozGGs', 'your rpc server');
+```
 
 * Generate mnemonic
 
@@ -84,6 +93,65 @@ List<String> identityFundraiser = await TezsterDart.unlockFundraiserIdentity(
 /* [edskRzNDm2dpqe2yd5zYAw1vmjr8sAwMubfcXajxdCNNr4Ud39BoppeqMAzoCPmb14mzfXRhjtydQjCbqU2VzWrsq6JP4D9GVb,
     edpkvASxrq16v5Awxpz4XPTA2d6QFaCL8expPrPNcVgVbWxT84Kdw2,
     tz1hhkSbaocSWm3wawZUuUdX57L3maSH16Pv] */
+```
+
+* Send transaction.
+    * The most basic operation on the chain is the transfer of value between two accounts.  In this example we have the account we activated above: tz1QSHaKpTFhgHLbqinyYRjxD5sLcbfbzhxy and some random testnet address to test with: tz1RVcUP9nUurgEJMDou8eW3bVDs6qmP5Lnc. Note all amounts are in µtz, as in micro-tez, hence 0.5tz is represented as 500000. The fee of 1500 was chosen arbitrarily, but some operations have minimum fee requirements.
+
+``` dart
+var server = '';
+
+var keyStore = KeyStoreModel(
+      publicKey: 'edpkvQtuhdZQmjdjVfaY9Kf4hHfrRJYugaJErkCGvV3ER1S7XWsrrj',
+      secretKey:
+          'edskRgu8wHxjwayvnmpLDDijzD3VZDoAH7ZLqJWuG4zg7LbxmSWZWhtkSyM5Uby41rGfsBGk4iPKWHSDniFyCRv3j7YFCknyHH',
+      publicKeyHash: 'tz1QSHaKpTFhgHLbqinyYRjxD5sLcbfbzhxy',
+    );
+
+var signer = await TezsterDart.createSigner(
+    TezsterDart.writeKeyWithHint(keyStore.secretKey, 'edsk'));
+    
+var result = await TezsterDart.sendTransactionOperation(
+      server,
+      signer,
+      keyStore,
+      'tz1RVcUP9nUurgEJMDou8eW3bVDs6qmP5Lnc',
+      500000,
+      1500,
+    );
+
+print("Applied operation ===> $result['appliedOp']");
+print("Operation groupID ===> $result['operationGroupID']");
+
+```
+
+* Send delegation.
+    * One of the most exciting features of Tezos is delegation. This is a means for non-"baker" (non-validator) accounts to participate in the on-chain governance process and receive staking rewards. It is possible to delegate both implicit and originated accounts. For implicit addresses, those starting with tz1, tz2 and tz3, simply call sendDelegationOperation. Originated accounts, that is smart contracts, must explicitly support delegate assignment, but can also be deployed with a delegate already set.
+
+``` dart
+var server = '';
+
+var keyStore = KeyStoreModel(
+      publicKey: 'edpkvQtuhdZQmjdjVfaY9Kf4hHfrRJYugaJErkCGvV3ER1S7XWsrrj',
+      secretKey:
+          'edskRgu8wHxjwayvnmpLDDijzD3VZDoAH7ZLqJWuG4zg7LbxmSWZWhtkSyM5Uby41rGfsBGk4iPKWHSDniFyCRv3j7YFCknyHH',
+      publicKeyHash: 'tz1QSHaKpTFhgHLbqinyYRjxD5sLcbfbzhxy',
+    );
+
+var signer = await TezsterDart.createSigner(
+        TezsterDart.writeKeyWithHint(keyStore.secretKey, 'edsk'));
+
+var result = await TezsterDart.sendDelegationOperation(
+      server,
+      signer,
+      keyStore,
+      'tz1RVcUP9nUurgEJMDou8eW3bVDs6qmP5Lnc',
+      10000,
+    );
+
+print("Applied operation ===> $result['appliedOp']");
+print("Operation groupID ===> $result['operationGroupID']");
+
 ```
 
 ---
