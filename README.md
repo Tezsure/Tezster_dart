@@ -24,7 +24,7 @@ Tezos is a decentralized blockchain that governs itself by establishing a true d
   * Delegate an Account.
   * Deploy a contract.
   * Call a contract.
-  * Await operation Confirmation.
+  * Operation confirmation.
   
 ### Getting started
 
@@ -240,7 +240,7 @@ print("Operation groupID ===> $result['operationGroupID']");
 reference link: `https://github.com/Tezsure/Tezster_dart/blob/master/example/lib/main.dart#L141`
 <br>
 
-* Await operation Confirmation.
+* Operation confirmation.
     * No wonder it's really important to await for confirmation for any on chain interactions. Hence, we have provided `awaitOperationConfirmation()` method with this release that developers can leverage for their advantage to confirm the originated contract's operations id. We have set an example for you how to use it.
 
 ``` dart
