@@ -106,7 +106,7 @@ class _MyAppState extends State<MyApp> {
     );
     print("Applied operation ===> $delegationResult['appliedOp']");
     print("Operation groupID ===> $delegationResult['operationGroupID']");
-
+    
     //Deploy a contract
     var contract = """parameter string;
     storage string;
