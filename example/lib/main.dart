@@ -73,7 +73,7 @@ class _MyAppState extends State<MyApp> {
       publicKeyHash: 'tz1LRibbLEEWpaXb4aKrXXgWPvx9ue9haAAV',
     );
 
-    const contract = """parameter string;
+    var contract = """parameter string;
     storage string;
     code { DUP;
         DIP { CDR ; NIL string ; SWAP ; CONS } ;
@@ -82,13 +82,12 @@ class _MyAppState extends State<MyApp> {
         NIL operation; PAIR}""";
 
     var storage = '"Sample"';
-
     var signer = await TezsterDart.createSigner(
         TezsterDart.writeKeyWithHint(keyStore.secretKey, 'edsk'));
 
     print(signer);
 
-    const server = 'https://testnet.tezster.tech';
+    var server = 'https://testnet.tezster.tech';
 
     var result = await TezsterDart.sendContractOriginationOperation(
       server,
@@ -103,14 +102,43 @@ class _MyAppState extends State<MyApp> {
       storage,
       codeFormat: TezosParameterFormat.Michelson,
     );
-
+    var groupId = result['operationGroupID'];
     print("Injected operation group id ${result['operationGroupID']}");
+
+    var network = 'delphinet';
+    var serverInfo = {
+      'url': 'https://conseil-dev.cryptonomic-infra.tech:443',
+      'apiKey': 'f420a571-d526-4252-89e4-d7a2eb7f26b4',
+      'network': network
+    };
+
+    var conseilResult = await TezsterDart.awaitOperationConfirmation(
+        serverInfo, network, groupId, 5);
+    print('Originated contract at ${conseilResult['originated_contracts']}');
+
+    var contractAddress = conseilResult['originated_contracts'];
+
+    var resultInvoke = await TezsterDart.sendContractInvocationOperation(
+        server,
+        signer,
+        keyStore,
+        contractAddress,
+        10000,
+        100000,
+        1000,
+        100000,
+        '',
+        '"Cryptonomicon"',
+        codeFormat: TezosParameterFormat.Michelson);
+
+    print('Injected operation group id ${resultInvoke['operationGroupID']}');
   }
 
   @override
   void initState() {
     super.initState();
     tezosWalletUtil();
+    // runNewTestingDemo();
   }
 
   @override

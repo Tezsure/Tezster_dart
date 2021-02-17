@@ -13,6 +13,7 @@ import 'package:bs58check/bs58check.dart' as bs58check;
 import 'package:tezster_dart/chain/tezos/tezos_node_writer.dart';
 import 'package:tezster_dart/helper/constants.dart';
 import 'package:tezster_dart/helper/http_helper.dart';
+import 'package:tezster_dart/reporting/tezos/tezos_conseil_client.dart';
 import 'package:tezster_dart/src/soft-signer/soft_signer.dart';
 import 'package:tezster_dart/tezster_dart.dart';
 import 'package:tezster_dart/types/tezos/tezos_chain_types.dart';
@@ -22,10 +23,12 @@ import 'package:flutter_sodium/flutter_sodium.dart';
 import 'package:tezster_dart/helper/generateKeys.dart';
 
 class TezsterDart {
+  /// Generate mnemonic
   static String generateMnemonic({int strength = 256}) {
     return bip39.generateMnemonic(strength: strength);
   }
 
+  /// Generate keys from mnemonic
   static Future<List<String>> getKeysFromMnemonic({
     String mnemonic,
   }) async {
@@ -39,6 +42,7 @@ class TezsterDart {
     return [skKey, pkKey, pkKeyHash];
   }
 
+  /// Create / Unlock identity from mnemonic and passphrase.
   static Future<List<String>> getKeysFromMnemonicAndPassphrase({
     String mnemonic,
     String passphrase,
@@ -51,6 +55,7 @@ class TezsterDart {
     );
   }
 
+  /// Unlock fundraiser identity.
   static Future<List<String>> unlockFundraiserIdentity({
     String mnemonic,
     String email,
@@ -65,6 +70,7 @@ class TezsterDart {
     );
   }
 
+  /// Sign operation with private key and forged operation
   static Future<List<String>> signOperationGroup({
     String privateKey,
     String forgedOperation,
@@ -119,6 +125,7 @@ class TezsterDart {
     return [skKey, pkKey, pkKeyHash];
   }
 
+  // Get balance from given publicKeyHash and rpc
   static Future<String> getBalance(String publicKeyHash, String rpc) async {
     assert(publicKeyHash != null);
     assert(rpc != null);
@@ -133,11 +140,13 @@ class TezsterDart {
     return GenerateKeys.writeKeyWithHint(key, hint);
   }
 
+  // Create Signer from given secretKey
   static createSigner(Uint8List secretKey, {int validity = 60}) {
     assert(secretKey != null);
     return SoftSigner.createSigner(secretKey, validity);
   }
 
+  /// Transfer Balance
   static sendTransactionOperation(String server, SoftSigner signer,
       KeyStoreModel keyStore, String to, int amount, int fee,
       {int offset = 54}) async {
@@ -156,6 +165,7 @@ class TezsterDart {
         server, signer, keyStore, to, amount, fee);
   }
 
+  /// Delegate an Account
   static sendDelegationOperation(String server, SoftSigner signer,
       KeyStoreModel keyStore, String delegate, int fee,
       {offset = 54}) async {
@@ -192,7 +202,6 @@ class TezsterDart {
     assert(keyStore.publicKey != null);
     assert(keyStore.secretKey != null);
     assert(amount != null);
-    // assert(delegate != null);
     assert(fee != null);
     assert(storageLimit != null);
     assert(gasLimit != null);
@@ -214,5 +223,57 @@ class TezsterDart {
       codeFormat,
       offset,
     );
+  }
+
+  static awaitOperationConfirmation(serverInfo, network, hash, duration,
+      {blocktime}) async {
+    assert(serverInfo != null);
+    assert(network != null);
+    assert(hash != null);
+    assert(duration != null);
+    return await TezosConseilClient.awaitOperationConfirmation(
+        serverInfo, network, hash, duration,
+        blocktime: blocktime);
+  }
+
+  static sendContractInvocationOperation(
+      String server,
+      SoftSigner signer,
+      KeyStoreModel keyStore,
+      String contract,
+      int amount,
+      int fee,
+      int storageLimit,
+      int gasLimit,
+      entrypoint,
+      String parameters,
+      {TezosParameterFormat codeFormat = TezosParameterFormat.Micheline,
+      offset = 54}) async {
+    assert(server != null);
+    assert(signer != null);
+    assert(keyStore != null);
+    assert(contract != null);
+    assert(keyStore.publicKeyHash != null);
+    assert(keyStore.publicKey != null);
+    assert(keyStore.secretKey != null);
+    assert(amount != null);
+    assert(entrypoint != null);
+    assert(parameters != null);
+    assert(fee != null);
+    assert(storageLimit != null);
+    assert(gasLimit != null);
+    return await TezosNodeWriter.sendContractInvocationOperation(
+        server,
+        signer,
+        keyStore,
+        contract,
+        amount,
+        fee,
+        storageLimit,
+        gasLimit,
+        entrypoint,
+        parameters,
+        parameterFormat: codeFormat ?? TezosParameterFormat.Micheline,
+        offset: offset ?? 54);
   }
 }

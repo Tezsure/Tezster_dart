@@ -51,9 +51,9 @@ void main() {
       publicKeyHash: 'tz1LRibbLEEWpaXb4aKrXXgWPvx9ue9haAAV',
     );
 
-    var signer = await TezsterDart.createSigner(
+    await TezsterDart.createSigner(
         TezsterDart.writeKeyWithHint(keyStore.secretKey, 'edsk'));
-    print(signer);
+    // print(signer);
   });
 
   test('send-Transaction-Operation', () async {

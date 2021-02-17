@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:tezster_dart/helper/constants.dart';
 
 class OperationModel {
@@ -12,6 +14,8 @@ class OperationModel {
   String publicKey;
   String delegate;
   Map<String, Object> script;
+
+  Map<String, dynamic> parameters;
 
   OperationModel({
     this.destination,
@@ -32,7 +36,7 @@ class OperationModel {
     }
   }
 
-  Map<String, Object> toJson() => kind == 'delegation'
+  Map<String, dynamic> toJson() => kind == 'delegation'
       ? {
           'counter': counter.toString(),
           'delegate': delegate,
@@ -43,26 +47,59 @@ class OperationModel {
           'storage_limit':
               TezosConstants.DefaultDelegationStorageLimit.toString(),
         }
-      : kind == 'origination'
+      : kind == 'reveal'
           ? {
               'kind': kind,
               'source': source,
-              'fee': fee,
+              'fee': '0',
               'counter': counter.toString(),
               'gas_limit': gasLimit.toString(),
               'storage_limit': storageLimit.toString(),
-              'balance': amount,
-              'delegate': delegate,
-              'script': script,
+              'public_key': publicKey
             }
-          : {
-              'destination': destination,
-              'amount': amount,
-              'storage_limit': storageLimit.toString(),
-              'gas_limit': gasLimit.toString(),
-              'counter': counter.toString(),
-              'fee': fee,
-              'source': source,
-              'kind': kind,
-            };
+          : kind == "origination"
+              ? delegate == null
+                  ? {
+                      'kind': 'origination',
+                      'source': source,
+                      'fee': fee.toString(),
+                      'counter': counter.toString(),
+                      'gas_limit': gasLimit.toString(),
+                      'storage_limit': storageLimit.toString(),
+                      'balance': amount.toString(),
+                      'script': script
+                    }
+                  : {
+                      'kind': 'origination',
+                      'source': source,
+                      'fee': fee.toString(),
+                      'counter': counter.toString(),
+                      'gas_limit': gasLimit.toString(),
+                      'storage_limit': storageLimit.toString(),
+                      'balance': amount.toString(),
+                      'delegate': delegate,
+                      'script': script
+                    }
+              : parameters == null
+                  ? {
+                      'destination': destination,
+                      'amount': amount,
+                      'storage_limit': storageLimit.toString(),
+                      'gas_limit': gasLimit.toString(),
+                      'counter': counter.toString(),
+                      'fee': fee,
+                      'source': source,
+                      'kind': kind,
+                    }
+                  : {
+                      'destination': destination,
+                      'amount': amount,
+                      'storage_limit': storageLimit.toString(),
+                      'gas_limit': gasLimit.toString(),
+                      'counter': counter.toString(),
+                      'fee': fee,
+                      'source': source,
+                      'kind': kind,
+                      'parameters': parameters,
+                    };
 }

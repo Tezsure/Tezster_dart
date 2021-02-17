@@ -10,6 +10,7 @@ class TezosMessageCodec {
     if (message.kind == 'reveal') return encodeReveal(message);
     if (message.kind == 'delegation') return encodeDelegation(message);
     if (message.kind == 'origination') return encodeOrigination(message);
+    return '';
   }
 
   static String encodeTransaction(OperationModel message) {
@@ -21,7 +22,42 @@ class TezosMessageCodec {
     hex += TezosMessageUtils.writeInt(message.storageLimit);
     hex += TezosMessageUtils.writeInt(int.parse(message.amount));
     hex += TezosMessageUtils.writeAddress(message.destination);
-    hex += '00';
+    if (message.parameters != null) {
+      var composite = message.parameters;
+      var result = TezosLanguageUtil.translateMichelineToHex(
+          jsonEncode(composite['value']));
+      if ((composite['entrypoint'] == 'default' ||
+              composite['entrypoint'] == '') &&
+          result == '030b') {
+        hex += '00';
+      } else {
+        hex += 'ff';
+        if (composite['entrypoint'] == 'default' ||
+            composite['entrypoint'] == '') {
+          hex += '00';
+        } else if (composite['entrypoint'] == 'root') {
+          hex += '01';
+        } else if (composite['entrypoint'] == 'do') {
+          hex += '02';
+        } else if (composite['entrypoint'] == 'set_delegate') {
+          hex += '03';
+        } else if (composite['entrypoint'] == 'remove_delegate') {
+          hex += '04';
+        } else {
+          var entryStr = '0' + composite['entrypoint'].length.toRadixString(16);
+          hex += 'ff' +
+              (entryStr.substring(entryStr.length - 2)) +
+              composite['entrypoint']
+                  .split('')
+                  .map((String c) => c.codeUnitAt(0).toRadixString(16))
+                  .join('');
+        }
+        var resRad = '0000000' + (result.length ~/ 2).toRadixString(16);
+        hex += resRad.substring(resRad.length - 8) + result;
+      }
+    } else {
+      hex += '00';
+    }
     return hex;
   }
 
@@ -68,13 +104,17 @@ class TezosMessageCodec {
       hex += TezosMessageUtils.writeBoolean(false);
     }
     if (origination.script != null) {
-      // var parts = [];
-      // parts.add(origination.script['code']);
-      // parts.add(origination.script['storage']);
-      // hex += parts
-      //     .map((e) =>
-      //         TezosLanguageUtil.normalizeMichelineWhiteSpace(jsonEncode(e)))
-      //     .map((e) => TezosLanguageUtil.translateMichelineToHex(e));
+      var parts = [];
+      parts.add(origination.script['code']);
+      parts.add(origination.script['storage']);
+      hex += parts
+          .map((p) => jsonEncode(p))
+          .map((p) => TezosLanguageUtil.translateMichelineToHex(p))
+          .fold('', (m, p) {
+        var result = ('0000000' + (p.length ~/ 2).toRadixString(16));
+        result = result.substring(result.length - 8) + p;
+        return m + result;
+      });
     }
 
     return hex;

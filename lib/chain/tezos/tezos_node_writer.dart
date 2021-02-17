@@ -84,6 +84,83 @@ class TezosNodeWriter {
     return sendOperation(server, operations, signer, offset);
   }
 
+  static sendContractInvocationOperation(
+      String server,
+      SoftSigner signer,
+      KeyStoreModel keyStore,
+      String contract,
+      int amount,
+      int fee,
+      int storageLimit,
+      int gasLimit,
+      entrypoint,
+      String parameters,
+      {TezosParameterFormat parameterFormat = TezosParameterFormat.Micheline,
+      offset = 54}) async {
+    var counter = await TezosNodeReader.getCounterForAccount(
+            server, keyStore.publicKeyHash) +
+        1;
+    var transaction = constructContractInvocationOperation(
+        keyStore.publicKeyHash,
+        counter,
+        contract,
+        amount,
+        fee,
+        storageLimit,
+        gasLimit,
+        entrypoint,
+        parameters,
+        parameterFormat);
+    var operations = await appendRevealOperation(server, keyStore.publicKey,
+        keyStore.publicKeyHash, counter - 1, [transaction]);
+    return sendOperation(server, operations, signer, offset);
+  }
+
+  static constructContractInvocationOperation(
+      String publicKeyHash,
+      int counter,
+      String contract,
+      int amount,
+      int fee,
+      int storageLimit,
+      int gasLimit,
+      entrypoint,
+      String parameters,
+      TezosParameterFormat parameterFormat) {
+    OperationModel transaction = new OperationModel(
+      destination: contract,
+      amount: amount.toString(),
+      counter: counter,
+      fee: fee.toString(),
+      source: publicKeyHash,
+    );
+    if (parameters != null) {
+      if (parameterFormat == TezosParameterFormat.Michelson) {
+        var michelineParams =
+            TezosLanguageUtil.translateMichelsonToMicheline(parameters);
+        transaction.parameters = {
+          'entrypoint': entrypoint.isEmpty ? 'default' : entrypoint,
+          'value': jsonDecode(michelineParams)
+        };
+      } else if (parameterFormat == TezosParameterFormat.Micheline) {
+        transaction.parameters = {
+          'entrypoint': entrypoint.isEmpty ? 'default' : entrypoint,
+          'value': jsonDecode(parameters)
+        };
+      } else if (parameterFormat == TezosParameterFormat.MichelsonLambda) {
+        var michelineLambda =
+            TezosLanguageUtil.translateMichelsonToMicheline('code $parameters');
+        transaction.parameters = {
+          'entrypoint': entrypoint.isEmpty ? 'default' : entrypoint,
+          'value': jsonDecode(michelineLambda)
+        };
+      }
+    } else if (entrypoint != null) {
+      transaction.parameters = {'entrypoint': entrypoint, 'value': []};
+    }
+    return transaction;
+  }
+
   static Future<List<OperationModel>> appendRevealOperation(
       String server,
       String publicKey,
@@ -178,24 +255,7 @@ class TezosNodeWriter {
       } else if (arr.length == 1 &&
           arr[0]['contents'].length == 1 &&
           arr[0]['contents'][0]['kind'].toString() == "activate_account") {
-      } else {
-        // errors = arr.map((r) => r['contents']).map((o) {
-        //   o
-        //       .map((c) => c['metadata']['operation_result'])
-        //       .addAll(o.expand((c) =>
-        //               c['metadata']['internal_operation_results'] != null
-        //                   ? c['metadata']['internal_operation_results']
-        //                   : null)
-        //             ..toList()
-        //           // ..filter((c) => !!c)
-        //           // ..map((c) => c['result']).toList(),
-        //           )
-        //       .map((r) => parseRPCOperationResult(r))
-        //       .toList()
-        //       // .where((i) => i.length > 0)
-        //       .join(', ');
-        // }).join(', ');
-      }
+      } else {}
     } catch (err) {
       if (json.toString().startsWith('Failed to parse the request body: ')) {
         errors = json.toString().toString().substring(34);
@@ -255,6 +315,8 @@ class TezosNodeWriter {
     if (codeFormat == TezosParameterFormat.Michelson) {
       parsedCode =
           jsonDecode(TezosLanguageUtil.translateMichelsonToMicheline(code));
+      parsedStorage =
+          jsonDecode(TezosLanguageUtil.translateMichelsonToMicheline(storage));
     } else if (codeFormat == TezosParameterFormat.Micheline) {
       parsedCode = jsonDecode(code);
       parsedStorage = jsonDecode(storage);
