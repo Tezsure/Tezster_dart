@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:tezster_dart/helper/constants.dart';
 
 class OperationModel {

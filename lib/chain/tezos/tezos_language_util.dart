@@ -1,4 +1,5 @@
-import 'package:michelson_parser/michelson_parser.dart';
+
+import 'package:tezster_dart/michelson_parser/michelson_parser.dart';
 
 class TezosLanguageUtil {
   static String translateMichelsonToMicheline(String code) {

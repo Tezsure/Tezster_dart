@@ -14,11 +14,17 @@ Tezos is a decentralized blockchain that governs itself by establishing a true d
 ### Features
 
 * Tezos wallet utilities.
+  * Get Balance.
   * Generate mnemonics.
   * Generate keys from mnemonic.
   * Generate keys from mnemonics and passphrase.
   * Sign Operation Group.
   * Unlock fundraiser identity.
+  * Transfer Balance.
+  * Delegate an Account.
+  * Deploy a contract.
+  * Call a contract.
+  * Await operation Confirmation.
   
 ### Getting started
 
@@ -31,6 +37,12 @@ import 'package:tezster_dart/tezster_dart.dart';
 ```
 
 ### Usage
+
+* Get Balance
+
+``` dart
+String balance = await TezsterDart.getBalance('tz1c....ozGGs', 'your rpc server');
+```
 
 * Generate mnemonic
 
@@ -85,6 +97,209 @@ List<String> identityFundraiser = await TezsterDart.unlockFundraiserIdentity(
     edpkvASxrq16v5Awxpz4XPTA2d6QFaCL8expPrPNcVgVbWxT84Kdw2,
     tz1hhkSbaocSWm3wawZUuUdX57L3maSH16Pv] */
 ```
+
+* Transfer Balance.
+    * The most basic operation on the chain is the transfer of value between two accounts.  In this example we have the account we activated above: tz1QSHaKpTFhgHLbqinyYRjxD5sLcbfbzhxy and some random testnet address to test with: tz1RVcUP9nUurgEJMDou8eW3bVDs6qmP5Lnc. Note all amounts are in µtz, as in micro-tez, hence 0.5tz is represented as 500000. The fee of 1500 was chosen arbitrarily, but some operations have minimum fee requirements.
+
+``` dart
+var server = '';
+
+var keyStore = KeyStoreModel(
+      publicKey: 'edpkvQtuhdZQmjdjVfaY9Kf4hHfrRJYugaJErkCGvV3ER1S7XWsrrj',
+      secretKey:
+          'edskRgu8wHxjwayvnmpLDDijzD3VZDoAH7ZLqJWuG4zg7LbxmSWZWhtkSyM5Uby41rGfsBGk4iPKWHSDniFyCRv3j7YFCknyHH',
+      publicKeyHash: 'tz1QSHaKpTFhgHLbqinyYRjxD5sLcbfbzhxy',
+    );
+
+var signer = await TezsterDart.createSigner(
+    TezsterDart.writeKeyWithHint(keyStore.secretKey, 'edsk'));
+    
+var result = await TezsterDart.sendTransactionOperation(
+      server,
+      signer,
+      keyStore,
+      'tz1RVcUP9nUurgEJMDou8eW3bVDs6qmP5Lnc',
+      500000,
+      1500,
+    );
+
+print("Applied operation ===> $result['appliedOp']");
+print("Operation groupID ===> $result['operationGroupID']");
+
+```
+
+* Delegate an Account.
+    * One of the most exciting features of Tezos is delegation. This is a means for non-"baker" (non-validator) accounts to participate in the on-chain governance process and receive staking rewards. It is possible to delegate both implicit and originated accounts. For implicit addresses, those starting with tz1, tz2 and tz3, simply call sendDelegationOperation. Originated accounts, that is smart contracts, must explicitly support delegate assignment, but can also be deployed with a delegate already set.
+
+``` dart
+var server = '';
+
+var keyStore = KeyStoreModel(
+      publicKey: 'edpkvQtuhdZQmjdjVfaY9Kf4hHfrRJYugaJErkCGvV3ER1S7XWsrrj',
+      secretKey:
+          'edskRgu8wHxjwayvnmpLDDijzD3VZDoAH7ZLqJWuG4zg7LbxmSWZWhtkSyM5Uby41rGfsBGk4iPKWHSDniFyCRv3j7YFCknyHH',
+      publicKeyHash: 'tz1QSHaKpTFhgHLbqinyYRjxD5sLcbfbzhxy',
+    );
+
+var signer = await TezsterDart.createSigner(
+        TezsterDart.writeKeyWithHint(keyStore.secretKey, 'edsk'));
+
+var result = await TezsterDart.sendDelegationOperation(
+      server,
+      signer,
+      keyStore,
+      'tz1RVcUP9nUurgEJMDou8eW3bVDs6qmP5Lnc',
+      10000,
+    );
+
+print("Applied operation ===> $result['appliedOp']");
+print("Operation groupID ===> $result['operationGroupID']");
+
+```
+
+* Deploy a contract.
+    * With this release we are excited to include the feature of trestles chain interactions, including contract deployment a user can directly write smart contracts in Michelson language and deploy it on Tezos chain using the `sendContractOriginationOperation()` method in return you'll get an origination id of the deployed contract that can be use to track the contract on chain. We have set an example for you below.
+
+``` dart
+var server = '';
+
+var contract = """parameter string;
+    storage string;
+    code { DUP;
+        DIP { CDR ; NIL string ; SWAP ; CONS } ;
+        CAR ; CONS ;
+        CONCAT;
+        NIL operation; PAIR}""";
+
+var storage = '"Sample"';
+
+var keyStore = KeyStoreModel(
+      publicKey: 'edpkvQtuhdZQmjdjVfaY9Kf4hHfrRJYugaJErkCGvV3ER1S7XWsrrj',
+      secretKey:
+          'edskRgu8wHxjwayvnmpLDDijzD3VZDoAH7ZLqJWuG4zg7LbxmSWZWhtkSyM5Uby41rGfsBGk4iPKWHSDniFyCRv3j7YFCknyHH',
+      publicKeyHash: 'tz1QSHaKpTFhgHLbqinyYRjxD5sLcbfbzhxy',
+    );
+
+var signer = await TezsterDart.createSigner(
+        TezsterDart.writeKeyWithHint(keyStore.secretKey, 'edsk'));
+
+var result = await TezsterDart.sendContractOriginationOperation(
+      server,
+      signer,
+      keyStore,
+      0,
+      null,
+      100000,
+      1000,
+      100000,
+      contract,
+      storage,
+      codeFormat: TezosParameterFormat.Michelson,
+    );
+
+print("Operation groupID ===> $result['operationGroupID']");
+
+```
+reference link: `https://github.com/Tezsure/Tezster_dart/blob/master/example/lib/main.dart#L110`
+<br>
+
+* Call a contract.
+    * We have also included the feature to call or invoke a deployed contract just use the inbuilt `sendContractInvocationOperation()` method in return you'll get an origination id of the invoked contract that can be used to track the contracts on chain. We have set an example for you below.
+
+``` dart
+var server = '';
+
+var keyStore = KeyStoreModel(
+      publicKey: 'edpkvQtuhdZQmjdjVfaY9Kf4hHfrRJYugaJErkCGvV3ER1S7XWsrrj',
+      secretKey:
+          'edskRgu8wHxjwayvnmpLDDijzD3VZDoAH7ZLqJWuG4zg7LbxmSWZWhtkSyM5Uby41rGfsBGk4iPKWHSDniFyCRv3j7YFCknyHH',
+      publicKeyHash: 'tz1QSHaKpTFhgHLbqinyYRjxD5sLcbfbzhxy',
+    );
+
+var signer = await TezsterDart.createSigner(
+        TezsterDart.writeKeyWithHint(keyStore.secretKey, 'edsk'));
+
+var contractAddress = 'KT1KA7DqFjShLC4CPtChPX8QtRYECUb99xMY';
+
+var resultInvoke = await TezsterDart.sendContractInvocationOperation(
+        server,
+        signer,
+        keyStore,
+        contractAddress,
+        10000,
+        100000,
+        1000,
+        100000,
+        '',
+        '"Cryptonomicon"',  
+        codeFormat: TezosParameterFormat.Michelson);
+
+print("Operation groupID ===> $result['operationGroupID']");
+
+```
+reference link: `https://github.com/Tezsure/Tezster_dart/blob/master/example/lib/main.dart#L141`
+<br>
+
+* Await operation Confirmation.
+    * No wonder it's really important to await for confirmation for any on chain interactions. Hence, we have provided `awaitOperationConfirmation()` method with this release that developers can leverage for their advantage to confirm the originated contract's operations id. We have set an example for you how to use it.
+
+``` dart
+var server = '';
+
+var network = 'carthagenet';
+
+var serverInfo = {
+      'url': '',
+      'apiKey': '',
+      'network': network
+    };
+
+var contract = """parameter string;
+    storage string;
+    code { DUP;
+        DIP { CDR ; NIL string ; SWAP ; CONS } ;
+        CAR ; CONS ;
+        CONCAT;
+        NIL operation; PAIR}""";
+
+var storage = '"Sample"';
+
+var keyStore = KeyStoreModel(
+      publicKey: 'edpkvQtuhdZQmjdjVfaY9Kf4hHfrRJYugaJErkCGvV3ER1S7XWsrrj',
+      secretKey:
+          'edskRgu8wHxjwayvnmpLDDijzD3VZDoAH7ZLqJWuG4zg7LbxmSWZWhtkSyM5Uby41rGfsBGk4iPKWHSDniFyCRv3j7YFCknyHH',
+      publicKeyHash: 'tz1QSHaKpTFhgHLbqinyYRjxD5sLcbfbzhxy',
+    );
+
+var signer = await TezsterDart.createSigner(
+        TezsterDart.writeKeyWithHint(keyStore.secretKey, 'edsk'));
+
+var result = await TezsterDart.sendContractOriginationOperation(
+      server,
+      signer,
+      keyStore,
+      0,
+      null,
+      100000,
+      1000,
+      100000,
+      contract,
+      storage,
+      codeFormat: TezosParameterFormat.Michelson,
+    );
+
+print("Operation groupID ===> $result['operationGroupID']");
+
+var groupId = result['operationGroupID'];
+
+var conseilResult = await TezsterDart.awaitOperationConfirmation(
+        serverInfo, network, groupId, 5);
+
+print('Originated contract at ${conseilResult['originated_contracts']}');
+
+```
+reference link: `https://github.com/Tezsure/Tezster_dart/blob/master/example/lib/main.dart#L162`
+<br>
 
 ---
 **NOTE:**
