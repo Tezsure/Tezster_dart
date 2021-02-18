@@ -26,7 +26,6 @@ class MichelsonGrammarTokenizer {
             "text": tokens[numindex].value,
             "col": tokens[numindex].columnNumber,
             "line": '1',
-            // 'toString': () => tokens[numindex].value,
           }
         : null;
     numindex++;
@@ -159,7 +158,6 @@ class MichelsonGrammarTokenizer {
     var result = false;
     var _keys = delimiters.keys.toList();
     for (var i = 0; i < _keys.length; i++) {
-      // var key = _keys[i];
       var value = delimiters[_keys[i]];
       if (value is List) {
         result = value.contains(char);

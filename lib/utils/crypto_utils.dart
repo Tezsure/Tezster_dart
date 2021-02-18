@@ -11,13 +11,9 @@ class CryptoUtils {
     var keyBytes = SodiumUtils.pwhash(passphrase, salt);
     var nonce = SodiumUtils.nonce();
     var s = SodiumUtils.close(message, nonce, keyBytes);
-    // nonce.addAll(s);
+
     return new Uint8List.fromList(nonce.toList() + s.toList());
   }
-
-  // static signDetached(Uint8List simpleHash) {
-  //   return
-  // }
 
   static Uint8List decryptMessage(message, passphrase, salt) {
     var keyBytes = SodiumUtils.pwhash(passphrase, salt);

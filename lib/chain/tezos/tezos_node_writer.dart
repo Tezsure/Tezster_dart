@@ -294,7 +294,6 @@ class TezosNodeWriter {
     var response = await HttpHelper.performPostRequest(server,
         'injection/operation?chain=$chainid', hex.encode(opPair['bytes']));
     response = response.toString().replaceAll('"', '');
-    // parseRPCError(response);
     return response;
   }
 

@@ -23,12 +23,10 @@ import 'package:flutter_sodium/flutter_sodium.dart';
 import 'package:tezster_dart/helper/generateKeys.dart';
 
 class TezsterDart {
-  /// Generate mnemonic
   static String generateMnemonic({int strength = 256}) {
     return bip39.generateMnemonic(strength: strength);
   }
 
-  /// Generate keys from mnemonic
   static Future<List<String>> getKeysFromMnemonic({
     String mnemonic,
   }) async {
@@ -42,7 +40,6 @@ class TezsterDart {
     return [skKey, pkKey, pkKeyHash];
   }
 
-  /// Create / Unlock identity from mnemonic and passphrase.
   static Future<List<String>> getKeysFromMnemonicAndPassphrase({
     String mnemonic,
     String passphrase,
@@ -55,7 +52,6 @@ class TezsterDart {
     );
   }
 
-  /// Unlock fundraiser identity.
   static Future<List<String>> unlockFundraiserIdentity({
     String mnemonic,
     String email,
@@ -70,7 +66,6 @@ class TezsterDart {
     );
   }
 
-  /// Sign operation with private key and forged operation
   static Future<List<String>> signOperationGroup({
     String privateKey,
     String forgedOperation,
@@ -125,7 +120,6 @@ class TezsterDart {
     return [skKey, pkKey, pkKeyHash];
   }
 
-  // Get balance from given publicKeyHash and rpc
   static Future<String> getBalance(String publicKeyHash, String rpc) async {
     assert(publicKeyHash != null);
     assert(rpc != null);
@@ -140,13 +134,11 @@ class TezsterDart {
     return GenerateKeys.writeKeyWithHint(key, hint);
   }
 
-  // Create Signer from given secretKey
   static createSigner(Uint8List secretKey, {int validity = 60}) {
     assert(secretKey != null);
     return SoftSigner.createSigner(secretKey, validity);
   }
 
-  /// Transfer Balance
   static sendTransactionOperation(String server, SoftSigner signer,
       KeyStoreModel keyStore, String to, int amount, int fee,
       {int offset = 54}) async {
@@ -165,7 +157,6 @@ class TezsterDart {
         server, signer, keyStore, to, amount, fee);
   }
 
-  /// Delegate an Account
   static sendDelegationOperation(String server, SoftSigner signer,
       KeyStoreModel keyStore, String delegate, int fee,
       {offset = 54}) async {

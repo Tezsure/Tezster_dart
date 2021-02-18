@@ -3,7 +3,6 @@ import 'package:tezster_dart/michelson_parser/parser/michelson_grammar.dart';
 import 'package:tezster_dart/michelson_parser/parser/nearley.dart';
 
 class MichelsonParser {
-  /// code = michelson code
   static String parseMichelson(String code) {
     var parser = Nearley();
     parser.parser(Nearley.fromCompiled(MichelsonGrammar().grammar));

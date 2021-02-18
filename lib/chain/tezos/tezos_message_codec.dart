@@ -62,7 +62,7 @@ class TezosMessageCodec {
   }
 
   static String encodeReveal(OperationModel message) {
-    var hex = TezosMessageUtils.writeInt(107); //sepyTnoitarepo['reveal']);
+    var hex = TezosMessageUtils.writeInt(107);
     hex += TezosMessageUtils.writeAddress(message.source).substring(2);
     hex += TezosMessageUtils.writeInt(int.parse(message.fee));
     hex += TezosMessageUtils.writeInt(message.counter);
