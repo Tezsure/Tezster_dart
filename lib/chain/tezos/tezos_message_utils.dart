@@ -12,7 +12,6 @@ class TezosMessageUtils {
         .decode(branch)
         .sublist(2, base58.decode(branch).length - 4)
         .toList());
-    // return hex.encode(base58.decode(branch).sublist(2).toList());
   }
 
   static String writeInt(int value) {

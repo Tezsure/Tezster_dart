@@ -68,14 +68,12 @@ class Nearley {
       for (var w = scannable.length - 1; 0 <= w; w--) {
         var state = scannable[w];
         var expect = state.rule.symbols[state.dot];
-        // Try to consume the token
-        // either regex or literal
+
         if (expect is RegExp
             ? expect.hasMatch(value['value'])
             : expect['type'] != null
                 ? expect['type'] == token['type']
                 : expect['literal'] == literal) {
-          // Add it
           var next = state.nextState({
             'data': value,
             'token': token,
@@ -86,18 +84,9 @@ class Nearley {
         }
       }
 
-      // Next, for each of the rules, we either
-      // (a) complete it, and try to see if the reference row expected that
-      //     rule
-      // (b) predict the next nonterminal it expects by adding that
-      //     nonterminal's start state
-      // To prevent duplication, we also keep track of rules we have already
-      // added
-
       nextColumn.process();
       table.add(nextColumn);
 
-      // If needed, throw an error:
       if (nextColumn.states.length == 0) {
         var err = new NearleyError(reportError(token));
         err.offset = this.current;
@@ -113,14 +102,12 @@ class Nearley {
       this.lexerState = lexer.save();
     }
 
-    // Incrementally keep track of results
     results = this.finish();
 
     return this;
   }
 
   finish() {
-    // Return the possible parsings
     var considerations = [];
     var start = this.grammar.start;
     var column = this.table[this.table.length - 1];
@@ -138,7 +125,6 @@ class Nearley {
   }
 
   reportError(token) {
-    // var lexerMessage = this.lexer.formatError(token, "Syntax error");
     var lines = [];
     var tokenDisplay =
         (token['type'] != null ? token['type'] + " token: " : "") +
@@ -159,13 +145,10 @@ class Nearley {
       }
     }).toList();
 
-    // Display a "state stack" for each expectant state
-    // - which shows you how this state came to be, step by step.
-    // If there is more than one derivation, we only display the first one.
     var stateStacks = expectantStates.map((state) {
       return this.buildFirstStateStack(state, []);
     }).toList();
-    // Display each state that is expecting a terminal symbol next.
+
     stateStacks.forEach((stateStack) {
       var state = stateStack[0];
       var nextSymbol =
@@ -181,8 +164,7 @@ class Nearley {
 
   String reportLexerError(lexerError) {
     var tokenDisplay, lexerMessage;
-    // Planning to add a token property to moo's thrown error
-    // even on erroring tokens to be used in error display below
+
     var token = lexerError.token;
     if (token) {
       tokenDisplay = "input " + jsonEncode(token.text[0]) + " (lexer error)";
@@ -213,13 +195,11 @@ class Nearley {
       lines.add('Unexpected ' +
           tokenDisplay +
           '. Instead, I was expecting to see one of the following:\n');
-      // Display a "state stack" for each expectant state
-      // - which shows you how this state came to be, step by step.
-      // If there is more than one derivation, we only display the first one.
+
       var stateStacks = expectantStates.map((state) {
         return this.buildFirstStateStack(state, []) ?? [state];
       });
-      // Display each state that is expecting a terminal symbol next.
+
       stateStacks.forEach((stateStack) {
         var state = stateStack[0];
         var nextSymbol = state.rule.symbols[state.dot];
@@ -234,9 +214,6 @@ class Nearley {
 
   buildFirstStateStack(state, visited) {
     if (visited.indexOf(state) != -1) {
-      // Found cycle, return null
-      // to eliminate this path from the results, because
-      // we don't know how to display it meaningfully
       return null;
     }
     if (state.wantedBy.length == 0) {
@@ -277,7 +254,6 @@ class Nearley {
   }
 
   getSymbolLongDisplay(symbol) {
-    // var type = typeof symbol;
     if (symbol is String) {
       return symbol;
     } else if (symbol is Map) {
@@ -332,28 +308,23 @@ class Column {
         if (state.data != fail) {
           var wantBy = state.wantedBy;
 
-          // complete
           for (var i = wantBy.length - 1; 0 <= i; i--) {
             var left = wantBy[i];
             this.complete(left, state);
           }
 
-          // special-case nullables
           if (state.reference == index) {
-            // make sure future predictors of this rule get completed.
             var exp = state.rule.name;
             this.completed[exp] = this.completed[exp] ?? [];
             this.completed[exp].add(state);
           }
         }
       } else {
-        // queue scannable states
         var exp = state.rule.symbols[state.dot];
         if (!(exp is String)) {
           this.scannable.add(state);
         }
 
-        // predict
         if (_wants[exp] != null) {
           _wants[exp].add(state);
           if (_completed.containsKey(exp)) {
@@ -519,8 +490,6 @@ class StreamLexer {
       return List.generate(length - s.length + 1, (index) => '').join(" ") + s;
     }
 
-    // nb. this gets called after consuming the offending token,
-    // so the culprit is index-1
     var buffer = this.buffer;
     if (buffer is String) {
       var lines = buffer.split("\n").sublist(max(0, this.line - 5), this.line);

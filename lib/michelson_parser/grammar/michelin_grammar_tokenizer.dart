@@ -27,7 +27,6 @@ class MichelinGrammarTokenizer {
             "text": tokens[numindex].value,
             "col": tokens[numindex].columnNumber,
             "line": '1',
-            // 'toString': () => tokens[numindex].value,
           }
         : null;
     numindex++;
@@ -105,38 +104,9 @@ class MichelinGrammarTokenizer {
           }
           seq += chunk[j];
         }
-        // if (seq.isNotEmpty) {
-        //   if (tokens.last.type == 'word' &&
-        //       getKeyFromValue(char, isRegex: false) == null) {
-        //     tokens.last = tokens.last..value += char;
-        //   } else if (tokens.last.type == 'number' &&
-        //       getKeyFromValue(char, isRegex: true).key == "number") {
-        //     tokens.last = tokens.last..value += char;
-        //   } else if (isArrayOrStringContaines(seq)) {
-        //     var argSeq = getKeyFromValue(seq);
-        //     tokens.add(GrammarResultModel(argSeq.key, seq)..columnNumber = i);
-        //     i += (seq.length - 1);
-        //   } else {
-        //     if (char != '%') {
-        //       var argSeq = getKeyFromValue(char);
-        //       tokens
-        //           .add(GrammarResultModel(argSeq.key, char)..columnNumber = i);
-        //     }
-        //   }
-        // }
+        
       }
-      // else if (char == '%' || char == ':') {
-      //   var nextIndex = i + 30;
-      //   if (nextIndex >= chunk.length - 1) nextIndex = chunk.length - 1;
-      //   var data = chunk.substring(
-      //     i,
-      //     nextIndex,
-      //   );
-      //   var endIndex = getEndIndexOfVar(data);
-      //   tokens.add(GrammarResultModel('annot', data.substring(0, endIndex))
-      //     ..columnNumber = i);
-      //   i += endIndex - 1;
-      // }
+     
       else if (char == '"') {
         var nextIndex = i + 200;
         if (nextIndex >= chunk.length - 1) nextIndex = chunk.length;
@@ -167,7 +137,6 @@ class MichelinGrammarTokenizer {
     var result = false;
     var _keys = delimiters.keys.toList();
     for (var i = 0; i < _keys.length; i++) {
-      // var key = _keys[i];
       var value = delimiters[_keys[i]];
       if (value is List) {
         result = value.contains(char);

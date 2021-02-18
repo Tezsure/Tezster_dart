@@ -119,8 +119,6 @@ class MichelsonGrammar {
       'macroCADR': macroCADRconst,
       'macroDIP': dIPmatcher,
       'macroDUP': dUPmatcher,
-      // 'macroDIP': macroDIPconst,
-      // 'macroDUP': macroDUPconst,
       'macroSETCADR': macroSETCADRconst,
       'macroASSERTlist': macroASSERTlistConst,
       'constantData': ['Unit', 'True', 'False', 'None', 'instruction'],
