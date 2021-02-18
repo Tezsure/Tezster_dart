@@ -1,3 +1,10 @@
+# [2.1.0+1]
+
+* Deploy contract
+* Call contract
+* Operation confirmation
+* Fix for revelation of an account Ref #12
+
 # [2.0.0]
 
 * Dependencies update.
