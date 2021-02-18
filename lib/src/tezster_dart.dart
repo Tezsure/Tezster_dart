@@ -13,8 +13,10 @@ import 'package:bs58check/bs58check.dart' as bs58check;
 import 'package:tezster_dart/chain/tezos/tezos_node_writer.dart';
 import 'package:tezster_dart/helper/constants.dart';
 import 'package:tezster_dart/helper/http_helper.dart';
+import 'package:tezster_dart/reporting/tezos/tezos_conseil_client.dart';
 import 'package:tezster_dart/src/soft-signer/soft_signer.dart';
 import 'package:tezster_dart/tezster_dart.dart';
+import 'package:tezster_dart/types/tezos/tezos_chain_types.dart';
 import "package:unorm_dart/unorm_dart.dart" as unorm;
 import 'package:flutter_sodium/flutter_sodium.dart';
 
@@ -168,5 +170,101 @@ class TezsterDart {
     if (fee == null || fee == 0) fee = TezosConstants.DefaultDelegationFee;
     return await TezosNodeWriter.sendDelegationOperation(
         server, signer, keyStore, delegate, fee, offset);
+  }
+
+  static sendContractOriginationOperation(
+    String server,
+    SoftSigner signer,
+    KeyStoreModel keyStore,
+    int amount,
+    String delegate,
+    int fee,
+    int storageLimit,
+    int gasLimit,
+    String code,
+    String storage, {
+    TezosParameterFormat codeFormat = TezosParameterFormat.Micheline,
+    int offset = 54,
+  }) async {
+    assert(server != null);
+    assert(signer != null);
+    assert(keyStore != null);
+    assert(keyStore.publicKeyHash != null);
+    assert(keyStore.publicKey != null);
+    assert(keyStore.secretKey != null);
+    assert(amount != null);
+    assert(fee != null);
+    assert(storageLimit != null);
+    assert(gasLimit != null);
+    assert(code != null);
+    assert(storage != null);
+    assert(codeFormat != null);
+    assert(offset != null);
+    return await TezosNodeWriter.sendContractOriginationOperation(
+      server,
+      signer,
+      keyStore,
+      amount,
+      delegate,
+      fee,
+      storageLimit,
+      gasLimit,
+      code,
+      storage,
+      codeFormat,
+      offset,
+    );
+  }
+
+  static awaitOperationConfirmation(serverInfo, network, hash, duration,
+      {blocktime}) async {
+    assert(serverInfo != null);
+    assert(network != null);
+    assert(hash != null);
+    assert(duration != null);
+    return await TezosConseilClient.awaitOperationConfirmation(
+        serverInfo, network, hash, duration,
+        blocktime: blocktime);
+  }
+
+  static sendContractInvocationOperation(
+      String server,
+      SoftSigner signer,
+      KeyStoreModel keyStore,
+      String contract,
+      int amount,
+      int fee,
+      int storageLimit,
+      int gasLimit,
+      entrypoint,
+      String parameters,
+      {TezosParameterFormat codeFormat = TezosParameterFormat.Micheline,
+      offset = 54}) async {
+    assert(server != null);
+    assert(signer != null);
+    assert(keyStore != null);
+    assert(contract != null);
+    assert(keyStore.publicKeyHash != null);
+    assert(keyStore.publicKey != null);
+    assert(keyStore.secretKey != null);
+    assert(amount != null);
+    assert(entrypoint != null);
+    assert(parameters != null);
+    assert(fee != null);
+    assert(storageLimit != null);
+    assert(gasLimit != null);
+    return await TezosNodeWriter.sendContractInvocationOperation(
+        server,
+        signer,
+        keyStore,
+        contract,
+        amount,
+        fee,
+        storageLimit,
+        gasLimit,
+        entrypoint,
+        parameters,
+        parameterFormat: codeFormat ?? TezosParameterFormat.Micheline,
+        offset: offset ?? 54);
   }
 }

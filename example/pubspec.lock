@@ -14,7 +14,7 @@ packages:
       name: bip39
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.0.3"
+    version: "1.0.4"
   blake2b:
     dependency: transitive
     description:
@@ -117,7 +117,7 @@ packages:
       name: flutter_sodium
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.1.9"
+    version: "0.1.11"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -164,7 +164,7 @@ packages:
       name: pointycastle
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.0.2"
+    version: "2.0.1"
   sky_engine:
     dependency: transitive
     description: flutter
@@ -218,7 +218,7 @@ packages:
       path: ".."
       relative: true
     source: path
-    version: "2.0.0"
+    version: "2.1.0+1"
   typed_data:
     dependency: transitive
     description:

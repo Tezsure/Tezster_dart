@@ -106,6 +106,91 @@ class _MyAppState extends State<MyApp> {
     );
     print("Applied operation ===> $delegationResult['appliedOp']");
     print("Operation groupID ===> $delegationResult['operationGroupID']");
+    
+    //Deploy a contract
+    var contract = """parameter string;
+    storage string;
+    code { DUP;
+        DIP { CDR ; NIL string ; SWAP ; CONS } ;
+        CAR ; CONS ;
+        CONCAT;
+        NIL operation; PAIR}""";
+
+    var storage = '"Sample"';
+    var contractOriginationSigner = await TezsterDart.createSigner(
+        TezsterDart.writeKeyWithHint(keyStore.secretKey, 'edsk'));
+
+    var resultContractOrigination =
+        await TezsterDart.sendContractOriginationOperation(
+      server,
+      contractOriginationSigner,
+      keyStore,
+      0,
+      null,
+      100000,
+      1000,
+      100000,
+      contract,
+      storage,
+      codeFormat: TezosParameterFormat.Michelson,
+    );
+
+    print(
+        "Operation groupID ===> $resultContractOrigination['operationGroupID']");
+
+    //Call a contract
+    var contractInvocationSigner = await TezsterDart.createSigner(
+        TezsterDart.writeKeyWithHint(keyStore.secretKey, 'edsk'));
+
+    var contractAddress = 'KT1KA7DqFjShLC4CPtChPX8QtRYECUb99xMY';
+
+    var resultInvoke = await TezsterDart.sendContractInvocationOperation(
+        server,
+        contractInvocationSigner,
+        keyStore,
+        contractAddress,
+        10000,
+        100000,
+        1000,
+        100000,
+        '',
+        '"Cryptonomicon"',
+        codeFormat: TezosParameterFormat.Michelson);
+
+    print("Operation groupID ===> $resultInvoke['operationGroupID']");
+
+    //Await opration Confirmation
+    var network = 'carthagenet';
+
+    var serverInfo = {'url': '', 'apiKey': '', 'network': network};
+
+    var operationConfirmationSigner = await TezsterDart.createSigner(
+        TezsterDart.writeKeyWithHint(keyStore.secretKey, 'edsk'));
+
+    var resultoperationConfirmation =
+        await TezsterDart.sendContractOriginationOperation(
+      server,
+      operationConfirmationSigner,
+      keyStore,
+      0,
+      null,
+      100000,
+      1000,
+      100000,
+      contract,
+      storage,
+      codeFormat: TezosParameterFormat.Michelson,
+    );
+
+    print(
+        "Operation groupID ===> $resultoperationConfirmation['operationGroupID']");
+
+    var groupId = resultoperationConfirmation['operationGroupID'];
+
+    var conseilResult = await TezsterDart.awaitOperationConfirmation(
+        serverInfo, network, groupId, 5);
+
+    print('Originated contract at ${conseilResult['originated_contracts']}');
   }
 
   @override

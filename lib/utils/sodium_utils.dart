@@ -1,4 +1,3 @@
-import 'dart:ffi';
 import 'dart:typed_data';
 
 import 'package:flutter_sodium/flutter_sodium.dart';
@@ -31,11 +30,11 @@ class SodiumUtils {
     return Sodium.cryptoSecretboxEasy(message, nonce, keyBytes);
   }
 
-  static Uint8List open(Uint8List nonce_and_ciphertext, Uint8List key) {
+  static Uint8List open(Uint8List nonceAndCiphertext, Uint8List key) {
     var nonce =
-        nonce_and_ciphertext.sublist(0, Sodium.cryptoSecretboxNoncebytes);
+        nonceAndCiphertext.sublist(0, Sodium.cryptoSecretboxNoncebytes);
     var ciphertext =
-        nonce_and_ciphertext.sublist(Sodium.cryptoSecretboxNoncebytes);
+        nonceAndCiphertext.sublist(Sodium.cryptoSecretboxNoncebytes);
 
     return Sodium.cryptoSecretboxOpenEasy(ciphertext, nonce, key);
   }
