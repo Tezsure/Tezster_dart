@@ -1,17 +1,14 @@
 import 'dart:typed_data';
 
 import 'package:blake2b/blake2b_hash.dart';
-import 'package:bs58check/bs58check.dart';
+import 'package:bs58check/bs58check.dart' as bs58check;
 import 'package:convert/convert.dart';
 import 'package:tezster_dart/helper/generateKeys.dart';
 import 'package:tezster_dart/src/soft-signer/soft_signer.dart';
 
 class TezosMessageUtils {
   static String writeBranch(String branch) {
-    return hex.encode(base58
-        .decode(branch)
-        .sublist(2, base58.decode(branch).length - 4)
-        .toList());
+    return hex.encode(bs58check.decode(branch).sublist(2).toList());
   }
 
   static String writeInt(int value) {
@@ -51,9 +48,8 @@ class TezosMessageUtils {
   }
 
   static String writeAddress(String address) {
-    var base58data = base58.decode(address).sublist(3);
-    base58data = base58data.sublist(0, base58data.length - 4);
-    var _hex = hex.encode(base58data);
+    var bs58checkdata = bs58check.decode(address).sublist(3);
+    var _hex = hex.encode(bs58checkdata);
     if (address.startsWith("tz1")) {
       return "0000" + _hex;
     } else if (address.startsWith("tz2")) {
@@ -70,11 +66,11 @@ class TezosMessageUtils {
 
   static String writePublicKey(String publicKey) {
     if (publicKey.startsWith("edpk")) {
-      return "00" + hex.encode(base58.decode(publicKey).sublist(4));
+      return "00" + hex.encode(bs58check.decode(publicKey).sublist(4));
     } else if (publicKey.startsWith("sppk")) {
-      return "01" + hex.encode(base58.decode(publicKey).sublist(4));
+      return "01" + hex.encode(bs58check.decode(publicKey).sublist(4));
     } else if (publicKey.startsWith("p2pk")) {
-      return "02" + hex.encode(base58.decode(publicKey).sublist(4));
+      return "02" + hex.encode(bs58check.decode(publicKey).sublist(4));
     } else {
       throw new Exception('Unrecognized key type');
     }

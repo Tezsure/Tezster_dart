@@ -173,11 +173,11 @@ class TezosNodeWriter {
     if (!isKeyRevealed) {
       var revealOp = OperationModel(
         counter: counter,
-        fee: '0',
+        fee: '0', // Reveal Fee will be covered by the appended operation
         source: publicKeyHash,
         kind: 'reveal',
-        gasLimit: 10600,
-        storageLimit: 0,
+        gasLimit: TezosConstants.DefaultKeyRevealGasLimit,
+        storageLimit: TezosConstants.DefaultKeyRevealStorageLimit,
         publicKey: publicKey,
       );
       for (var index = 0; index < operations.length; index++) {
@@ -210,7 +210,7 @@ class TezosNodeWriter {
 
   static String forgeOperations(
       String branch, List<OperationModel> operations) {
-    var encoded = TezosMessageUtils.writeBranch(branch);
+    String encoded = TezosMessageUtils.writeBranch(branch);
     operations.forEach((element) {
       encoded += TezosMessageCodec.encodeOperation(element);
     });
