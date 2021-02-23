@@ -1,3 +1,7 @@
+# [2.1.1-beta]
+
+* Fix for revelation of an account Ref #12
+
 # [2.1.0-beta]
 
 * Deploy contract
