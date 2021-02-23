@@ -267,4 +267,5 @@ class TezsterDart {
         parameterFormat: codeFormat ?? TezosParameterFormat.Micheline,
         offset: offset ?? 54);
   }
+
 }
