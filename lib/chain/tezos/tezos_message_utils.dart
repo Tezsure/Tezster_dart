@@ -49,7 +49,6 @@ class TezosMessageUtils {
 
   static String writeAddress(String address) {
     var bs58checkdata = bs58check.decode(address).sublist(3);
-    // bs58checkdata = bs58checkdata.sublist(0, bs58checkdata.length - 4);
     var _hex = hex.encode(bs58checkdata);
     if (address.startsWith("tz1")) {
       return "0000" + _hex;
