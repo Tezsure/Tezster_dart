@@ -15,6 +15,9 @@ class OperationModel {
 
   Map<String, dynamic> parameters;
 
+  String pkh;
+  String secret;
+
   OperationModel({
     this.destination,
     this.amount,
@@ -27,6 +30,8 @@ class OperationModel {
     this.publicKey,
     this.delegate,
     this.script,
+    this.pkh,
+    this.secret,
   }) {
     if (kind == 'delegation') {
       gasLimit = TezosConstants.DefaultDelegationGasLimit;
@@ -78,26 +83,32 @@ class OperationModel {
                       'delegate': delegate,
                       'script': script
                     }
-              : parameters == null
+              : kind == "activate_account"
                   ? {
-                      'destination': destination,
-                      'amount': amount,
-                      'storage_limit': storageLimit.toString(),
-                      'gas_limit': gasLimit.toString(),
-                      'counter': counter.toString(),
-                      'fee': fee,
-                      'source': source,
                       'kind': kind,
+                      'pkh': pkh,
+                      'secret': secret,
                     }
-                  : {
-                      'destination': destination,
-                      'amount': amount,
-                      'storage_limit': storageLimit.toString(),
-                      'gas_limit': gasLimit.toString(),
-                      'counter': counter.toString(),
-                      'fee': fee,
-                      'source': source,
-                      'kind': kind,
-                      'parameters': parameters,
-                    };
+                  : parameters == null
+                      ? {
+                          'destination': destination,
+                          'amount': amount,
+                          'storage_limit': storageLimit.toString(),
+                          'gas_limit': gasLimit.toString(),
+                          'counter': counter.toString(),
+                          'fee': fee,
+                          'source': source,
+                          'kind': kind,
+                        }
+                      : {
+                          'destination': destination,
+                          'amount': amount,
+                          'storage_limit': storageLimit.toString(),
+                          'gas_limit': gasLimit.toString(),
+                          'counter': counter.toString(),
+                          'fee': fee,
+                          'source': source,
+                          'kind': kind,
+                          'parameters': parameters,
+                        };
 }

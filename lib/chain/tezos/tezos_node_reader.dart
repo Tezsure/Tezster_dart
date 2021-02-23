@@ -1,4 +1,3 @@
-
 import 'package:tezster_dart/helper/http_helper.dart';
 
 class TezosNodeReader {
@@ -21,7 +20,7 @@ class TezosNodeReader {
       {String chainid = 'main'}) async {
     var response = await HttpHelper.performGetRequest(server,
         'chains/$chainid/blocks/$block/context/contracts/$publicKeyHash/manager_key');
-    return response.toString().isNotEmpty ? response.toString() : '';
+    return response != null ? response.toString() : '';
   }
 
   static Future<Map<dynamic, dynamic>> getBlockAtOffset(

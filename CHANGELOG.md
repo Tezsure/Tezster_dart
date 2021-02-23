@@ -1,4 +1,4 @@
-# [2.1.0+1]
+# [2.1.0-beta]
 
 * Deploy contract
 * Call contract
