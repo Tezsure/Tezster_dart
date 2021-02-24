@@ -268,4 +268,25 @@ class TezsterDart {
         offset: offset ?? 54);
   }
 
+  static sendIdentityActivationOperation(String server, SoftSigner signer,
+      KeyStoreModel keyStore, String activationCode) async {
+    assert(server != null);
+    assert(signer != null);
+    assert(keyStore != null);
+    assert(activationCode != null);
+    return await TezosNodeWriter.sendIdentityActivationOperation(
+        server, signer, keyStore, activationCode);
+  }
+
+  static sendKeyRevealOperation(String server, signer, KeyStoreModel keyStore,
+      {fee = TezosConstants.DefaultKeyRevealFee,
+      offset = TezosConstants.HeadBranchOffset}) async {
+    assert(server != null);
+    assert(signer != null);
+    assert(keyStore != null);
+    assert(fee != null);
+    assert(offset != null);
+    return await TezosNodeWriter.sendKeyRevealOperation(
+        server, signer, keyStore, fee, offset);
+  }
 }

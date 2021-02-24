@@ -116,6 +116,36 @@ class TezosNodeWriter {
     return sendOperation(server, operations, signer, offset);
   }
 
+  static sendIdentityActivationOperation(String server, SoftSigner signer,
+      KeyStoreModel keyStore, String activationCode) async {
+    var activation = OperationModel(
+      kind: 'activate_account',
+      pkh: keyStore.publicKeyHash,
+      secret: activationCode,
+    );
+    return await sendOperation(server, [activation], signer, 54);
+  }
+
+  static sendKeyRevealOperation(
+      String server, signer, KeyStoreModel keyStore, fee, offset) async {
+    var counter = (await TezosNodeReader.getCounterForAccount(
+            server, keyStore.publicKeyHash)) +
+        1;
+
+    var revealOp = OperationModel(
+      kind: 'reveal',
+      source: keyStore.publicKeyHash,
+      fee: fee.toString(),
+      counter: counter,
+      gasLimit: 10000,
+      storageLimit: 0,
+      publicKey: keyStore.publicKey,
+    );
+
+    var operations = [revealOp];
+    return sendOperation(server, operations, signer, offset);
+  }
+
   static constructContractInvocationOperation(
       String publicKeyHash,
       int counter,

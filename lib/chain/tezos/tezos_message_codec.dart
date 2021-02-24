@@ -6,11 +6,20 @@ import 'package:tezster_dart/models/operation_model.dart';
 
 class TezosMessageCodec {
   static String encodeOperation(OperationModel message) {
+    if (message.pkh != null && message.secret != null)
+      return encodeActivation(message);
     if (message.kind == 'transaction') return encodeTransaction(message);
     if (message.kind == 'reveal') return encodeReveal(message);
     if (message.kind == 'delegation') return encodeDelegation(message);
     if (message.kind == 'origination') return encodeOrigination(message);
     return '';
+  }
+
+  static String encodeActivation(activation) {
+    var hex = TezosMessageUtils.writeInt(4);
+    hex += TezosMessageUtils.writeAddress(activation.pkh).substring(4);
+    hex += activation.secret;
+    return hex;
   }
 
   static String encodeTransaction(OperationModel message) {
