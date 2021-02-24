@@ -54,7 +54,7 @@ class OperationModel {
           ? {
               'kind': kind,
               'source': source,
-              'fee': '0',
+              'fee': fee,
               'counter': counter.toString(),
               'gas_limit': gasLimit.toString(),
               'storage_limit': storageLimit.toString(),

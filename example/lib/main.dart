@@ -17,6 +17,12 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  testActivationAndRevel() async {
+    const server = 'https://testnet.tezster.tech';
+
+    // [, , ]
+  }
+
   tezosWalletUtil() async {
     //Generate mnemonic
     String mnemonic = TezsterDart
@@ -91,8 +97,8 @@ class _MyAppState extends State<MyApp> {
       500000,
       1500,
     );
-    print("Applied operation ===> $transactionResult['appliedOp']");
-    print("Operation groupID ===> $transactionResult['operationGroupID']");
+    print("Applied operation ===> ${transactionResult['appliedOp']}");
+    print("Operation groupID ===> ${transactionResult['operationGroupID']}");
 
     //Send delegation
     var delegationSigner = await TezsterDart.createSigner(
@@ -104,8 +110,8 @@ class _MyAppState extends State<MyApp> {
       'tz1RVcUP9nUurgEJMDou8eW3bVDs6qmP5Lnc',
       10000,
     );
-    print("Applied operation ===> $delegationResult['appliedOp']");
-    print("Operation groupID ===> $delegationResult['operationGroupID']");
+    print("Applied operation ===> ${delegationResult['appliedOp']}");
+    print("Operation groupID ===> ${delegationResult['operationGroupID']}");
 
     //Deploy a contract
     var contract = """parameter string;
@@ -136,7 +142,7 @@ class _MyAppState extends State<MyApp> {
     );
 
     print(
-        "Operation groupID ===> $resultContractOrigination['operationGroupID']");
+        "Operation groupID ===> ${resultContractOrigination['operationGroupID']}");
 
     //Call a contract
     var contractInvocationSigner = await TezsterDart.createSigner(
@@ -157,7 +163,7 @@ class _MyAppState extends State<MyApp> {
         '"Cryptonomicon"',
         codeFormat: TezosParameterFormat.Michelson);
 
-    print("Operation groupID ===> $resultInvoke['operationGroupID']");
+    print("Operation groupID ===> ${resultInvoke['operationGroupID']}");
 
     //Await opration Confirmation
     var network = 'carthagenet';
@@ -183,7 +189,7 @@ class _MyAppState extends State<MyApp> {
     );
 
     print(
-        "Operation groupID ===> $resultoperationConfirmation['operationGroupID']");
+        "Operation groupID ===> ${resultoperationConfirmation['operationGroupID']}");
 
     var groupId = resultoperationConfirmation['operationGroupID'];
 
@@ -191,12 +197,68 @@ class _MyAppState extends State<MyApp> {
         serverInfo, network, groupId, 5);
 
     print('Originated contract at ${conseilResult['originated_contracts']}');
+
+    //Activating a fundraiser account
+    var faucetKeyStore = KeyStoreModel(
+      publicKeyHash: '',
+      seed: [
+        "wife",
+        "filter",
+        "wage",
+        "thunder",
+        "forget",
+        "scale",
+        "punch",
+        "mammal",
+        "offer",
+        "car",
+        "cash",
+        "defy",
+        "vehicle",
+        "romance",
+        "green"
+      ],
+      secret: '',
+      email: '',
+      password: '',
+    );
+
+    var faucetKeys = await TezsterDart.unlockFundraiserIdentity(
+        email: faucetKeyStore.email,
+        passphrase: faucetKeyStore.password,
+        mnemonic: faucetKeyStore.seed.join(' '));
+    faucetKeyStore
+      ..publicKey = faucetKeys[1]
+      ..secretKey = faucetKeys[0]
+      ..publicKeyHash = faucetKeys[2];
+    var activationOperationSigner = await TezsterDart.createSigner(
+        TezsterDart.writeKeyWithHint(faucetKeyStore.secretKey, 'edsk'));
+    var activationOperationResult =
+        await TezsterDart.sendIdentityActivationOperation(server,
+            activationOperationSigner, faucetKeyStore, faucetKeyStore.secret);
+    print('${activationOperationResult['operationGroupID']}');
+
+    //Reveal an account
+    var keyRevealKeyStore = KeyStoreModel(
+      publicKeyHash: 'tz1Uey......FDPWW5MHgi',
+      secretKey: 'edskRpg......EjHx8ebL2B6g',
+      publicKey: 'edpktt......gYJu2',
+    );
+
+    var keyRevealSigner = await TezsterDart.createSigner(
+        TezsterDart.writeKeyWithHint(keyRevealKeyStore.secretKey, 'edsk'));
+
+    var keyRevealResult = await TezsterDart.sendKeyRevealOperation(
+        server, keyRevealSigner, keyRevealKeyStore);
+
+    print('${keyRevealResult['operationGroupID']}');
   }
 
   @override
   void initState() {
     super.initState();
-    tezosWalletUtil();
+    // tezosWalletUtil();
+    testActivationAndRevel();
   }
 
   @override
