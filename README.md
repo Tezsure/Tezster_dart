@@ -25,6 +25,8 @@ Tezos is a decentralized blockchain that governs itself by establishing a true d
   * Deploy a contract.
   * Call a contract.
   * Operation confirmation.
+  * Activating a fundraiser account
+  * Reveal an account
   
 ### Getting started
 
@@ -299,6 +301,80 @@ print('Originated contract at ${conseilResult['originated_contracts']}');
 
 ```
 reference link: `https://github.com/Tezsure/Tezster_dart/blob/master/example/lib/main.dart#L162`
+<br>
+
+* Activating a fundraiser account 
+    * A fundraiser account needs to be activated to be used for any operation. Hence, we have included the facility to activate a faucet account. All the user has to do is call the `sendIdentityActivationOperation()` method and viola the faucet or a fundraiser account will be activated. We have set an example for you how to use it.
+
+``` dart
+var server = '';
+
+var faucetKeyStore = KeyStoreModel(
+      publicKeyHash: 'tz1ga.....trZNA6A',
+      seed: [
+        "wife",
+        "filter",
+        "wage",
+        "thunder",
+        "forget",
+        "scale",
+        "punch",
+        "mammal",
+        "offer",
+        "car",
+        "cash",
+        "defy",
+        "vehicle",
+        "romance",
+        "green"
+      ],
+      secret: '',
+      email: '',
+      password: '',
+    );
+
+var keys = await TezsterDart.unlockFundraiserIdentity(
+        email: faucetKeyStore.email,
+        passphrase: faucetKeyStore.password,
+        mnemonic: faucetKeyStore.seed.join(' '));
+
+faucetKeyStore
+      ..publicKey = keys[1]
+      ..secretKey = keys[0]
+      ..publicKeyHash = keys[2];
+
+var activationOperationSigner = await TezsterDart.createSigner(
+        TezsterDart.writeKeyWithHint(faucetKeyStore.secretKey, 'edsk'));
+
+var activationOperationResult =
+        await TezsterDart.sendIdentityActivationOperation(server,
+            activationOperationSigner, faucetKeyStore, faucetKeyStore.secret);
+
+print('${activationOperationResult['operationGroupID']}');
+```
+<br>
+
+* Reveal an account
+    * Once a fundraiser account has been activated it needs to be revealed on-chain. Hence, we have included the facility to reveal the faucet/fundraiser account all you have to do is call the `sendKeyRevealOperation()` method, and voila it’s revealed. We have set an example for you how to use it.
+
+``` dart
+var server = '';
+
+var keyStore = KeyStoreModel(
+      publicKeyHash: 'tz1U.....W5MHgi',
+      secretKey:
+          'edskRp......bL2B6g',
+      publicKey: 'edpktt.....U1gYJu2',
+    );
+
+var signer = await TezsterDart.createSigner(
+        TezsterDart.writeKeyWithHint(keyStore.secretKey, 'edsk'));
+
+var result =
+        await TezsterDart.sendKeyRevealOperation(server, signer, keyStore);
+
+print('${result['operationGroupID']}');
+```
 <br>
 
 ---
