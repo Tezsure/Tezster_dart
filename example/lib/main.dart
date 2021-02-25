@@ -17,12 +17,6 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  testActivationAndRevel() async {
-    const server = 'https://testnet.tezster.tech';
-
-    // [, , ]
-  }
-
   tezosWalletUtil() async {
     //Generate mnemonic
     String mnemonic = TezsterDart
@@ -257,8 +251,7 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    // tezosWalletUtil();
-    testActivationAndRevel();
+    tezosWalletUtil();
   }
 
   @override

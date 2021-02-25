@@ -1,3 +1,11 @@
+# [2.1.1]
+
+* Deploy contract
+* Call contract
+* Operation confirmation
+* Activating a fundraiser account 
+* Reveal an account
+
 # [2.1.1-beta.2]
 
 * Activating a fundraiser account 
