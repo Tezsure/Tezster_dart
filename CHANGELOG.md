@@ -1,3 +1,8 @@
+# [2.1.2-beta]
+
+* Support for florence mainnet and testnet
+* Operation Gas fee calculator
+
 # [2.1.1]
 
 * Deploy contract
