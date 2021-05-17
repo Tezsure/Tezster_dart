@@ -1,3 +1,8 @@
+# [2.1.2-beta]
+
+* Florence support added
+* Gas price calculator added
+
 # [2.1.1]
 
 * Deploy contract

@@ -32,23 +32,17 @@ class OperationModel {
     this.script,
     this.pkh,
     this.secret,
-  }) {
-    if (kind == 'delegation') {
-      gasLimit = TezosConstants.DefaultDelegationGasLimit;
-      storageLimit = TezosConstants.DefaultDelegationStorageLimit;
-    }
-  }
+  });
 
   Map<String, dynamic> toJson() => kind == 'delegation'
       ? {
           'counter': counter.toString(),
           'delegate': delegate,
           'fee': fee.toString(),
-          'gas_limit': TezosConstants.DefaultDelegationGasLimit.toString(),
+          'gas_limit': gasLimit.toString(),
           'kind': kind,
           'source': source,
-          'storage_limit':
-              TezosConstants.DefaultDelegationStorageLimit.toString(),
+          'storage_limit': storageLimit.toString(),
         }
       : kind == 'reveal'
           ? {
