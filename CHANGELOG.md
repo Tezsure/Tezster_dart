@@ -1,7 +1,7 @@
 # [2.1.2-beta]
 
-* Florence support added
-* Gas price calculator added
+* Support for florence mainnet and testnet
+* Operation Gas fee calculator
 
 # [2.1.1]
 
