@@ -203,6 +203,7 @@ class TezosNodeWriter {
           'value': jsonDecode(michelineLambda)
         };
       }
+      
     } else if (entrypoint != null) {
       transaction.parameters = {'entrypoint': entrypoint, 'value': []};
     }

@@ -1,8 +1,22 @@
+import 'dart:io';
+
 import 'package:flutter_test/flutter_test.dart';
+import 'package:tezster_dart/chain/tezos/tezos_language_util.dart';
 import 'package:tezster_dart/tezster_dart.dart';
+
+class MyHttpOverrides extends HttpOverrides {
+  @override
+  HttpClient createHttpClient(SecurityContext context) {
+    return super.createHttpClient(context)
+      ..badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
+  }
+}
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+  HttpOverrides.global = new MyHttpOverrides();
+
   String testPrivateKey =
       "edskRdVS5H9YCRAG8yqZkX2nUTbGcaDqjYgopkJwRuPUnYzCn3t9ZGksncTLYe33bFjq29pRhpvjQizCCzmugMGhJiXezixvdC";
   String testForgedOperation =
@@ -57,10 +71,10 @@ void main() {
 
   test('send-Transaction-Operation', () async {
     var keyStore = KeyStoreModel(
-      publicKey: 'edpkuh9tUmMMVKJVqG4bJxNLsCob6y8wXycshi6Pn11SQ5hx7SAVjf',
+      publicKey: 'edpkuK9UBHsuC6sECF6Zmqedt4Gx8jQJyEuXiG7CaJo4BBZRd6LvP2',
       secretKey:
-          'edskRs9KBdoU675PBVyHdM3fqixemkykm7hgHeXAYKUjdoVn3Aev8dP11p47zc4iuWJsefSP4t2vdHPoQisQC3DjZY3ZbbSP9Y',
-      publicKeyHash: 'tz1LRibbLEEWpaXb4aKrXXgWPvx9ue9haAAV',
+          'edskRdnByVjgf2wVJo2VTFVu9GV23pwdEhaeywV7h6ZM4geepV3hmCTr97oEdYHbPNmK8PZVQ59oW1unoTm89RjCZu4oriGFg7',
+      publicKeyHash: 'tz1iUgGzt7gukNEqiJz78zvoFJEKeBZRCdLQ',
     );
 
     var signer = await TezsterDart.createSigner(
@@ -72,20 +86,21 @@ void main() {
       server,
       signer,
       keyStore,
-      'tz1LRibbLEEWpaXb4aKrXXgWPvx9ue9haAAV',
+      'KT1VCczKAoRQJKco7NiSaB93PMkYCbL2z1K7',
       500000,
       1500,
     );
+    print(result['operationGroupID']);
     expect(true,
         result['operationGroupID'] != null && result['operationGroupID'] != '');
   });
 
   test('send-Delegation-Operation', () async {
     var keyStore = KeyStoreModel(
-      publicKey: 'edpkunM8fmwNb8NqcKZ1WiBrZQqvuN1NRY3FrSRer9HEySaPAkqgqt',
+      publicKey: 'edpkuK9UBHsuC6sECF6Zmqedt4Gx8jQJyEuXiG7CaJo4BBZRd6LvP2',
       secretKey:
-          'edskRjFXdYtHUrkLh7cs6b8EQigNi5uFGYxSsC3CgpvaA86Xcvo4TxrcmK155jY3c9hyxaQK8s8cfFXscEUFwdTjhFLf3P5LVX',
-      publicKeyHash: 'tz1csxCjsefVvKzWWAvhkoVn3M67wxaozGGs',
+          'edskRdnByVjgf2wVJo2VTFVu9GV23pwdEhaeywV7h6ZM4geepV3hmCTr97oEdYHbPNmK8PZVQ59oW1unoTm89RjCZu4oriGFg7',
+      publicKeyHash: 'tz1iUgGzt7gukNEqiJz78zvoFJEKeBZRCdLQ',
     );
 
     var signer = await TezsterDart.createSigner(
@@ -97,11 +112,84 @@ void main() {
       server,
       signer,
       keyStore,
-      'tz1RUGhq8sQpfGu1W2kf7MixqWX7oxThBFLr',
+      'KT1VCczKAoRQJKco7NiSaB93PMkYCbL2z1K7',
       10000,
     );
 
     expect(true,
         result['operationGroupID'] != null && result['operationGroupID'] != '');
+  });
+
+  test('getContractStorage', () async {
+    var result = await TezsterDart.getContractStorage(
+        'https://testnet.tezster.tech', 'KT1VCczKAoRQJKco7NiSaB93PMkYCbL2z1K7');
+    print(result);
+    expect(result != null, true);
+  });
+
+  test('getValueForBigMapKey', () async {
+    var accountHex =
+        '0x${TezsterDart.writeAddress("KT1REEb5VxWRjcHm5GzDMwErMmNFftsE5Gpf")}';
+    print(accountHex);
+    var packedKey = TezsterDart.encodeBigMapKey(TezsterDart.writePackedData(
+        '(Pair $accountHex ${0})', '',
+        format: TezosParameterFormat.Michelson));
+    print(packedKey);
+    var storage = await TezsterDart.getValueForBigMapKey(
+        "https://mainnet.tezster.tech", "1823", packedKey);
+    print(storage);
+  });
+
+  // var packedKey = TezsterDart.encodeBigMapKey(TezsterDart.writePackedData(
+  //       '0x${TezsterDart.writeAddress("KT1GRSvLoikDsXujKgZPsGLX8k8VvR2Tq95b")}',
+  //       '',
+  //       format: TezosParameterFormat.Michelson));
+  //   print(packedKey);
+
+  test('send token', () async {
+    var keyStore = KeyStoreModel(
+      publicKeyHash: 'tz1USmQMoNCUUyk4BfeEGUyZRK2Bcc9zoK8C',
+      publicKey: 'edpktjBAyr2Zyns59K6VGuCkPY32PQdAGbe5fR3YvBML6gifZQkv1e',
+      secretKey:
+          'edskS86RQn9HM3KMAzFhvXnDPDy9Tfv4ao8peZcqMB2KnLEHnaGLbvNueWGysKamE3NkbZEmcdQvG1KxvQgXeFJjb313o28Urc',
+    );
+    var rpc = "https://testnet.tezster.tech";
+    // tezsureApi,
+    var receiver = "tz1RWLHsfDcXzU2Y3BkWYwxvG2oeeqgH6p8y";
+    var contractAddress = "KT1JCq5sWnE8EivqhY7RuNSHgC5injKYLUCT";
+    var amount = 0.0002;
+    var decimals = 18;
+    var _amount = (amount *
+            1000000) //double.parse(1.toStringAsFixed(decimals ?? 0).replaceAll('.', '')))
+        .toInt();
+    var transactionSigner = await TezsterDart.createSigner(
+        TezsterDart.writeKeyWithHint(keyStore.secretKey, 'edsk'));
+
+    var result = await TezsterDart.sendContractInvocationOperation(
+      rpc,
+      transactionSigner,
+      keyStore,
+      contractAddress,
+      0,
+      100000,
+      1000,
+      100000,
+      'transfer',
+      // FA1.2
+      """(Pair "${keyStore.publicKeyHash}" (Pair "$receiver" $_amount))""",
+      // FA2
+      // """{Pair "${keyStore.publicKeyHash}" {Pair "$receiver" (Pair 0 $_amount)}}""",
+      // """(Right (Right (Left (Right (Pair "" (Pair "" $_amount))))))""",
+      codeFormat: TezosParameterFormat.Michelson,
+    );
+
+    print(result);
+    expect(result != null, true);
+  });
+
+  test('Test Michelin to Hex', () {
+    var data = TezosLanguageUtil.translateMichelineToHex(
+        """{ "bytes": "0155fdb2c7edb043dbed4e188580aa5e5c1dba593200" }""");
+    print(data);
   });
 }

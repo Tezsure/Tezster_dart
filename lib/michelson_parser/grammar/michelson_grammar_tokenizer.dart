@@ -76,8 +76,8 @@ class MichelsonGrammarTokenizer {
       }
       if (isArrayOrStringContaines(char, isRegexCheck: true)) {
         var seq = char;
-        for (int j = i + 1; j < i + 50; j++) {
-          if (j >= chunk.length - 1) break;
+        for (int j = i + 1; j < i + 55; j++) {
+          if (j >= chunk.length) break;
           if (isArrayOrStringContaines(seq) && chunk[j] != '_') {
             var __seq = chunk[j];
             for (var i = 1; i < 10; i++) {
@@ -99,10 +99,12 @@ class MichelsonGrammarTokenizer {
           seq += chunk[j];
         }
         if (seq.isNotEmpty) {
-          if (tokens.last.type == 'word' &&
+          if (tokens.length > 0 &&
+              tokens.last.type == 'word' &&
               getKeyFromValue(char, isRegex: false) == null) {
             tokens.last = tokens.last..value += char;
-          } else if (tokens.last.type == 'number' &&
+          } else if (tokens.length > 0 &&
+              tokens.last.type == 'number' &&
               getKeyFromValue(char, isRegex: true).key == "number") {
             tokens.last = tokens.last..value += char;
           } else if (isArrayOrStringContaines(seq)) {
@@ -110,7 +112,30 @@ class MichelsonGrammarTokenizer {
             tokens.add(GrammarResultModel(argSeq.key, seq)..columnNumber = i);
             i += (seq.length - 1);
           } else {
-            if (char != '%') {
+            if (seq != char &&
+                isArrayOrStringContaines(
+                    seq.substring(0,
+                        seq.indexOf(' ') == -1 ? seq.length : seq.indexOf(' ')),
+                    isRegexCheck: true) &&
+                seq.length > 10) {
+              var argSeq = getKeyFromValue(
+                  seq.substring(0,
+                      seq.indexOf(' ') == -1 ? seq.length : seq.indexOf(' ')),
+                  isRegex: true);
+              tokens.add(GrammarResultModel(
+                  argSeq.key,
+                  seq.substring(0,
+                      seq.indexOf(' ') == -1 ? seq.length : seq.indexOf(' ')))
+                ..columnNumber = i);
+              i += (seq
+                      .substring(
+                          0,
+                          seq.indexOf(' ') == -1
+                              ? seq.length
+                              : seq.indexOf(' '))
+                      .length -
+                  1);
+            } else if (char != '%') {
               var argSeq = getKeyFromValue(char);
               tokens
                   .add(GrammarResultModel(argSeq.key, char)..columnNumber = i);
@@ -142,6 +167,13 @@ class MichelsonGrammarTokenizer {
         print("No match found ==> $char");
       }
     }
+  }
+
+  bool isNumeric(String s) {
+    if (s == null) {
+      return false;
+    }
+    return double.parse(s) != null;
   }
 
   int getEndIndexOfVar(String text) {

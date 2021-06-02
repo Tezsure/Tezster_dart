@@ -1,4 +1,3 @@
-
 import 'package:tezster_dart/michelson_parser/grammar/michelson_grammar_tokenizer.dart';
 
 class MichelsonGrammar {
@@ -467,7 +466,9 @@ class MichelsonGrammar {
 
   intToJson(d) => '{ "int": "${int.parse(getMapValue(d[0]))}" }';
 
-  bytesToJson(d) => '{ "bytes": "${d[0].toString().substring(2)}" }';
+  bytesToJson(d) {
+    return '{ "bytes": "${getMapValue(d[0]).substring(2)}" }';
+  }
 
   stringToJson(d) => '{ "string": ${getMapValue(d[0])} }';
 
