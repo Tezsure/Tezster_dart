@@ -122,21 +122,21 @@ void main() {
 
   test('getContractStorage', () async {
     var result = await TezsterDart.getContractStorage(
-        'https://testnet.tezster.tech', 'KT1VCczKAoRQJKco7NiSaB93PMkYCbL2z1K7');
+        'https://mainnet.tezster.tech', 'KT1GRSvLoikDsXujKgZPsGLX8k8VvR2Tq95b');
     print(result);
     expect(result != null, true);
   });
 
   test('getValueForBigMapKey', () async {
     var accountHex =
-        '0x${TezsterDart.writeAddress("KT1REEb5VxWRjcHm5GzDMwErMmNFftsE5Gpf")}';
+        '0x${TezsterDart.writeAddress("KT1VYsVfmobT7rsMVivvZ4J8i3bPiqz12NaH")}';
     print(accountHex);
     var packedKey = TezsterDart.encodeBigMapKey(TezsterDart.writePackedData(
-        '(Pair $accountHex ${0})', '',
+        '$accountHex', '',
         format: TezosParameterFormat.Michelson));
     print(packedKey);
     var storage = await TezsterDart.getValueForBigMapKey(
-        "https://mainnet.tezster.tech", "1823", packedKey);
+        "https://mainnet.tezster.tech", "1453", packedKey);
     print(storage);
   });
 

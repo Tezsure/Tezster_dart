@@ -194,7 +194,6 @@ class TezosMessageUtils {
             return '05${TezosLanguageUtil.translateMichelineToHex(value)}';
           } else if (format == TezosParameterFormat.Michelson) {
             var micheline = TezosLanguageUtil.translateMichelsonToMicheline(value);
-            print(TezosLanguageUtil.translateMichelineToHex(micheline));
             return '05${TezosLanguageUtil.translateMichelineToHex(micheline)}';
           } else {
             throw new Exception('Unsupported format $format provided');
