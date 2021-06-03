@@ -277,8 +277,8 @@ class TezosNodeWriter {
         'signature': signedOpGroup['signature']
       }
     ];
-    print("signedOpGroup['signature'] ===> ${signedOpGroup['signature']}");
-    print("parameters ===> ${jsonEncode(payload)}");
+    // print("signedOpGroup['signature'] ===> ${signedOpGroup['signature']}");
+    // print("parameters ===> ${jsonEncode(payload)}");
     var response = await HttpHelper.performPostRequest(server,
         'chains/$chainid/blocks/head/helpers/preapply/operations', payload);
     var json;
@@ -359,7 +359,7 @@ class TezosNodeWriter {
       int counter) {
     var parsedCode;
     var parsedStorage;
-    print("using code Format ==> ${codeFormat.toString()}");
+    // print("using code Format ==> ${codeFormat.toString()}");
     if (codeFormat == TezosParameterFormat.Michelson) {
       parsedCode =
           jsonDecode(TezosLanguageUtil.translateMichelsonToMicheline(code));

@@ -157,10 +157,10 @@ void main() {
     // tezsureApi,
     var receiver = "tz1RWLHsfDcXzU2Y3BkWYwxvG2oeeqgH6p8y";
     var contractAddress = "KT1JCq5sWnE8EivqhY7RuNSHgC5injKYLUCT";
-    var amount = 0.0002;
+    var amount = 20;
     var decimals = 18;
     var _amount = (amount *
-            1000000) //double.parse(1.toStringAsFixed(decimals ?? 0).replaceAll('.', '')))
+            double.parse(1.toStringAsFixed(decimals ?? 0).replaceAll('.', '')))
         .toInt();
     var transactionSigner = await TezsterDart.createSigner(
         TezsterDart.writeKeyWithHint(keyStore.secretKey, 'edsk'));
@@ -188,8 +188,11 @@ void main() {
   });
 
   test('Test Michelin to Hex', () {
-    var data = TezosLanguageUtil.translateMichelineToHex(
-        """{ "bytes": "0155fdb2c7edb043dbed4e188580aa5e5c1dba593200" }""");
+    var micheline = TezosLanguageUtil.translateMichelsonToMicheline(
+        """(Pair "tz1USmQMoNCUUyk4BfeEGUyZRK2Bcc9zoK8C" (Pair "tz1RWLHsfDcXzU2Y3BkWYwxvG2oeeqgH6p8y" 1000))""");
+    print(micheline);
+    var data = TezosLanguageUtil.translateMichelineToHex(micheline);
     print(data);
+    print("it's working..");
   });
 }
