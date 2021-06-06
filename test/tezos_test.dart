@@ -189,7 +189,7 @@ void main() {
 
   test('Test Michelin to Hex', () {
     var micheline = TezosLanguageUtil.translateMichelsonToMicheline(
-        """(Pair "tz1USmQMoNCUUyk4BfeEGUyZRK2Bcc9zoK8C" (Pair "tz1RWLHsfDcXzU2Y3BkWYwxvG2oeeqgH6p8y" 1000))""");
+        """{Pair "tz1USmQMoNCUUyk4BfeEGUyZRK2Bcc9zoK8C" {Pair "tz1XPAqaxaentpo8e295W7hjr696sq9XHzHj" (Pair 0 500000000000000000)}}""");
     print(micheline);
     var data = TezosLanguageUtil.translateMichelineToHex(micheline);
     print(data);

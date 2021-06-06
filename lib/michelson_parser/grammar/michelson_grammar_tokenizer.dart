@@ -123,7 +123,7 @@ class MichelsonGrammarTokenizer {
                       seq.indexOf(' ') == -1 ? seq.length : seq.indexOf(' ')),
                   isRegex: true);
               if (argSeq.key == 'number')
-                while (seq.endsWith(')') || seq.endsWith(' '))
+                while (!isNumeric(seq.substring(seq.length - 2)))
                   seq = seq.substring(0, seq.length - 1);
               tokens.add(GrammarResultModel(
                   argSeq.key,
@@ -176,7 +176,7 @@ class MichelsonGrammarTokenizer {
     if (s == null) {
       return false;
     }
-    return double.parse(s) != null;
+    return double.tryParse(s) != null;
   }
 
   int getEndIndexOfVar(String text) {
