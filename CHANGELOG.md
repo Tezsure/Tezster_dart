@@ -1,6 +1,6 @@
 # [2.1.2-beta.1]
 
-* Operation Gas fee calculator optimization
+* Operation Gas fee calculator optimisation
 * Michelson grammar improvements
 * Minor bug fixes
 
