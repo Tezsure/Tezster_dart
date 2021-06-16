@@ -3,8 +3,10 @@ import 'dart:typed_data';
 import 'package:blake2b/blake2b_hash.dart';
 import 'package:bs58check/bs58check.dart' as bs58check;
 import 'package:convert/convert.dart';
+import 'package:tezster_dart/chain/tezos/tezos_language_util.dart';
 import 'package:tezster_dart/helper/generateKeys.dart';
 import 'package:tezster_dart/src/soft-signer/soft_signer.dart';
+import 'package:tezster_dart/types/tezos/tezos_chain_types.dart';
 
 class TezosMessageUtils {
   static String writeBranch(String branch) {
@@ -31,7 +33,7 @@ class TezosMessageUtils {
     String h = '';
     if (n > 2147483648) {
       var r = BigInt.from(n);
-      while (r.compareTo(BigInt.zero) != -1) {
+      while (r.compareTo(BigInt.zero) != 0) {
         var _h = ('0' + (r & BigInt.from(127)).toRadixString(16));
         h = _h.substring(_h.length - 2) + h;
         r = r >> 7;
@@ -95,5 +97,111 @@ class TezosMessageUtils {
 
   static String writeBoolean(bool b) {
     return b ? "ff" : "00";
+  }
+
+  static encodeBigMapKey(Uint8List key) {
+    return readBufferWithHint(simpleHash(key, 32), 'expr');
+  }
+
+  static readBufferWithHint(address, hint) {
+    var buffer = address;
+    if (hint == 'op') {
+      return bs58check
+          .encode(Uint8List.fromList(hex.decode('0574' + hex.encode(buffer))));
+    } else if (hint == 'p') {
+      return bs58check
+          .encode(Uint8List.fromList(hex.decode('02aa' + hex.encode(buffer))));
+    } else if (hint == 'expr') {
+      return bs58check.encode(
+          Uint8List.fromList(hex.decode('0d2c401b' + hex.encode(buffer))));
+    } else if (hint == '') {
+      return bs58check.encode(buffer);
+    } else {
+      throw new Exception('Unsupported hint $hint');
+    }
+  }
+
+  static String writeSignedInt(value) {
+    if (value == 0 || value == '0') {
+      return '00';
+    }
+    var n = BigInt.from(value).abs();
+    var l = n.bitLength;
+    var arr = [];
+    for (var i = 0; i < l; i += 7) {
+      var byte = BigInt.zero;
+      if (i == 0) {
+        byte = n & BigInt.parse('0x3f');
+        n = n >> 6;
+      } else {
+        byte = n & BigInt.parse('0x7f');
+        n = n >> 7;
+      }
+      if (value < 0 && i == 0) {
+        byte = byte | BigInt.parse('0x40');
+      }
+      if (i + 7 < l) {
+        byte = byte | BigInt.parse('0x80');
+      }
+      arr.add(byte);
+    }
+    if (l % 7 == 0) {
+      arr[arr.length - 1] = arr[arr.length - 1] | 0x80;
+      arr.add(1);
+    }
+    return arr
+        .map((w) => ('0' + w.toRadixString(16))
+            .substring(0, w.toRadixString(16).length - 2))
+        .toList()
+        .join('');
+  }
+
+  static String writeString(value) {
+    var len = dataLength(value.length);
+    var text = value
+        .split('')
+        .map((String c) => c.codeUnitAt(0).toRadixString(16))
+        .toList()
+        .join('');
+    return len + text;
+  }
+
+  static dataLength(value) {
+    var data = ('0000000' + (value).toString(16));
+    return data.substring(0, data.length - 8);
+  }
+
+  static writePackedData(value, type, format) {
+    switch (type) {
+      case 'int':
+        return '0500' + writeSignedInt(value);
+      case 'nat':
+        return '0500' + writeInt(int.parse(value));
+      case 'string':
+        return '0501' + writeString(value);
+      case 'key_hash':
+        var address = writeAddress(value).substring(2);
+        return '050a${dataLength(address.length / 2)}$address';
+      case 'address':
+        var address = writeAddress(value);
+        return '050a${dataLength(address.length / 2)}$address';
+      case 'bytes':
+        var buffer = hex.encode(value);
+        return '050a${dataLength(buffer.length / 2)}$buffer';
+      default:
+        try {
+          if (format == TezosParameterFormat.Micheline) {
+            return '05${TezosLanguageUtil.translateMichelineToHex(value)}';
+          } else if (format == TezosParameterFormat.Michelson) {
+            var micheline = TezosLanguageUtil.translateMichelsonToMicheline(value);
+            return '05${TezosLanguageUtil.translateMichelineToHex(micheline)}';
+          } else {
+            throw new Exception('Unsupported format $format provided');
+          }
+        } catch (e) {
+          throw new Exception(
+              'Unrecognized data type or format: $type, $format : $e');
+        }
+    }
   }
 }

@@ -1,4 +1,3 @@
-
 import 'package:tezster_dart/michelson_parser/grammar/michelin_grammar_tokenizer.dart';
 
 class MichelineGrammar {
@@ -177,10 +176,10 @@ class MichelineGrammar {
   }
 
   String staticBytesToHex(d) {
-    final prefix = '0a';
+    var prefix = '0a';
     var bytes = getMapValue(d[6]);
     bytes = bytes.substring(1, bytes.length - 1);
-    final len = encodeLength(int.parse((bytes.length ~/ 2).toString()));
+    var len = encodeLength(bytes.length ~/ 2);
     return prefix + len + bytes;
   }
 
@@ -353,10 +352,12 @@ class MichelineGrammar {
       str = str.substring(str.length - 2);
       return str;
     }).join('');
-    return output.substring(output.length - 2);
+    return output;
   }
 
-  getMapValue(d) => d is List ? d[0]['value'].toString() : d['value'];
+  getMapValue(d) {
+    return d is List ? d[0]['value'].toString() : d['value'];
+  }
 
   Map<String, dynamic> get grammar => {
         'Lexer': lexer,
