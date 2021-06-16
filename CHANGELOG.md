@@ -1,3 +1,9 @@
+# [2.1.2-beta.1]
+
+* Operation Gas fee calculator optimization
+* Michelson grammar improvements
+* Other bugs fixed
+
 # [2.1.2-beta]
 
 * Support for florence mainnet and testnet

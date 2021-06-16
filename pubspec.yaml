@@ -1,7 +1,7 @@
 name: tezster_dart
 description: A flutter package which provides the functionalities to play around
   with tezos dApps
-version: 2.1.2-beta.2
+version: 2.1.2-beta.1
 homepage: https://github.com/Tezsure/tezster_dart
 repository: https://github.com/Tezsure/tezster_dart
 issue_tracker: https://github.com/Tezsure/tezster_dart/issues
