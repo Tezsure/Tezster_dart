@@ -1,22 +1,7 @@
-import 'dart:io';
-
 import 'package:flutter_test/flutter_test.dart';
-import 'package:tezster_dart/chain/tezos/tezos_language_util.dart';
 import 'package:tezster_dart/tezster_dart.dart';
 
-class MyHttpOverrides extends HttpOverrides {
-  @override
-  HttpClient createHttpClient(SecurityContext context) {
-    return super.createHttpClient(context)
-      ..badCertificateCallback =
-          (X509Certificate cert, String host, int port) => true;
-  }
-}
-
 void main() {
-  TestWidgetsFlutterBinding.ensureInitialized();
-  HttpOverrides.global = new MyHttpOverrides();
-
   String testPrivateKey =
       "edskRdVS5H9YCRAG8yqZkX2nUTbGcaDqjYgopkJwRuPUnYzCn3t9ZGksncTLYe33bFjq29pRhpvjQizCCzmugMGhJiXezixvdC";
   String testForgedOperation =
@@ -61,7 +46,7 @@ void main() {
     var keyStore = KeyStoreModel(
       publicKey: 'edpkuh9tUmMMVKJVqG4bJxNLsCob6y8wXycshi6Pn11SQ5hx7SAVjf',
       secretKey:
-          'edskRs9KBdoU675PBVyHdM3fqixemkykm7hgHeXAYKUjdoVn3Aev8dP11p47zc4iuWJsefSP4t2vdHPoQisQC3DjZY3ZbbSP9Y',
+          'edskRs9KBdoU675PBVfqzxcczxkykm7cvcxvhgHeXAYKUjdoVn3Aev8dP11p47zc4iuWJsefSP4t2vdHPoQisQC3DjZY3ZbbSP9Y',
       publicKeyHash: 'tz1LRibbLEEWpaXb4aKrXXgWPvx9ue9haAAV',
     );
 
@@ -73,8 +58,8 @@ void main() {
     var keyStore = KeyStoreModel(
       publicKey: 'edpkuK9UBHsuC6sECF6Zmqedt4Gx8jQJyEuXiG7CaJo4BBZRd6LvP2',
       secretKey:
-          'edskRdnByVjgf2wVJo2VTFVu9GV23pwdEhaeywV7h6ZM4geepV3hmCTr97oEdYHbPNmK8PZVQ59oW1unoTm89RjCZu4oriGFg7',
-      publicKeyHash: 'tz1iUgGzt7gukNEqiJz78zvoFJEKeBZRCdLQ',
+          'edskRdnByVjgf2wVJo2VTFVu9GV23pwdEzxczczch6ZM4geepV3hmCTr97oEdYHbPNmK8PZVQ59oW1unoTm89RjCZu4oriGFg7',
+      publicKeyHash: 'tz1iUgGzt7gukNEqiJz78zvoFJEASDEzdLQ',
     );
 
     var signer = await TezsterDart.createSigner(
@@ -86,7 +71,7 @@ void main() {
       server,
       signer,
       keyStore,
-      'KT1VCczKAoRQJKco7NiSaB93PMkYCbL2z1K7',
+      'KT1VCczKAoRQJKco7NiSaB93PmKyabL2z1K7',
       500000,
       1500,
     );
@@ -99,8 +84,8 @@ void main() {
     var keyStore = KeyStoreModel(
       publicKey: 'edpkuK9UBHsuC6sECF6Zmqedt4Gx8jQJyEuXiG7CaJo4BBZRd6LvP2',
       secretKey:
-          'edskRdnByVjgf2wVJo2VTFVu9GV23pwdEhaeywV7h6ZM4geepV3hmCTr97oEdYHbPNmK8PZVQ59oW1unoTm89RjCZu4oriGFg7',
-      publicKeyHash: 'tz1iUgGzt7gukNEqiJz78zvoFJEKeBZRCdLQ',
+          'edskRdnByVjgf2wVJo2VTFVu9GzxczczcsFGRDwV7h6ZM4geepV3hmCTr97oEdYHbPNmK8PZVQ59oW1unoTm89RjCZu4oriGFg7',
+      publicKeyHash: 'tz1iUgGzt7gukNEqiJz78zvoFJEKeBZRCdDF',
     );
 
     var signer = await TezsterDart.createSigner(
@@ -112,7 +97,7 @@ void main() {
       server,
       signer,
       keyStore,
-      'KT1VCczKAoRQJKco7NiSaB93PMkYCbL2z1K7',
+      'KT1VCczKAoRQJKco7NiSaB93PMkYCbL2z1K0',
       10000,
     );
 
