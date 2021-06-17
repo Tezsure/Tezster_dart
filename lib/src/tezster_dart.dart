@@ -24,6 +24,8 @@ import 'package:flutter_sodium/flutter_sodium.dart';
 
 import 'package:tezster_dart/helper/generateKeys.dart';
 
+import 'package:tezster_dart/utils/crypto_utils.dart';
+
 class TezsterDart {
   static String generateMnemonic({int strength = 256}) {
     return bip39.generateMnemonic(strength: strength);
@@ -52,6 +54,19 @@ class TezsterDart {
       passphrase: passphrase,
       mnemonic: mnemonic,
     );
+  }
+
+  static List<String> getKeysFromSecretKey(String skKey) {
+    Uint8List secretKeyBytes = GenerateKeys.writeKeyWithHint(skKey, 'edsk');
+    KeyPair keys = _recoverKeys(secretKeyBytes);
+    String pkKey = TezosMessageUtils.readKeyWithHint(keys.pk, 'edpk');
+    String pkKeyHash = GenerateKeys.computeKeyHash(keys.pk);
+    return [skKey, pkKey, pkKeyHash];
+  }
+
+  static _recoverKeys(Uint8List secretKey) {
+    KeyPair keys = CryptoUtils.recoverPublicKey(secretKey);
+    return keys;
   }
 
   static Future<List<String>> unlockFundraiserIdentity({
@@ -317,11 +332,12 @@ class TezsterDart {
         hex.decode(TezosMessageUtils.writePackedData(value, type, format)));
   }
 
-  static getValueForBigMapKey(String server,String index,String key,{ block = 'head', chainid = 'main'}) async {
-        assert(server != null);
+  static getValueForBigMapKey(String server, String index, String key,
+      {block = 'head', chainid = 'main'}) async {
+    assert(server != null);
     assert(index != null);
     assert(key != null);
-    return await TezosNodeReader.getValueForBigMapKey(server, index, key, block: 'head', chainid: 'main');
+    return await TezosNodeReader.getValueForBigMapKey(server, index, key,
+        block: 'head', chainid: 'main');
   }
-
 }
