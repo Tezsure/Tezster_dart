@@ -18,6 +18,15 @@ void main() {
     expect(keys[2], "tz1g85oYHLFKDpNfDHPeBUbi3S7pUsgCB28q");
   });
 
+  test('Restore account from secret key', () {
+    List<String> keys = TezsterDart.getKeysFromSecretKey(
+        "edskRdVS5H9YCRAG8yqZkX2nUTbGcaDqjYgopkJwRuPUnYzCn3t9ZGksncTLYe33bFjq29pRhpvjQizCCzmugMGhJiXezixvdC");
+    expect(keys[0],
+        "edskRdVS5H9YCRAG8yqZkX2nUTbGcaDqjYgopkJwRuPUnYzCn3t9ZGksncTLYe33bFjq29pRhpvjQizCCzmugMGhJiXezixvdC");
+    expect(keys[1], "edpkuLog552hecagkykJ3fTvop6grTMhfZY4TWbvchDWdYyxCHcrQL");
+    expect(keys[2], "tz1g85oYHLFKDpNfDHPeBUbi3S7pUsgCB28q");
+  });
+
   test('Sign Operation Group', () async {
     List<String> keys = await TezsterDart.signOperationGroup(
       forgedOperation: testForgedOperation,
