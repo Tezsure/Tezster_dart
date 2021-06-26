@@ -2,7 +2,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:tezster_dart/tezster_dart.dart';
 
 void main() {
-  TestWidgetsFlutterBinding.ensureInitialized();
   String testPrivateKey =
       "edskRdVS5H9YCRAG8yqZkX2nUTbGcaDqjYgopkJwRuPUnYzCn3t9ZGksncTLYe33bFjq29pRhpvjQizCCzmugMGhJiXezixvdC";
   String testForgedOperation =
@@ -47,7 +46,7 @@ void main() {
     var keyStore = KeyStoreModel(
       publicKey: 'edpkuh9tUmMMVKJVqG4bJxNLsCob6y8wXycshi6Pn11SQ5hx7SAVjf',
       secretKey:
-          'edskRs9KBdoU675PBVyHdM3fqixemkykm7hgHeXAYKUjdoVn3Aev8dP11p47zc4iuWJsefSP4t2vdHPoQisQC3DjZY3ZbbSP9Y',
+          'edskRs9KBdoU675PBVfqzxcczxkykm7cvcxvhgHeXAYKUjdoVn3Aev8dP11p47zc4iuWJsefSP4t2vdHPoQisQC3DjZY3ZbbSP9Y',
       publicKeyHash: 'tz1LRibbLEEWpaXb4aKrXXgWPvx9ue9haAAV',
     );
 
@@ -57,10 +56,10 @@ void main() {
 
   test('send-Transaction-Operation', () async {
     var keyStore = KeyStoreModel(
-      publicKey: 'edpkuh9tUmMMVKJVqG4bJxNLsCob6y8wXycshi6Pn11SQ5hx7SAVjf',
+      publicKey: 'edpkuK9UBHsuC6sECF6Zmqedt4Gx8jQJyEuXiG7CaJo4BBZRd6LvP2',
       secretKey:
-          'edskRs9KBdoU675PBVyHdM3fqixemkykm7hgHeXAYKUjdoVn3Aev8dP11p47zc4iuWJsefSP4t2vdHPoQisQC3DjZY3ZbbSP9Y',
-      publicKeyHash: 'tz1LRibbLEEWpaXb4aKrXXgWPvx9ue9haAAV',
+          'edskRdnByVjgf2wVJo2VTFVu9GV23pwdEzxczczch6ZM4geepV3hmCTr97oEdYHbPNmK8PZVQ59oW1unoTm89RjCZu4oriGFg7',
+      publicKeyHash: 'tz1iUgGzt7gukNEqiJz78zvoFJEASDEzdLQ',
     );
 
     var signer = await TezsterDart.createSigner(
@@ -72,20 +71,21 @@ void main() {
       server,
       signer,
       keyStore,
-      'tz1LRibbLEEWpaXb4aKrXXgWPvx9ue9haAAV',
+      'KT1VCczKAoRQJKco7NiSaB93PmKyabL2z1K7',
       500000,
       1500,
     );
+    print(result['operationGroupID']);
     expect(true,
         result['operationGroupID'] != null && result['operationGroupID'] != '');
   });
 
   test('send-Delegation-Operation', () async {
     var keyStore = KeyStoreModel(
-      publicKey: 'edpkunM8fmwNb8NqcKZ1WiBrZQqvuN1NRY3FrSRer9HEySaPAkqgqt',
+      publicKey: 'edpkuK9UBHsuC6sECF6Zmqedt4Gx8jQJyEuXiG7CaJo4BBZRd6LvP2',
       secretKey:
-          'edskRjFXdYtHUrkLh7cs6b8EQigNi5uFGYxSsC3CgpvaA86Xcvo4TxrcmK155jY3c9hyxaQK8s8cfFXscEUFwdTjhFLf3P5LVX',
-      publicKeyHash: 'tz1csxCjsefVvKzWWAvhkoVn3M67wxaozGGs',
+          'edskRdnByVjgf2wVJo2VTFVu9GzxczczcsFGRDwV7h6ZM4geepV3hmCTr97oEdYHbPNmK8PZVQ59oW1unoTm89RjCZu4oriGFg7',
+      publicKeyHash: 'tz1iUgGzt7gukNEqiJz78zvoFJEKeBZRCdDF',
     );
 
     var signer = await TezsterDart.createSigner(
@@ -97,7 +97,7 @@ void main() {
       server,
       signer,
       keyStore,
-      'tz1RUGhq8sQpfGu1W2kf7MixqWX7oxThBFLr',
+      'KT1VCczKAoRQJKco7NiSaB93PMkYCbL2z1K0',
       10000,
     );
 

@@ -10,6 +10,8 @@ import 'package:crypto/crypto.dart';
 import 'package:password_hash/password_hash.dart';
 import 'package:bip39/bip39.dart' as bip39;
 import 'package:bs58check/bs58check.dart' as bs58check;
+import 'package:tezster_dart/chain/tezos/tezos_message_utils.dart';
+import 'package:tezster_dart/chain/tezos/tezos_node_reader.dart';
 import 'package:tezster_dart/chain/tezos/tezos_node_writer.dart';
 import 'package:tezster_dart/helper/constants.dart';
 import 'package:tezster_dart/helper/http_helper.dart';
@@ -132,6 +134,11 @@ class TezsterDart {
     assert(key != null);
     assert(hint != null);
     return GenerateKeys.writeKeyWithHint(key, hint);
+  }
+
+  static String writeAddress(address) {
+    assert(address != null);
+    return TezosMessageUtils.writeAddress(address);
   }
 
   static createSigner(Uint8List secretKey, {int validity = 60}) {
@@ -289,4 +296,32 @@ class TezsterDart {
     return await TezosNodeWriter.sendKeyRevealOperation(
         server, signer, keyStore, fee, offset);
   }
+
+  static getContractStorage(String server, String accountHash) async {
+    assert(server != null);
+    assert(accountHash != null);
+    return await TezosNodeReader.getContractStorage(server, accountHash);
+  }
+
+  static encodeBigMapKey(Uint8List key) {
+    assert(key != null);
+    return TezosMessageUtils.encodeBigMapKey(key);
+  }
+
+  static Uint8List writePackedData(String value, String type,
+      {format = TezosParameterFormat.Micheline}) {
+    assert(value != null);
+    assert(type != null);
+    assert(format != null);
+    return Uint8List.fromList(
+        hex.decode(TezosMessageUtils.writePackedData(value, type, format)));
+  }
+
+  static getValueForBigMapKey(String server,String index,String key,{ block = 'head', chainid = 'main'}) async {
+        assert(server != null);
+    assert(index != null);
+    assert(key != null);
+    return await TezosNodeReader.getValueForBigMapKey(server, index, key, block: 'head', chainid: 'main');
+  }
+
 }
