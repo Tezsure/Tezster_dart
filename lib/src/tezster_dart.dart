@@ -18,11 +18,15 @@ import 'package:tezster_dart/src/soft-signer/soft_signer.dart';
 import 'package:tezster_dart/tezster_dart.dart';
 import 'package:tezster_dart/types/tezos/tezos_chain_types.dart';
 import "package:unorm_dart/unorm_dart.dart" as unorm;
-import 'package:flutter_sodium/flutter_sodium.dart';
-
+// import 'package:flutter_sodium/flutter_sodium.dart';
+import 'package:libsodium/libsodium.dart';
 import 'package:tezster_dart/helper/generateKeys.dart';
 
 class TezsterDart {
+  static init() {
+    Sodium.init();
+  }
+
   static String generateMnemonic({int strength = 256}) {
     return bip39.generateMnemonic(strength: strength);
   }
