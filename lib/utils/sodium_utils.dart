@@ -1,6 +1,8 @@
 import 'dart:typed_data';
 
-import 'package:flutter_sodium/flutter_sodium.dart';
+// import 'package:flutter_sodium/flutter_sodium.dart';
+// import 's';
+import 'package:libsodium/libsodium.dart';
 
 class SodiumUtils {
   static Uint8List rand(length) {
