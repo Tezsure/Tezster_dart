@@ -113,4 +113,14 @@ void main() {
     expect(true,
         result['operationGroupID'] != null && result['operationGroupID'] != '');
   });
+
+  test('restore identity from mnemonic', () async {
+    List<String> keys = await TezsterDart.restoreIdentityFromMnemonic(
+        "curious roof motor parade analyst riot chronic actor pony random ring slot",
+        "m/44'/1729'/0'/0'");
+    expect(keys[0],
+        'edskRzZLyGkhw9fmibXfqyMuEtEaa8Lxfqz9VBAq7LZbb4AfNQrgbtwW7Tv8qRyr44M89KrTTdLoxML29wEXc2864QuG1xWijP');
+    expect(keys[1], 'edpkvPPibVYfQd7uohshcoS7Q2XXTD6vgsJWBrYHmDypkVabWh8czs');
+    expect(keys[2], 'tz1Kx6NQZ2M4a9FssBswKyT25USCXWHcTbw7');
+  });
 }

@@ -1,5 +1,4 @@
 import 'dart:typed_data';
-import 'package:flutter_sodium/flutter_sodium.dart';
 import 'package:tezster_dart/utils/sodium_utils.dart';
 
 class CryptoUtils {
@@ -23,10 +22,5 @@ class CryptoUtils {
 
   static Uint8List signDetached(Uint8List simpleHash, Uint8List key) {
     return SodiumUtils.sign(simpleHash, key);
-  }
-
-    static KeyPair recoverPublicKey(Uint8List secretKey) {
-    KeyPair k = SodiumUtils.publicKey(secretKey);
-    return k;
   }
 }

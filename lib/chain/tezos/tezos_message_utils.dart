@@ -95,17 +95,16 @@ class TezosMessageUtils {
   }
 
   static dynamic readKeyWithHint(Uint8List b, String hint) {
+    Uint8List key = !(b.runtimeType == Uint8List) ? Uint8List.fromList(b) : b;
+    String keyHex = hex.encode(key);
     if (hint == 'edsk') {
       return GenerateKeys.readKeysWithHint(b, '2bf64e07');
     } else if (hint == 'edpk') {
-      return readPublicKey(
-          "00${hex.encode(String.fromCharCodes(b).codeUnits)}", b);
+      return readPublicKey("00$keyHex", b);
     } else if (hint == 'sppk') {
-      return readPublicKey(
-          "01${hex.encode(String.fromCharCodes(b).codeUnits)}", b);
+      return readPublicKey("01$keyHex", b);
     } else if (hint == 'p2pk') {
-      return readPublicKey(
-          "02${hex.encode(String.fromCharCodes(b).codeUnits)}", b);
+      return readPublicKey("02$keyHex", b);
     } else {
       throw new Exception("Unrecognized key hint, $hint");
     }
@@ -202,6 +201,43 @@ class TezosMessageUtils {
   static dataLength(value) {
     var data = ('0000000' + (value).toString(16));
     return data.substring(0, data.length - 8);
+  }
+
+  static readAddress(String hexValue, Uint8List b) {
+    if (hexValue.length != 44 && hexValue.length != 42) {
+      throw new Exception("Incorrect hex length to parse an address");
+    }
+    var implicitHint = hexValue.length == 44
+        ? hexValue.substring(0, 4)
+        : "00" + hexValue.substring(0, 2);
+    if (implicitHint == "0000") {
+      return GenerateKeys.readKeysWithHint(b, '06a19f');
+    } else if (implicitHint == "0001") {
+      return GenerateKeys.readKeysWithHint(b, '06a1a1');
+    } else if (implicitHint == "0002") {
+      return GenerateKeys.readKeysWithHint(b, '06a1a4');
+    } else if (hexValue.substring(0, 2) == "01" && hexValue.length == 44) {
+      return GenerateKeys.readKeysWithHint(b, '025a79');
+    } else {
+      throw new Exception("Unrecognized address type");
+    }
+  }
+
+  static readAddressWithHint(Uint8List b, String hint) {
+    Uint8List address =
+        !(b.runtimeType == Uint8List) ? Uint8List.fromList(b) : b;
+    String hexValue = hex.encode(address);
+    if (hint == 'tz1') {
+      return readAddress("0000$hexValue", b);
+    } else if (hint == 'tz2') {
+      return readAddress("0001$hexValue", b);
+    } else if (hint == 'tz3') {
+      return readAddress("0002$hexValue", b);
+    } else if (hint == 'kt1') {
+      return readAddress("01$hexValue}00", b);
+    } else {
+      throw new Exception("Unrecognized address hint, '$hint'");
+    }
   }
 
   static writePackedData(value, type, format) {
