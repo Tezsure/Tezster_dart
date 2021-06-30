@@ -7,6 +7,7 @@ import 'dart:core';
 import 'package:convert/convert.dart';
 import 'package:blake2b/blake2b_hash.dart';
 import 'package:crypto/crypto.dart';
+import 'package:ed25519_hd_key/ed25519_hd_key.dart';
 import 'package:password_hash/password_hash.dart';
 import 'package:bip39/bip39.dart' as bip39;
 import 'package:bs58check/bs58check.dart' as bs58check;
@@ -19,12 +20,11 @@ import 'package:tezster_dart/reporting/tezos/tezos_conseil_client.dart';
 import 'package:tezster_dart/src/soft-signer/soft_signer.dart';
 import 'package:tezster_dart/tezster_dart.dart';
 import 'package:tezster_dart/types/tezos/tezos_chain_types.dart';
+import 'package:tezster_dart/utils/sodium_utils.dart';
 import "package:unorm_dart/unorm_dart.dart" as unorm;
 import 'package:flutter_sodium/flutter_sodium.dart';
 
 import 'package:tezster_dart/helper/generateKeys.dart';
-
-import 'package:tezster_dart/utils/crypto_utils.dart';
 
 class TezsterDart {
   static String generateMnemonic({int strength = 256}) {
@@ -56,17 +56,46 @@ class TezsterDart {
     );
   }
 
+  static Future<List<String>> restoreIdentityFromMnemonic(
+      String mnemonic, String derivationPath,
+      {String password = '', String pkh, bool validate = true}) async {
+    if (validate) {
+      if (![12, 15, 18, 21, 24].contains(mnemonic.split(' ').length)) {
+        throw new Exception("Invalid mnemonic length.");
+      }
+      if (!bip39.validateMnemonic(mnemonic)) {
+        throw new Exception("The given mnemonic could not be validated.");
+      }
+    }
+
+    KeyPair keys;
+    Uint8List seed = bip39.mnemonicToSeed(mnemonic);
+
+    if (derivationPath != null && derivationPath.length > 0) {
+      KeyData keysource = ED25519_HD_KEY.derivePath(derivationPath, seed);
+      var combinedKey = Uint8List.fromList(keysource.key + keysource.chainCode);
+      keys = SodiumUtils.publicKey(combinedKey);
+    } else {
+      return await _unlockKeys(mnemonic: mnemonic, passphrase: password);
+    }
+
+    var secretKey = TezosMessageUtils.readKeyWithHint(keys.sk, "edsk");
+    var publicKey = TezosMessageUtils.readKeyWithHint(keys.pk, "edpk");
+    var publicKeyHash = GenerateKeys.computeKeyHash(keys.pk);
+    if (pkh != null && publicKeyHash != pkh) {
+      throw new Exception(
+          'The given mnemonic and passphrase do not correspond to the supplied public key hash');
+    }
+
+    return [secretKey, publicKey, publicKeyHash];
+  }
+
   static List<String> getKeysFromSecretKey(String skKey) {
     Uint8List secretKeyBytes = GenerateKeys.writeKeyWithHint(skKey, 'edsk');
-    KeyPair keys = _recoverKeys(secretKeyBytes);
+    KeyPair keys = SodiumUtils.publicKey(secretKeyBytes);
     String pkKey = TezosMessageUtils.readKeyWithHint(keys.pk, 'edpk');
     String pkKeyHash = GenerateKeys.computeKeyHash(keys.pk);
     return [skKey, pkKey, pkKeyHash];
-  }
-
-  static _recoverKeys(Uint8List secretKey) {
-    KeyPair keys = CryptoUtils.recoverPublicKey(secretKey);
-    return keys;
   }
 
   static Future<List<String>> unlockFundraiserIdentity({
