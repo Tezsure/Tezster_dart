@@ -56,8 +56,8 @@ class TezsterDart {
     );
   }
 
-  static Future<List<String>> restoreIdentityFromMnemonic(
-      String mnemonic, String derivationPath,
+  static Future<List<String>> restoreIdentityFromDerivationPath(
+      String derivationPath, String mnemonic,
       {String password = '', String pkh, bool validate = true}) async {
     if (validate) {
       if (![12, 15, 18, 21, 24].contains(mnemonic.split(' ').length)) {

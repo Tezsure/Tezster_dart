@@ -9,6 +9,13 @@ void main() {
   String testMnemonics =
       "luxury bulb roast timber sense stove sugar sketch goddess host meadow decorate gather salmon funny person canoe daring machine network camp moment wrong dice";
 
+  KeyStoreModel _keyStoreModel = KeyStoreModel(
+    secretKey:
+        "edskRrDH2TF4DwKU1ETsUjyhxPC8aCTD6ko5YDguNkJjRb3PiBm8Upe4FGFmCrQqzSVMDLfFN22XrQXATcA3v41hWnAhymgQwc",
+    publicKey: "edpku4ZfXDzF7CjPkX5LS8JFg1Znab3UKdhp18maKq2MrR82Gm9BTc",
+    publicKeyHash: "tz1aPUfTyjtUcSnCfSvyykT67atDtVu7FePX",
+  );
+
   test('Get Keys From Mnemonics and PassPhrase', () async {
     List<String> keys =
         await TezsterDart.getKeysFromMnemonic(mnemonic: testMnemonics);
@@ -19,12 +26,11 @@ void main() {
   });
 
   test('Restore account from secret key', () {
-    List<String> keys = TezsterDart.getKeysFromSecretKey(
-        "edskRdVS5H9YCRAG8yqZkX2nUTbGcaDqjYgopkJwRuPUnYzCn3t9ZGksncTLYe33bFjq29pRhpvjQizCCzmugMGhJiXezixvdC");
-    expect(keys[0],
-        "edskRdVS5H9YCRAG8yqZkX2nUTbGcaDqjYgopkJwRuPUnYzCn3t9ZGksncTLYe33bFjq29pRhpvjQizCCzmugMGhJiXezixvdC");
-    expect(keys[1], "edpkuLog552hecagkykJ3fTvop6grTMhfZY4TWbvchDWdYyxCHcrQL");
-    expect(keys[2], "tz1g85oYHLFKDpNfDHPeBUbi3S7pUsgCB28q");
+    List<String> keys =
+        TezsterDart.getKeysFromSecretKey(_keyStoreModel.secretKey);
+    expect(keys[0], _keyStoreModel.secretKey);
+    expect(keys[1], _keyStoreModel.publicKey);
+    expect(keys[2], _keyStoreModel.publicKeyHash);
   });
 
   test('Sign Operation Group', () async {
@@ -52,61 +58,37 @@ void main() {
   });
 
   test('Create Soft Signer', () async {
-    var keyStore = KeyStoreModel(
-      publicKey: 'edpkuh9tUmMMVKJVqG4bJxNLsCob6y8wXycshi6Pn11SQ5hx7SAVjf',
-      secretKey:
-          'edskRs9KBdoU675PBVfqzxcczxkykm7cvcxvhgHeXAYKUjdoVn3Aev8dP11p47zc4iuWJsefSP4t2vdHPoQisQC3DjZY3ZbbSP9Y',
-      publicKeyHash: 'tz1LRibbLEEWpaXb4aKrXXgWPvx9ue9haAAV',
-    );
-
     await TezsterDart.createSigner(
-        TezsterDart.writeKeyWithHint(keyStore.secretKey, 'edsk'));
+        TezsterDart.writeKeyWithHint(_keyStoreModel.secretKey, 'edsk'));
   });
 
   test('send-Transaction-Operation', () async {
-    var keyStore = KeyStoreModel(
-      publicKey: 'edpkuK9UBHsuC6sECF6Zmqedt4Gx8jQJyEuXiG7CaJo4BBZRd6LvP2',
-      secretKey:
-          'edskRdnByVjgf2wVJo2VTFVu9GV23pwdEzxczczch6ZM4geepV3hmCTr97oEdYHbPNmK8PZVQ59oW1unoTm89RjCZu4oriGFg7',
-      publicKeyHash: 'tz1iUgGzt7gukNEqiJz78zvoFJEASDEzdLQ',
-    );
-
     var signer = await TezsterDart.createSigner(
-        TezsterDart.writeKeyWithHint(keyStore.secretKey, 'edsk'));
-    print(signer);
+        TezsterDart.writeKeyWithHint(_keyStoreModel.secretKey, 'edsk'));
     const server = 'https://testnet.tezster.tech';
 
     var result = await TezsterDart.sendTransactionOperation(
       server,
       signer,
-      keyStore,
-      'KT1VCczKAoRQJKco7NiSaB93PmKyabL2z1K7',
+      _keyStoreModel,
+      'tz1dTkCS1NQwapmafZwCoqBq1QhXmopKDLcj',
       500000,
       1500,
     );
-    print(result['operationGroupID']);
     expect(true,
         result['operationGroupID'] != null && result['operationGroupID'] != '');
   });
 
   test('send-Delegation-Operation', () async {
-    var keyStore = KeyStoreModel(
-      publicKey: 'edpkuK9UBHsuC6sECF6Zmqedt4Gx8jQJyEuXiG7CaJo4BBZRd6LvP2',
-      secretKey:
-          'edskRdnByVjgf2wVJo2VTFVu9GzxczczcsFGRDwV7h6ZM4geepV3hmCTr97oEdYHbPNmK8PZVQ59oW1unoTm89RjCZu4oriGFg7',
-      publicKeyHash: 'tz1iUgGzt7gukNEqiJz78zvoFJEKeBZRCdDF',
-    );
-
     var signer = await TezsterDart.createSigner(
-        TezsterDart.writeKeyWithHint(keyStore.secretKey, 'edsk'));
-    print(signer);
+        TezsterDart.writeKeyWithHint(_keyStoreModel.secretKey, 'edsk'));
     const server = 'https://testnet.tezster.tech';
 
     var result = await TezsterDart.sendDelegationOperation(
       server,
       signer,
-      keyStore,
-      'KT1VCczKAoRQJKco7NiSaB93PMkYCbL2z1K0',
+      _keyStoreModel,
+      'tz1dTkCS1NQwapmafZwCoqBq1QhXmopKDLcj',
       10000,
     );
 
@@ -115,9 +97,9 @@ void main() {
   });
 
   test('restore identity from mnemonic', () async {
-    List<String> keys = await TezsterDart.restoreIdentityFromMnemonic(
-        "curious roof motor parade analyst riot chronic actor pony random ring slot",
-        "m/44'/1729'/0'/0'");
+    List<String> keys = await TezsterDart.restoreIdentityFromDerivationPath(
+        "m/44'/1729'/0'/0'",
+        "curious roof motor parade analyst riot chronic actor pony random ring slot");
     expect(keys[0],
         'edskRzZLyGkhw9fmibXfqyMuEtEaa8Lxfqz9VBAq7LZbb4AfNQrgbtwW7Tv8qRyr44M89KrTTdLoxML29wEXc2864QuG1xWijP');
     expect(keys[1], 'edpkvPPibVYfQd7uohshcoS7Q2XXTD6vgsJWBrYHmDypkVabWh8czs');
