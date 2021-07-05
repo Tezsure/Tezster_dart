@@ -1,3 +1,8 @@
+# [2.1.2-beta.2]
+
+* Resstore Keys from secretkey
+* Restore Keys from mnemonic and derivationPath.
+
 # [2.1.2-beta.1]
 
 * Operation Gas fee calculator optimisation
