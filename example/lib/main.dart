@@ -43,6 +43,13 @@ class _MyAppState extends State<MyApp> {
     // identityWithMnemonic ===> [privateKey, publicKey, publicKeyHash]
     // Accessing: private key ===> identity[0] | public key ===> identity[1] | public Key Hash ===> identity[2] all of type string.
 
+    //Restore account from secret key
+    List<String> restoredKeys = TezsterDart.getKeysFromSecretKey(
+        "edskRrDH2TF4DwKU1ETsUjyhxPC8aCTD6ko5YDguNkJjRb3PiBm8Upe4FGFmCrQqzSVMDLfFN22XrQXATcA3v41hWnAhymgQwc");
+    print("Restored account keys ===> $restoredKeys");
+    // restoredKeys ===> [privateKey, publicKey, publicKeyHash]
+    // Accessing: private key ===> restoredKeys[0] | public key ===> restoredKeys[1] | public Key Hash ===> restoredKeys[2] all of type string.
+
     //Sign operation with public-Key and forged operation
     List<String> signOpGrp = await TezsterDart.signOperationGroup(
       privateKey:
@@ -106,6 +113,14 @@ class _MyAppState extends State<MyApp> {
     );
     print("Applied operation ===> ${delegationResult['appliedOp']}");
     print("Operation groupID ===> ${delegationResult['operationGroupID']}");
+
+    // restore identity from derivation path and mnemonic
+    List<String> revoceredKeys =
+        await TezsterDart.restoreIdentityFromDerivationPath("m/44'/1729'/0'/0'",
+            "curious roof motor parade analyst riot chronic actor pony random ring slot");
+    print("revoceredKeys ===> $revoceredKeys");
+    //revoceredKeys ===> [privateKey, publicKey, publicKeyHash]
+    //Accessing: private key ===> revoceredKeys[0] | public key ===> revoceredKeys[1] | public Key Hash ===> revoceredKeys[2] all of type string.
 
     //Deploy a contract
     var contract = """parameter string;
