@@ -9,16 +9,16 @@ enum SignerCurve { ED25519, SECP256K1, SECP256R1 }
 class SoftSigner {
   var _secretKey;
   var _lockTimout;
-  var _passphrase;
-  var _salt;
-  var _unlocked;
+  late var _passphrase;
+  late var _salt;
+  late var _unlocked;
   var _key;
 
   SoftSigner(
-      {Uint8List secretKey,
+      {Uint8List? secretKey,
       int validity = -1,
       String passphrase = '',
-      Uint8List salt}) {
+      Uint8List? salt}) {
     this._secretKey = secretKey;
     this._lockTimout = validity;
     this._passphrase = passphrase;
@@ -51,7 +51,7 @@ class SoftSigner {
       return new SoftSigner(secretKey: secretKey);
   }
 
-  Uint8List getKey() {
+  Uint8List? getKey() {
     if (!_unlocked) {
       var k = CryptoUtils.decryptMessage(_secretKey, _passphrase, _salt);
       if (_lockTimout == 0) {
@@ -72,7 +72,7 @@ class SoftSigner {
 
   Uint8List signOperation(Uint8List uint8list) {
     return CryptoUtils.signDetached(TezosMessageUtils.simpleHash(uint8list, 32),
-        Uint8List.fromList(getKey()));
+        Uint8List.fromList(getKey()!));
   }
 
   SignerCurve getSignerCurve() {

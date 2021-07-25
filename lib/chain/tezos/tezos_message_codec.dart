@@ -24,15 +24,15 @@ class TezosMessageCodec {
 
   static String encodeTransaction(OperationModel message) {
     String hex = TezosMessageUtils.writeInt(108);
-    hex += TezosMessageUtils.writeAddress(message.source).substring(2);
-    hex += TezosMessageUtils.writeInt(int.parse(message.fee));
-    hex += TezosMessageUtils.writeInt(message.counter);
-    hex += TezosMessageUtils.writeInt(message.gasLimit);
+    hex += TezosMessageUtils.writeAddress(message.source!).substring(2);
+    hex += TezosMessageUtils.writeInt(int.parse(message.fee!));
+    hex += TezosMessageUtils.writeInt(message.counter!);
+    hex += TezosMessageUtils.writeInt(message.gasLimit!);
     hex += TezosMessageUtils.writeInt(message.storageLimit);
-    hex += TezosMessageUtils.writeInt(int.parse(message.amount));
-    hex += TezosMessageUtils.writeAddress(message.destination);
+    hex += TezosMessageUtils.writeInt(int.parse(message.amount!));
+    hex += TezosMessageUtils.writeAddress(message.destination!);
     if (message.parameters != null) {
-      var composite = message.parameters;
+      var composite = message.parameters!;
       var result = TezosLanguageUtil.translateMichelineToHex(
           jsonEncode(composite['value']));
       if ((composite['entrypoint'] == 'default' ||
@@ -61,7 +61,7 @@ class TezosMessageCodec {
                   .map((String c) => c.codeUnitAt(0).toRadixString(16))
                   .join('');
         }
-        var resRad = '0000000' + (result.length ~/ 2).toRadixString(16);
+        var resRad = '0000000' + (result!.length ~/ 2).toRadixString(16);
         hex += resRad.substring(resRad.length - 8) + result;
       }
     } else {
@@ -72,25 +72,25 @@ class TezosMessageCodec {
 
   static String encodeReveal(OperationModel message) {
     var hex = TezosMessageUtils.writeInt(107);
-    hex += TezosMessageUtils.writeAddress(message.source).substring(2);
-    hex += TezosMessageUtils.writeInt(int.parse(message.fee));
-    hex += TezosMessageUtils.writeInt(message.counter);
-    hex += TezosMessageUtils.writeInt(message.gasLimit);
+    hex += TezosMessageUtils.writeAddress(message.source!).substring(2);
+    hex += TezosMessageUtils.writeInt(int.parse(message.fee!));
+    hex += TezosMessageUtils.writeInt(message.counter!);
+    hex += TezosMessageUtils.writeInt(message.gasLimit!);
     hex += TezosMessageUtils.writeInt(message.storageLimit);
-    hex += TezosMessageUtils.writePublicKey(message.publicKey);
+    hex += TezosMessageUtils.writePublicKey(message.publicKey!);
     return hex;
   }
 
   static String encodeDelegation(OperationModel delegation) {
     var hex = TezosMessageUtils.writeInt(110);
-    hex += TezosMessageUtils.writeAddress(delegation.source).substring(2);
-    hex += TezosMessageUtils.writeInt(int.parse(delegation.fee));
-    hex += TezosMessageUtils.writeInt(delegation.counter);
-    hex += TezosMessageUtils.writeInt(delegation.gasLimit);
+    hex += TezosMessageUtils.writeAddress(delegation.source!).substring(2);
+    hex += TezosMessageUtils.writeInt(int.parse(delegation.fee!));
+    hex += TezosMessageUtils.writeInt(delegation.counter!);
+    hex += TezosMessageUtils.writeInt(delegation.gasLimit!);
     hex += TezosMessageUtils.writeInt(delegation.storageLimit);
-    if (delegation.delegate != null && delegation.delegate.isNotEmpty) {
+    if (delegation.delegate != null && delegation.delegate!.isNotEmpty) {
       hex += TezosMessageUtils.writeBoolean(true);
-      hex += TezosMessageUtils.writeAddress(delegation.delegate).substring(2);
+      hex += TezosMessageUtils.writeAddress(delegation.delegate!).substring(2);
     } else {
       hex += TezosMessageUtils.writeBoolean(false);
     }
@@ -99,28 +99,28 @@ class TezosMessageCodec {
 
   static String encodeOrigination(OperationModel origination) {
     var hex = TezosMessageUtils.writeInt(109);
-    hex += TezosMessageUtils.writeAddress(origination.source).substring(2);
-    hex += TezosMessageUtils.writeInt(int.parse(origination.fee));
-    hex += TezosMessageUtils.writeInt(origination.counter);
-    hex += TezosMessageUtils.writeInt(origination.gasLimit);
+    hex += TezosMessageUtils.writeAddress(origination.source!).substring(2);
+    hex += TezosMessageUtils.writeInt(int.parse(origination.fee!));
+    hex += TezosMessageUtils.writeInt(origination.counter!);
+    hex += TezosMessageUtils.writeInt(origination.gasLimit!);
     hex += TezosMessageUtils.writeInt(origination.storageLimit);
-    hex += TezosMessageUtils.writeInt(int.parse(origination.amount));
+    hex += TezosMessageUtils.writeInt(int.parse(origination.amount!));
 
     if (origination.delegate != null) {
       hex += TezosMessageUtils.writeBoolean(true);
-      hex += TezosMessageUtils.writeAddress(origination.delegate).substring(2);
+      hex += TezosMessageUtils.writeAddress(origination.delegate!).substring(2);
     } else {
       hex += TezosMessageUtils.writeBoolean(false);
     }
     if (origination.script != null) {
       var parts = [];
-      parts.add(origination.script['code']);
-      parts.add(origination.script['storage']);
+      parts.add(origination.script!['code']);
+      parts.add(origination.script!['storage']);
       hex += parts
           .map((p) => jsonEncode(p))
           .map((p) => TezosLanguageUtil.translateMichelineToHex(p))
           .fold('', (m, p) {
-        var result = ('0000000' + (p.length ~/ 2).toRadixString(16));
+        var result = ('0000000' + (p!.length ~/ 2).toRadixString(16));
         result = result.substring(result.length - 8) + p;
         return m + result;
       });

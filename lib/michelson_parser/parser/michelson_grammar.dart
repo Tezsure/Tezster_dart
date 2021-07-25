@@ -2,7 +2,7 @@
 import 'package:tezster_dart/michelson_parser/grammar/michelson_grammar_tokenizer.dart';
 
 class MichelsonGrammar {
-  MichelsonGrammarTokenizer lexer;
+  MichelsonGrammarTokenizer? lexer;
 
   var macroCADRconst = 'C[AD]+R';
   var macroSETCADRconst = 'SET_C[AD]+R';
@@ -668,7 +668,7 @@ class MichelsonGrammar {
           {
             "name": "parameterValue",
             "symbols": [
-              (lexer.has("parameter") ? {'type': "parameter"} : parameter),
+              (lexer!.has("parameter") ? {'type': "parameter"} : parameter),
               "_",
               "typeData",
               "_",
@@ -679,7 +679,7 @@ class MichelsonGrammar {
           {
             "name": "storageValue",
             "symbols": [
-              (lexer.has("storage") ? {'type': "storage"} : storage),
+              (lexer!.has("storage") ? {'type': "storage"} : storage),
               "_",
               "typeData",
               "_",
@@ -690,7 +690,7 @@ class MichelsonGrammar {
           {
             "name": "parameter",
             "symbols": [
-              (lexer.has("parameter") ? {'type': "parameter"} : parameter),
+              (lexer!.has("parameter") ? {'type': "parameter"} : parameter),
               "_",
               "type",
               "_",
@@ -701,7 +701,7 @@ class MichelsonGrammar {
           {
             "name": "storage",
             "symbols": [
-              (lexer.has("storage") ? {'type': "storage"} : storage),
+              (lexer!.has("storage") ? {'type': "storage"} : storage),
               "_",
               "type",
               "_",
@@ -712,7 +712,7 @@ class MichelsonGrammar {
           {
             "name": "code",
             "symbols": [
-              (lexer.has("code") ? {'type': "code"} : code),
+              (lexer!.has("code") ? {'type': "code"} : code),
               "_",
               "subInstruction",
               "_",
@@ -724,7 +724,7 @@ class MichelsonGrammar {
           {
             "name": "code",
             "symbols": [
-              (lexer.has("code") ? {'type': "code"} : code),
+              (lexer!.has("code") ? {'type': "code"} : code),
               "_",
               {"literal": "{};"}
             ],
@@ -733,7 +733,7 @@ class MichelsonGrammar {
           {
             "name": "type",
             "symbols": [
-              (lexer.has("comparableType")
+              (lexer!.has("comparableType")
                   ? {'type': "comparableType"}
                   : comparableType)
             ],
@@ -742,7 +742,7 @@ class MichelsonGrammar {
           {
             "name": "type",
             "symbols": [
-              (lexer.has("constantType")
+              (lexer!.has("constantType")
                   ? {'type': "constantType"}
                   : constantType)
             ],
@@ -751,7 +751,7 @@ class MichelsonGrammar {
           {
             "name": "type",
             "symbols": [
-              (lexer.has("singleArgType")
+              (lexer!.has("singleArgType")
                   ? {'type': "singleArgType"}
                   : singleArgType),
               "_",
@@ -762,41 +762,41 @@ class MichelsonGrammar {
           {
             "name": "type",
             "symbols": [
-              (lexer.has("lparen") ? {'type': "lparen"} : lparen),
+              (lexer!.has("lparen") ? {'type': "lparen"} : lparen),
               "_",
-              (lexer.has("singleArgType")
+              (lexer!.has("singleArgType")
                   ? {'type': "singleArgType"}
                   : singleArgType),
               "_",
               "type",
               "_",
-              (lexer.has("rparen") ? {'type': "rparen"} : rparen)
+              (lexer!.has("rparen") ? {'type': "rparen"} : rparen)
             ],
             "postprocess": singleArgKeywordWithParenToJson
           },
           {
             "name": "type",
             "symbols": [
-              (lexer.has("lparen") ? {'type': "lparen"} : lparen),
+              (lexer!.has("lparen") ? {'type': "lparen"} : lparen),
               "_",
-              (lexer.has("singleArgType")
+              (lexer!.has("singleArgType")
                   ? {'type': "singleArgType"}
                   : singleArgType),
               "_",
-              (lexer.has("lparen") ? {'type': "lparen"} : lparen),
+              (lexer!.has("lparen") ? {'type': "lparen"} : lparen),
               "_",
               "type",
               "_",
-              (lexer.has("rparen") ? {'type': "rparen"} : rparen),
+              (lexer!.has("rparen") ? {'type': "rparen"} : rparen),
               "_",
-              (lexer.has("rparen") ? {'type': "rparen"} : rparen)
+              (lexer!.has("rparen") ? {'type': "rparen"} : rparen)
             ],
             "postprocess": singleArgKeywordWithParenToJson
           },
           {
             "name": "type",
             "symbols": [
-              (lexer.has("doubleArgType")
+              (lexer!.has("doubleArgType")
                   ? {'type': "doubleArgType"}
                   : doubleArgType),
               "_",
@@ -809,9 +809,9 @@ class MichelsonGrammar {
           {
             "name": "type",
             "symbols": [
-              (lexer.has("lparen") ? {'type': "lparen"} : lparen),
+              (lexer!.has("lparen") ? {'type': "lparen"} : lparen),
               "_",
-              (lexer.has("doubleArgType")
+              (lexer!.has("doubleArgType")
                   ? {'type': "doubleArgType"}
                   : doubleArgType),
               "_",
@@ -819,7 +819,7 @@ class MichelsonGrammar {
               "_",
               "type",
               "_",
-              (lexer.has("rparen") ? {'type': "rparen"} : rparen)
+              (lexer!.has("rparen") ? {'type': "rparen"} : rparen)
             ],
             "postprocess": doubleArgKeywordWithParenToJson
           },
@@ -827,7 +827,7 @@ class MichelsonGrammar {
             "name": r"type$ebnf$1$subexpression$1",
             "symbols": [
               "_",
-              (lexer.has("annot") ? {'type': "annot"} : annot)
+              (lexer!.has("annot") ? {'type': "annot"} : annot)
             ]
           },
           {
@@ -838,7 +838,7 @@ class MichelsonGrammar {
             "name": r"type$ebnf$1$subexpression$2",
             "symbols": [
               "_",
-              (lexer.has("annot") ? {'type': "annot"} : annot)
+              (lexer!.has("annot") ? {'type': "annot"} : annot)
             ]
           },
           {
@@ -849,7 +849,7 @@ class MichelsonGrammar {
           {
             "name": "type",
             "symbols": [
-              (lexer.has("comparableType")
+              (lexer!.has("comparableType")
                   ? {'type': "comparableType"}
                   : comparableType),
               r"type$ebnf$1"
@@ -860,7 +860,7 @@ class MichelsonGrammar {
             "name": r"type$ebnf$2$subexpression$1",
             "symbols": [
               "_",
-              (lexer.has("annot") ? {'type': "annot"} : annot)
+              (lexer!.has("annot") ? {'type': "annot"} : annot)
             ]
           },
           {
@@ -871,7 +871,7 @@ class MichelsonGrammar {
             "name": r"type$ebnf$2$subexpression$2",
             "symbols": [
               "_",
-              (lexer.has("annot") ? {'type': "annot"} : annot)
+              (lexer!.has("annot") ? {'type': "annot"} : annot)
             ]
           },
           {
@@ -882,7 +882,7 @@ class MichelsonGrammar {
           {
             "name": "type",
             "symbols": [
-              (lexer.has("constantType")
+              (lexer!.has("constantType")
                   ? {'type': "constantType"}
                   : constantType),
               r"type$ebnf$2"
@@ -893,7 +893,7 @@ class MichelsonGrammar {
             "name": r"type$ebnf$3$subexpression$1",
             "symbols": [
               "_",
-              (lexer.has("annot") ? {'type': "annot"} : annot)
+              (lexer!.has("annot") ? {'type': "annot"} : annot)
             ]
           },
           {
@@ -904,7 +904,7 @@ class MichelsonGrammar {
             "name": r"type$ebnf$3$subexpression$2",
             "symbols": [
               "_",
-              (lexer.has("annot") ? {'type': "annot"} : annot)
+              (lexer!.has("annot") ? {'type': "annot"} : annot)
             ]
           },
           {
@@ -915,14 +915,14 @@ class MichelsonGrammar {
           {
             "name": "type",
             "symbols": [
-              (lexer.has("lparen") ? {'type': "lparen"} : lparen),
+              (lexer!.has("lparen") ? {'type': "lparen"} : lparen),
               "_",
-              (lexer.has("comparableType")
+              (lexer!.has("comparableType")
                   ? {'type': "comparableType"}
                   : comparableType),
               r"type$ebnf$3",
               "_",
-              (lexer.has("rparen") ? {'type': "rparen"} : rparen)
+              (lexer!.has("rparen") ? {'type': "rparen"} : rparen)
             ],
             "postprocess": comparableTypeToJson
           },
@@ -930,7 +930,7 @@ class MichelsonGrammar {
             "name": r"type$ebnf$4$subexpression$1",
             "symbols": [
               "_",
-              (lexer.has("annot") ? {'type': "annot"} : annot)
+              (lexer!.has("annot") ? {'type': "annot"} : annot)
             ]
           },
           {
@@ -941,7 +941,7 @@ class MichelsonGrammar {
             "name": r"type$ebnf$4$subexpression$2",
             "symbols": [
               "_",
-              (lexer.has("annot") ? {'type': "annot"} : annot)
+              (lexer!.has("annot") ? {'type': "annot"} : annot)
             ]
           },
           {
@@ -952,14 +952,14 @@ class MichelsonGrammar {
           {
             "name": "type",
             "symbols": [
-              (lexer.has("lparen") ? {'type': "lparen"} : lparen),
+              (lexer!.has("lparen") ? {'type': "lparen"} : lparen),
               "_",
-              (lexer.has("constantType")
+              (lexer!.has("constantType")
                   ? {'type': "constantType"}
                   : constantType),
               r"type$ebnf$4",
               "_",
-              (lexer.has("rparen") ? {'type': "rparen"} : rparen)
+              (lexer!.has("rparen") ? {'type': "rparen"} : rparen)
             ],
             "postprocess": comparableTypeToJson
           },
@@ -967,7 +967,7 @@ class MichelsonGrammar {
             "name": r"type$ebnf$5$subexpression$1",
             "symbols": [
               "_",
-              (lexer.has("annot") ? {'type': "annot"} : annot)
+              (lexer!.has("annot") ? {'type': "annot"} : annot)
             ]
           },
           {
@@ -978,7 +978,7 @@ class MichelsonGrammar {
             "name": r"type$ebnf$5$subexpression$2",
             "symbols": [
               "_",
-              (lexer.has("annot") ? {'type': "annot"} : annot)
+              (lexer!.has("annot") ? {'type': "annot"} : annot)
             ]
           },
           {
@@ -989,15 +989,15 @@ class MichelsonGrammar {
           {
             "name": "type",
             "symbols": [
-              (lexer.has("lparen") ? {'type': "lparen"} : lparen),
+              (lexer!.has("lparen") ? {'type': "lparen"} : lparen),
               "_",
-              (lexer.has("singleArgType")
+              (lexer!.has("singleArgType")
                   ? {'type': "singleArgType"}
                   : singleArgType),
               r"type$ebnf$5",
               "_",
               "type",
-              (lexer.has("rparen") ? {'type': "rparen"} : rparen)
+              (lexer!.has("rparen") ? {'type': "rparen"} : rparen)
             ],
             "postprocess": singleArgTypeKeywordWithParenToJson
           },
@@ -1005,7 +1005,7 @@ class MichelsonGrammar {
             "name": r"type$ebnf$6$subexpression$1",
             "symbols": [
               "_",
-              (lexer.has("annot") ? {'type': "annot"} : annot)
+              (lexer!.has("annot") ? {'type': "annot"} : annot)
             ]
           },
           {
@@ -1016,7 +1016,7 @@ class MichelsonGrammar {
             "name": r"type$ebnf$6$subexpression$2",
             "symbols": [
               "_",
-              (lexer.has("annot") ? {'type': "annot"} : annot)
+              (lexer!.has("annot") ? {'type': "annot"} : annot)
             ]
           },
           {
@@ -1027,9 +1027,9 @@ class MichelsonGrammar {
           {
             "name": "type",
             "symbols": [
-              (lexer.has("lparen") ? {'type': "lparen"} : lparen),
+              (lexer!.has("lparen") ? {'type': "lparen"} : lparen),
               "_",
-              (lexer.has("doubleArgType")
+              (lexer!.has("doubleArgType")
                   ? {'type': "doubleArgType"}
                   : doubleArgType),
               r"type$ebnf$6",
@@ -1037,14 +1037,14 @@ class MichelsonGrammar {
               "type",
               "_",
               "type",
-              (lexer.has("rparen") ? {'type': "rparen"} : rparen)
+              (lexer!.has("rparen") ? {'type': "rparen"} : rparen)
             ],
             "postprocess": doubleArgTypeKeywordWithParenToJson
           },
           {
             "name": "typeData",
             "symbols": [
-              (lexer.has("singleArgType")
+              (lexer!.has("singleArgType")
                   ? {'type': "singleArgType"}
                   : singleArgType),
               "_",
@@ -1055,22 +1055,22 @@ class MichelsonGrammar {
           {
             "name": "typeData",
             "symbols": [
-              (lexer.has("lparen") ? {'type': "lparen"} : lparen),
+              (lexer!.has("lparen") ? {'type': "lparen"} : lparen),
               "_",
-              (lexer.has("singleArgType")
+              (lexer!.has("singleArgType")
                   ? {'type': "singleArgType"}
                   : singleArgType),
               "_",
               "typeData",
               "_",
-              (lexer.has("rparen") ? {'type': "rparen"} : rparen)
+              (lexer!.has("rparen") ? {'type': "rparen"} : rparen)
             ],
             "postprocess": singleArgKeywordWithParenToJson
           },
           {
             "name": "typeData",
             "symbols": [
-              (lexer.has("doubleArgType")
+              (lexer!.has("doubleArgType")
                   ? {'type': "doubleArgType"}
                   : doubleArgType),
               "_",
@@ -1083,9 +1083,9 @@ class MichelsonGrammar {
           {
             "name": "typeData",
             "symbols": [
-              (lexer.has("lparen") ? {'type': "lparen"} : lparen),
+              (lexer!.has("lparen") ? {'type': "lparen"} : lparen),
               "_",
-              (lexer.has("doubleArgType")
+              (lexer!.has("doubleArgType")
                   ? {'type': "doubleArgType"}
                   : doubleArgType),
               "_",
@@ -1093,7 +1093,7 @@ class MichelsonGrammar {
               "_",
               "typeData",
               "_",
-              (lexer.has("rparen") ? {'type': "rparen"} : rparen)
+              (lexer!.has("rparen") ? {'type': "rparen"} : rparen)
             ],
             "postprocess": doubleArgKeywordWithParenToJson
           },
@@ -1110,30 +1110,30 @@ class MichelsonGrammar {
           {
             "name": "typeData",
             "symbols": [
-              (lexer.has("number") ? {'type': "number"} : number)
+              (lexer!.has("number") ? {'type': "number"} : number)
             ],
             "postprocess": intToJson
           },
           {
             "name": "typeData",
             "symbols": [
-              (lexer.has("string") ? {'type': "string"} : string)
+              (lexer!.has("string") ? {'type': "string"} : string)
             ],
             "postprocess": stringToJson
           },
           {
             "name": "typeData",
             "symbols": [
-              (lexer.has("lbrace") ? {'type': "lbrace"} : lbrace),
+              (lexer!.has("lbrace") ? {'type': "lbrace"} : lbrace),
               "_",
-              (lexer.has("rbrace") ? {'type': "rbrace"} : rbrace)
+              (lexer!.has("rbrace") ? {'type': "rbrace"} : rbrace)
             ],
             "postprocess": (d) => []
           },
           {
             "name": "data",
             "symbols": [
-              (lexer.has("constantData")
+              (lexer!.has("constantData")
                   ? {'type': "constantData"}
                   : constantData)
             ],
@@ -1142,7 +1142,7 @@ class MichelsonGrammar {
           {
             "name": "data",
             "symbols": [
-              (lexer.has("singleArgData")
+              (lexer!.has("singleArgData")
                   ? {'type': "singleArgData"}
                   : singleArgData),
               "_",
@@ -1153,7 +1153,7 @@ class MichelsonGrammar {
           {
             "name": "data",
             "symbols": [
-              (lexer.has("doubleArgData")
+              (lexer!.has("doubleArgData")
                   ? {'type': "doubleArgData"}
                   : doubleArgData),
               "_",
@@ -1176,30 +1176,30 @@ class MichelsonGrammar {
           {
             "name": "data",
             "symbols": [
-              (lexer.has("string") ? {'type': "string"} : string)
+              (lexer!.has("string") ? {'type': "string"} : string)
             ],
             "postprocess": stringToJson
           },
           {
             "name": "data",
             "symbols": [
-              (lexer.has("bytes") ? {'type': "bytes"} : bytes)
+              (lexer!.has("bytes") ? {'type': "bytes"} : bytes)
             ],
             "postprocess": bytesToJson
           },
           {
             "name": "data",
             "symbols": [
-              (lexer.has("number") ? {'type': "number"} : number)
+              (lexer!.has("number") ? {'type': "number"} : number)
             ],
             "postprocess": intToJson
           },
           {
             "name": "subData",
             "symbols": [
-              (lexer.has("lbrace") ? {'type': "lbrace"} : lbrace),
+              (lexer!.has("lbrace") ? {'type': "lbrace"} : lbrace),
               "_",
-              (lexer.has("rbrace") ? {'type': "rbrace"} : rbrace)
+              (lexer!.has("rbrace") ? {'type': "rbrace"} : rbrace)
             ],
             "postprocess": (d) => "[]"
           },
@@ -1294,9 +1294,9 @@ class MichelsonGrammar {
           {
             "name": "subElt",
             "symbols": [
-              (lexer.has("lbrace") ? {'type': "lbrace"} : lbrace),
+              (lexer!.has("lbrace") ? {'type': "lbrace"} : lbrace),
               "_",
-              (lexer.has("rbrace") ? {'type': "rbrace"} : rbrace)
+              (lexer!.has("rbrace") ? {'type': "rbrace"} : rbrace)
             ],
             "postprocess": (d) => "[]"
           },
@@ -1354,7 +1354,7 @@ class MichelsonGrammar {
           {
             "name": "elt",
             "symbols": [
-              (lexer.has("elt") ? {'type': "elt"} : elt),
+              (lexer!.has("elt") ? {'type': "elt"} : elt),
               "_",
               "data",
               "_",
@@ -1365,9 +1365,9 @@ class MichelsonGrammar {
           {
             "name": "subTypeData",
             "symbols": [
-              (lexer.has("lbrace") ? {'type': "lbrace"} : lbrace),
+              (lexer!.has("lbrace") ? {'type': "lbrace"} : lbrace),
               "_",
-              (lexer.has("rbrace") ? {'type': "rbrace"} : rbrace)
+              (lexer!.has("rbrace") ? {'type': "rbrace"} : rbrace)
             ],
             "postprocess": (d) => "[]"
           },
@@ -1498,9 +1498,9 @@ class MichelsonGrammar {
           {
             "name": "subTypeElt",
             "symbols": [
-              (lexer.has("lbrace") ? {'type': "lbrace"} : lbrace),
+              (lexer!.has("lbrace") ? {'type': "lbrace"} : lbrace),
               "_",
-              (lexer.has("rbrace") ? {'type': "rbrace"} : rbrace)
+              (lexer!.has("rbrace") ? {'type': "rbrace"} : rbrace)
             ],
             "postprocess": (d) => "[]"
           },
@@ -1633,7 +1633,7 @@ class MichelsonGrammar {
           {
             "name": "typeElt",
             "symbols": [
-              (lexer.has("elt") ? {'type': "elt"} : elt),
+              (lexer!.has("elt") ? {'type': "elt"} : elt),
               "_",
               "typeData",
               "_",
@@ -1644,20 +1644,20 @@ class MichelsonGrammar {
           {
             "name": "subInstruction",
             "symbols": [
-              (lexer.has("lbrace") ? {'type': "lbrace"} : lbrace),
+              (lexer!.has("lbrace") ? {'type': "lbrace"} : lbrace),
               "_",
-              (lexer.has("rbrace") ? {'type': "rbrace"} : rbrace)
+              (lexer!.has("rbrace") ? {'type': "rbrace"} : rbrace)
             ],
             "postprocess": (d) => ""
           },
           {
             "name": "subInstruction",
             "symbols": [
-              (lexer.has("lbrace") ? {'type': "lbrace"} : lbrace),
+              (lexer!.has("lbrace") ? {'type': "lbrace"} : lbrace),
               "_",
               "instruction",
               "_",
-              (lexer.has("rbrace") ? {'type': "rbrace"} : rbrace)
+              (lexer!.has("rbrace") ? {'type': "rbrace"} : rbrace)
             ],
             "postprocess": (d) => d[2]
           },
@@ -1666,7 +1666,7 @@ class MichelsonGrammar {
             "symbols": [
               "instruction",
               "_",
-              (lexer.has("semicolon") ? {'type': "semicolon"} : semicolon),
+              (lexer!.has("semicolon") ? {'type': "semicolon"} : semicolon),
               "_"
             ]
           },
@@ -1679,7 +1679,7 @@ class MichelsonGrammar {
             "symbols": [
               "instruction",
               "_",
-              (lexer.has("semicolon") ? {'type': "semicolon"} : semicolon),
+              (lexer!.has("semicolon") ? {'type': "semicolon"} : semicolon),
               "_"
             ]
           },
@@ -1694,12 +1694,12 @@ class MichelsonGrammar {
           {
             "name": "subInstruction",
             "symbols": [
-              (lexer.has("lbrace") ? {'type': "lbrace"} : lbrace),
+              (lexer!.has("lbrace") ? {'type': "lbrace"} : lbrace),
               "_",
               r"subInstruction$ebnf$1",
               "instruction",
               "_",
-              (lexer.has("rbrace") ? {'type': "rbrace"} : rbrace)
+              (lexer!.has("rbrace") ? {'type': "rbrace"} : rbrace)
             ],
             "postprocess": instructionSetToJsonNoSemi
           },
@@ -1708,7 +1708,7 @@ class MichelsonGrammar {
             "symbols": [
               "instruction",
               "_",
-              (lexer.has("semicolon") ? {'type': "semicolon"} : semicolon),
+              (lexer!.has("semicolon") ? {'type': "semicolon"} : semicolon),
               "_"
             ]
           },
@@ -1721,7 +1721,7 @@ class MichelsonGrammar {
             "symbols": [
               "instruction",
               "_",
-              (lexer.has("semicolon") ? {'type': "semicolon"} : semicolon),
+              (lexer!.has("semicolon") ? {'type': "semicolon"} : semicolon),
               "_"
             ]
           },
@@ -1736,17 +1736,17 @@ class MichelsonGrammar {
           {
             "name": "subInstruction",
             "symbols": [
-              (lexer.has("lbrace") ? {'type': "lbrace"} : lbrace),
+              (lexer!.has("lbrace") ? {'type': "lbrace"} : lbrace),
               "_",
               r"subInstruction$ebnf$2",
-              (lexer.has("rbrace") ? {'type': "rbrace"} : rbrace)
+              (lexer!.has("rbrace") ? {'type': "rbrace"} : rbrace)
             ],
             "postprocess": instructionSetToJsonSemi
           },
           {
             "name": "instructions",
             "symbols": [
-              (lexer.has("baseInstruction")
+              (lexer!.has("baseInstruction")
                   ? {'type': "baseInstruction"}
                   : baseInstruction)
             ]
@@ -1754,25 +1754,25 @@ class MichelsonGrammar {
           {
             "name": "instructions",
             "symbols": [
-              (lexer.has("macroCADR") ? {'type': "macroCADR"} : macroCADR)
+              (lexer!.has("macroCADR") ? {'type': "macroCADR"} : macroCADR)
             ]
           },
           {
             "name": "instructions",
             "symbols": [
-              (lexer.has("macroDIP") ? {'type': "macroDIP"} : macroDIP)
+              (lexer!.has("macroDIP") ? {'type': "macroDIP"} : macroDIP)
             ]
           },
           {
             "name": "instructions",
             "symbols": [
-              (lexer.has("macroDUP") ? {'type': "macroDUP"} : macroDUP)
+              (lexer!.has("macroDUP") ? {'type': "macroDUP"} : macroDUP)
             ]
           },
           {
             "name": "instructions",
             "symbols": [
-              (lexer.has("macroSETCADR")
+              (lexer!.has("macroSETCADR")
                   ? {'type': "macroSETCADR"}
                   : macroSETCADR)
             ]
@@ -1780,7 +1780,7 @@ class MichelsonGrammar {
           {
             "name": "instructions",
             "symbols": [
-              (lexer.has("macroASSERTlist")
+              (lexer!.has("macroASSERTlist")
                   ? {'type': "macroASSERTlist"}
                   : macroASSERTlist)
             ]
@@ -1799,7 +1799,7 @@ class MichelsonGrammar {
             "name": r"instruction$ebnf$1$subexpression$1",
             "symbols": [
               "_",
-              (lexer.has("annot") ? {'type': "annot"} : annot)
+              (lexer!.has("annot") ? {'type': "annot"} : annot)
             ]
           },
           {
@@ -1810,7 +1810,7 @@ class MichelsonGrammar {
             "name": r"instruction$ebnf$1$subexpression$2",
             "symbols": [
               "_",
-              (lexer.has("annot") ? {'type': "annot"} : annot)
+              (lexer!.has("annot") ? {'type': "annot"} : annot)
             ]
           },
           {
@@ -1835,7 +1835,7 @@ class MichelsonGrammar {
             "name": r"instruction$ebnf$2$subexpression$1",
             "symbols": [
               "_",
-              (lexer.has("annot") ? {'type': "annot"} : annot)
+              (lexer!.has("annot") ? {'type': "annot"} : annot)
             ]
           },
           {
@@ -1846,7 +1846,7 @@ class MichelsonGrammar {
             "name": r"instruction$ebnf$2$subexpression$2",
             "symbols": [
               "_",
-              (lexer.has("annot") ? {'type': "annot"} : annot)
+              (lexer!.has("annot") ? {'type': "annot"} : annot)
             ]
           },
           {
@@ -1876,7 +1876,7 @@ class MichelsonGrammar {
             "name": r"instruction$ebnf$3$subexpression$1",
             "symbols": [
               "_",
-              (lexer.has("annot") ? {'type': "annot"} : annot)
+              (lexer!.has("annot") ? {'type': "annot"} : annot)
             ]
           },
           {
@@ -1887,7 +1887,7 @@ class MichelsonGrammar {
             "name": r"instruction$ebnf$3$subexpression$2",
             "symbols": [
               "_",
-              (lexer.has("annot") ? {'type': "annot"} : annot)
+              (lexer!.has("annot") ? {'type': "annot"} : annot)
             ]
           },
           {
@@ -1912,7 +1912,7 @@ class MichelsonGrammar {
             "name": r"instruction$ebnf$4$subexpression$1",
             "symbols": [
               "_",
-              (lexer.has("annot") ? {'type': "annot"} : annot)
+              (lexer!.has("annot") ? {'type': "annot"} : annot)
             ]
           },
           {
@@ -1923,7 +1923,7 @@ class MichelsonGrammar {
             "name": r"instruction$ebnf$4$subexpression$2",
             "symbols": [
               "_",
-              (lexer.has("annot") ? {'type': "annot"} : annot)
+              (lexer!.has("annot") ? {'type': "annot"} : annot)
             ]
           },
           {
@@ -1956,7 +1956,7 @@ class MichelsonGrammar {
             "name": r"instruction$ebnf$5$subexpression$1",
             "symbols": [
               "_",
-              (lexer.has("annot") ? {'type': "annot"} : annot)
+              (lexer!.has("annot") ? {'type': "annot"} : annot)
             ]
           },
           {
@@ -1967,7 +1967,7 @@ class MichelsonGrammar {
             "name": r"instruction$ebnf$5$subexpression$2",
             "symbols": [
               "_",
-              (lexer.has("annot") ? {'type': "annot"} : annot)
+              (lexer!.has("annot") ? {'type': "annot"} : annot)
             ]
           },
           {
@@ -2007,7 +2007,7 @@ class MichelsonGrammar {
             "name": r"instruction$ebnf$6$subexpression$1",
             "symbols": [
               "_",
-              (lexer.has("annot") ? {'type': "annot"} : annot)
+              (lexer!.has("annot") ? {'type': "annot"} : annot)
             ]
           },
           {
@@ -2018,7 +2018,7 @@ class MichelsonGrammar {
             "name": r"instruction$ebnf$6$subexpression$2",
             "symbols": [
               "_",
-              (lexer.has("annot") ? {'type': "annot"} : annot)
+              (lexer!.has("annot") ? {'type': "annot"} : annot)
             ]
           },
           {
@@ -2050,7 +2050,7 @@ class MichelsonGrammar {
             "name": r"instruction$ebnf$7$subexpression$1",
             "symbols": [
               "_",
-              (lexer.has("annot") ? {'type': "annot"} : annot)
+              (lexer!.has("annot") ? {'type': "annot"} : annot)
             ]
           },
           {
@@ -2061,7 +2061,7 @@ class MichelsonGrammar {
             "name": r"instruction$ebnf$7$subexpression$2",
             "symbols": [
               "_",
-              (lexer.has("annot") ? {'type': "annot"} : annot)
+              (lexer!.has("annot") ? {'type': "annot"} : annot)
             ]
           },
           {
@@ -2102,8 +2102,8 @@ class MichelsonGrammar {
               "_",
               "type",
               "_",
-              (lexer.has("lbrace") ? {'type': "lbrace"} : lbrace),
-              (lexer.has("rbrace") ? {'type': "rbrace"} : rbrace)
+              (lexer!.has("lbrace") ? {'type': "lbrace"} : lbrace),
+              (lexer!.has("rbrace") ? {'type': "rbrace"} : rbrace)
             ],
             "postprocess": pushToJson
           },
@@ -2111,7 +2111,7 @@ class MichelsonGrammar {
             "name": r"instruction$ebnf$8$subexpression$1",
             "symbols": [
               "_",
-              (lexer.has("annot") ? {'type': "annot"} : annot)
+              (lexer!.has("annot") ? {'type': "annot"} : annot)
             ]
           },
           {
@@ -2122,7 +2122,7 @@ class MichelsonGrammar {
             "name": r"instruction$ebnf$8$subexpression$2",
             "symbols": [
               "_",
-              (lexer.has("annot") ? {'type': "annot"} : annot)
+              (lexer!.has("annot") ? {'type': "annot"} : annot)
             ]
           },
           {
@@ -2194,7 +2194,7 @@ class MichelsonGrammar {
             "name": r"instruction$ebnf$11$subexpression$1",
             "symbols": [
               "_",
-              (lexer.has("annot") ? {'type': "annot"} : annot)
+              (lexer!.has("annot") ? {'type': "annot"} : annot)
             ]
           },
           {
@@ -2205,7 +2205,7 @@ class MichelsonGrammar {
             "name": r"instruction$ebnf$11$subexpression$2",
             "symbols": [
               "_",
-              (lexer.has("annot") ? {'type': "annot"} : annot)
+              (lexer!.has("annot") ? {'type': "annot"} : annot)
             ]
           },
           {
@@ -2291,7 +2291,7 @@ class MichelsonGrammar {
             "symbols": [
               {"literal": "CREATE_CONTRACT"},
               "_",
-              (lexer.has("lbrace") ? {'type': "lbrace"} : lbrace),
+              (lexer!.has("lbrace") ? {'type': "lbrace"} : lbrace),
               "_",
               "parameter",
               "_",
@@ -2299,7 +2299,7 @@ class MichelsonGrammar {
               "_",
               "code",
               "_",
-              (lexer.has("rbrace") ? {'type': "rbrace"} : rbrace)
+              (lexer!.has("rbrace") ? {'type': "rbrace"} : rbrace)
             ],
             "postprocess": subContractToJson
           },
@@ -2319,11 +2319,11 @@ class MichelsonGrammar {
             "symbols": [
               {"literal": "EMPTY_MAP"},
               "_",
-              (lexer.has("lparen") ? {'type': "lparen"} : lparen),
+              (lexer!.has("lparen") ? {'type': "lparen"} : lparen),
               "_",
               "type",
               "_",
-              (lexer.has("rparen") ? {'type': "rparen"} : rparen),
+              (lexer!.has("rparen") ? {'type': "rparen"} : rparen),
               "_",
               "type"
             ],

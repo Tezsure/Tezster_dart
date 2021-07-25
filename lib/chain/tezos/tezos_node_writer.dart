@@ -15,7 +15,7 @@ import 'package:tezster_dart/types/tezos/tezos_chain_types.dart';
 import 'package:tezster_dart/utils/gas_fee_calculator.dart';
 
 class TezosNodeWriter {
-  static Future<Map<String, Object>> sendTransactionOperation(String server,
+  static Future<Map<String, Object?>> sendTransactionOperation(String server,
       SoftSigner signer, KeyStoreModel keyStore, String to, int amount, int fee,
       {int offset = 54}) async {
     var counter = await TezosNodeReader.getCounterForAccount(
@@ -185,7 +185,7 @@ class TezosNodeWriter {
     if (parameters != null) {
       if (parameterFormat == TezosParameterFormat.Michelson) {
         var michelineParams =
-            TezosLanguageUtil.translateMichelsonToMicheline(parameters);
+            TezosLanguageUtil.translateMichelsonToMicheline(parameters)!;
         transaction.parameters = {
           'entrypoint': entrypoint.isEmpty ? 'default' : entrypoint,
           'value': jsonDecode(michelineParams)
@@ -197,7 +197,7 @@ class TezosNodeWriter {
         };
       } else if (parameterFormat == TezosParameterFormat.MichelsonLambda) {
         var michelineLambda =
-            TezosLanguageUtil.translateMichelsonToMicheline('code $parameters');
+            TezosLanguageUtil.translateMichelsonToMicheline('code $parameters')!;
         transaction.parameters = {
           'entrypoint': entrypoint.isEmpty ? 'default' : entrypoint,
           'value': jsonDecode(michelineLambda)
@@ -211,7 +211,7 @@ class TezosNodeWriter {
 
   static Future<List<OperationModel>> appendRevealOperation(
       String server,
-      String publicKey,
+      String? publicKey,
       String publicKeyHash,
       int accountOperationIndex,
       List<OperationModel> operations) async {
@@ -237,9 +237,9 @@ class TezosNodeWriter {
     return operations;
   }
 
-  static Future<Map<String, Object>> sendOperation(String server,
+  static Future<Map<String, Object?>> sendOperation(String server,
       List<OperationModel> operations, SoftSigner signer, int offset) async {
-    var blockHead = await TezosNodeReader.getBlockAtOffset(server, offset);
+    var blockHead = await (TezosNodeReader.getBlockAtOffset(server, offset) as Future<Map<dynamic, dynamic>>);
     var blockHash = blockHead['hash'].toString().substring(0, 51);
     var forgedOperationGroup = forgeOperations(blockHash, operations);
     var opSignature = signer.signOperation(Uint8List.fromList(hex.decode(
@@ -327,7 +327,7 @@ class TezosNodeWriter {
     }
   }
 
-  static String parseRPCOperationResult(result) {
+  static String? parseRPCOperationResult(result) {
     if (result.status == 'failed') {
       return "${result.status}: ${result.errors.map((e) => '(${e.kind}: ${e.id})').join(', ')}";
     } else if (result.status == 'applied') {
@@ -340,7 +340,7 @@ class TezosNodeWriter {
   static injectOperation(String server, Map<String, Object> opPair,
       {chainid = 'main'}) async {
     var response = await HttpHelper.performPostRequest(server,
-        'injection/operation?chain=$chainid', hex.encode(opPair['bytes']));
+        'injection/operation?chain=$chainid', hex.encode(opPair['bytes'] as List<int>));
     response = response.toString().replaceAll('"', '');
     return response;
   }
@@ -361,9 +361,9 @@ class TezosNodeWriter {
     print("using code Format ==> ${codeFormat.toString()}");
     if (codeFormat == TezosParameterFormat.Michelson) {
       parsedCode =
-          jsonDecode(TezosLanguageUtil.translateMichelsonToMicheline(code));
+          jsonDecode(TezosLanguageUtil.translateMichelsonToMicheline(code)!);
       parsedStorage =
-          jsonDecode(TezosLanguageUtil.translateMichelsonToMicheline(storage));
+          jsonDecode(TezosLanguageUtil.translateMichelsonToMicheline(storage)!);
     } else if (codeFormat == TezosParameterFormat.Micheline) {
       parsedCode = jsonDecode(code);
       parsedStorage = jsonDecode(storage);
