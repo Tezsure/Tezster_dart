@@ -287,8 +287,8 @@ class TezsterDart {
       int fee,
       int storageLimit,
       int gasLimit,
-      entrypoint,
-      String parameters,
+      List<String> entrypoint,
+      List<String> parameters,
       {TezosParameterFormat codeFormat = TezosParameterFormat.Micheline,
       offset = 54}) async {
     assert(server != null);

@@ -29,7 +29,7 @@ class TezosNodeWriter {
       destination: to,
       amount: amount.toString(),
       counter: counter,
-      fee: estimate.suggestedFeeMutez.toString(), 
+      fee: estimate.suggestedFeeMutez.toString(),
       source: keyStore.publicKeyHash,
       gasLimit: estimate.gasLimit,
       storageLimit: estimate.storageLimit,
@@ -105,26 +105,34 @@ class TezosNodeWriter {
       int fee,
       int storageLimit,
       int gasLimit,
-      entrypoint,
-      String parameters,
+      List<String> entrypoint,
+      List<String> parameters,
       {TezosParameterFormat parameterFormat = TezosParameterFormat.Micheline,
       offset = 54}) async {
     var counter = await TezosNodeReader.getCounterForAccount(
             server, keyStore.publicKeyHash) +
         1;
-    var transaction = constructContractInvocationOperation(
-        keyStore.publicKeyHash,
-        counter,
-        contract,
-        amount,
-        fee,
-        storageLimit,
-        gasLimit,
-        entrypoint,
-        parameters,
-        parameterFormat);
+
+    var transactions = [];
+
+    for (var i = 0; i < entrypoint.length; i++) {
+      transactions.add(
+        constructContractInvocationOperation(
+          keyStore.publicKeyHash,
+          counter,
+          contract,
+          amount,
+          fee,
+          storageLimit,
+          gasLimit,
+          entrypoint[i],
+          parameters[i],
+          parameterFormat,
+        ),
+      );
+    }
     var operations = await appendRevealOperation(server, keyStore.publicKey,
-        keyStore.publicKeyHash, counter - 1, [transaction]);
+        keyStore.publicKeyHash, counter - 1, [...transactions]);
     return sendOperation(server, operations, signer, offset);
   }
 
@@ -203,7 +211,6 @@ class TezosNodeWriter {
           'value': jsonDecode(michelineLambda)
         };
       }
-      
     } else if (entrypoint != null) {
       transaction.parameters = {'entrypoint': entrypoint, 'value': []};
     }

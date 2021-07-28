@@ -168,8 +168,8 @@ class _MyAppState extends State<MyApp> {
         100000,
         1000,
         100000,
-        '',
-        '"Cryptonomicon"',
+        [''],
+        ['"Cryptonomicon"'],
         codeFormat: TezosParameterFormat.Michelson);
 
     print("Operation groupID ===> ${resultInvoke['operationGroupID']}");
