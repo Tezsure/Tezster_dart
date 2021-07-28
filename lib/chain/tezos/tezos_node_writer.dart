@@ -119,7 +119,7 @@ class TezosNodeWriter {
       transactions.add(
         constructContractInvocationOperation(
           keyStore.publicKeyHash,
-          counter,
+          counter + i,
           contract[i],
           amount[i],
           fee,
