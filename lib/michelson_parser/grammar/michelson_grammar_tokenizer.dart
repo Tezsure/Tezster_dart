@@ -131,8 +131,10 @@ class MichelsonGrammarTokenizer {
                       0,
                       seq.indexOf(' ') == -1
                           ? seq.length
-                          : seq.indexOf(')') < seq.indexOf(' ')
-                              ? seq.indexOf(')')
+                          : seq.indexOf(')') != -1
+                              ? seq.indexOf(')') < seq.indexOf(' ')
+                                  ? seq.indexOf(')')
+                                  : seq.indexOf(' ')
                               : seq.indexOf(' ')))
                 ..columnNumber = i);
               i += (seq
@@ -140,8 +142,10 @@ class MichelsonGrammarTokenizer {
                           0,
                           seq.indexOf(' ') == -1
                               ? seq.length
-                              : seq.indexOf(')') < seq.indexOf(' ')
-                                  ? seq.indexOf(')')
+                              : seq.indexOf(')') != -1
+                                  ? seq.indexOf(')') < seq.indexOf(' ')
+                                      ? seq.indexOf(')')
+                                      : seq.indexOf(' ')
                                   : seq.indexOf(' '))
                       .length -
                   1);
