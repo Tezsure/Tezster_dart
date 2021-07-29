@@ -127,15 +127,22 @@ class MichelsonGrammarTokenizer {
                   seq = seq.substring(0, seq.length - 1);
               tokens.add(GrammarResultModel(
                   argSeq.key,
-                  seq.substring(0,
-                      seq.indexOf(' ') == -1 ? seq.length : seq.indexOf(' ')))
+                  seq.substring(
+                      0,
+                      seq.indexOf(' ') == -1
+                          ? seq.length
+                          : seq.indexOf(')') < seq.indexOf(' ')
+                              ? seq.indexOf(')')
+                              : seq.indexOf(' ')))
                 ..columnNumber = i);
               i += (seq
                       .substring(
                           0,
                           seq.indexOf(' ') == -1
                               ? seq.length
-                              : seq.indexOf(' '))
+                              : seq.indexOf(')') < seq.indexOf(' ')
+                                  ? seq.indexOf(')')
+                                  : seq.indexOf(' '))
                       .length -
                   1);
             } else if (char != '%') {

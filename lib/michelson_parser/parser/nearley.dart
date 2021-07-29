@@ -369,7 +369,7 @@ class ColumnState {
       try {
         data = rule.postprocess(data);  
       } catch (e) {
-        print("Error In ===> " + rule.name);
+        print("Error In ===> " + rule.name + "  " + rule.symbols.toString());
       }
     }
   }
