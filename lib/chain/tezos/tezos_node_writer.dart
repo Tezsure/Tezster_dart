@@ -178,7 +178,7 @@ class TezosNodeWriter {
       entrypoint,
       String parameters,
       TezosParameterFormat parameterFormat) {
-    var estimate = Estimate(gasLimit * 1000, storageLimit, 162, 250, fee);
+    var estimate = Estimate(gasLimit * 1500, storageLimit, 162, 250, fee);
 
     OperationModel transaction = new OperationModel(
       destination: contract,
