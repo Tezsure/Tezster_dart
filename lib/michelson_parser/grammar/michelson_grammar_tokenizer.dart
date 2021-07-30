@@ -123,7 +123,9 @@ class MichelsonGrammarTokenizer {
                       seq.indexOf(' ') == -1 ? seq.length : seq.indexOf(' ')),
                   isRegex: true);
               if (argSeq.key == 'number')
-                while (!isNumeric(seq.substring(seq.length - 2)))
+                while (seq != '' &&
+                    !isNumeric(
+                        seq.substring(seq.length - 2 < 0 ? 0 : seq.length - 2)))
                   seq = seq.substring(0, seq.length - 1);
               tokens.add(GrammarResultModel(
                   argSeq.key,
