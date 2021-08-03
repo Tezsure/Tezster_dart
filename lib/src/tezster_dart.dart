@@ -188,8 +188,8 @@ class TezsterDart {
   }
 
   static String normalizePrimitiveRecordOrder(String data) {
-    return MichelsonParser.normalizeMichelineWhiteSpace(jsonEncode(
-        TezosLanguageUtil.normalizePrimitiveRecordOrder(jsonDecode(data)))) ;
+    return jsonEncode(
+        TezosLanguageUtil.normalizePrimitiveRecordOrder(jsonDecode(data)));
   }
 
   static createSigner(Uint8List secretKey, {int validity = 60}) {
