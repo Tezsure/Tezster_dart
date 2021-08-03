@@ -11,11 +11,13 @@ import 'package:ed25519_hd_key/ed25519_hd_key.dart';
 import 'package:password_hash/password_hash.dart';
 import 'package:bip39/bip39.dart' as bip39;
 import 'package:bs58check/bs58check.dart' as bs58check;
+import 'package:tezster_dart/chain/tezos/tezos_language_util.dart';
 import 'package:tezster_dart/chain/tezos/tezos_message_utils.dart';
 import 'package:tezster_dart/chain/tezos/tezos_node_reader.dart';
 import 'package:tezster_dart/chain/tezos/tezos_node_writer.dart';
 import 'package:tezster_dart/helper/constants.dart';
 import 'package:tezster_dart/helper/http_helper.dart';
+import 'package:tezster_dart/michelson_parser/michelson_parser.dart';
 import 'package:tezster_dart/reporting/tezos/tezos_conseil_client.dart';
 import 'package:tezster_dart/src/soft-signer/soft_signer.dart';
 import 'package:tezster_dart/tezster_dart.dart';
@@ -183,6 +185,11 @@ class TezsterDart {
   static String writeAddress(address) {
     assert(address != null);
     return TezosMessageUtils.writeAddress(address);
+  }
+
+  static String normalizePrimitiveRecordOrder(String data) {
+    return MichelsonParser.normalizeMichelineWhiteSpace(jsonEncode(
+        TezosLanguageUtil.normalizePrimitiveRecordOrder(jsonDecode(data)))) ;
   }
 
   static createSigner(Uint8List secretKey, {int validity = 60}) {
