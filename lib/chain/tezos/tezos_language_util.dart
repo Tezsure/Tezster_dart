@@ -12,26 +12,6 @@ class TezosLanguageUtil {
     return MichelsonParser.translateMichelineToHex(p);
   }
 
-/*
-
-export function normalizePrimitiveRecordOrder(obj: object)  {
-        if (Array.isArray(obj)) {
-            return obj.map(normalizePrimitiveRecordOrder);
-        }
-
-        if (typeof obj === "object") {
-            return Object.keys(obj)
-                .sort((k1, k2) => primitiveRecordOrder.indexOf(k1) - primitiveRecordOrder.indexOf(k2))
-                .reduce((newObj, key) => ({
-                    ...newObj,
-                    [key]: normalizePrimitiveRecordOrder(obj[key])
-                }), {});
-        }
-        return obj;
-    }
-
- */
-
   static dynamic normalizePrimitiveRecordOrder(data) {
     if (data is List) return data.map(normalizePrimitiveRecordOrder).toList();
 
@@ -41,7 +21,9 @@ export function normalizePrimitiveRecordOrder(obj: object)  {
           TezosLanguageUtil.primitiveRecordOrder.indexOf(k1) -
           TezosLanguageUtil.primitiveRecordOrder.indexOf(k2));
 
-      data = keys.fold({}, (obj, value) => {...obj, value: data[value]});
+      data = keys.fold({}, (obj, value) {
+        return {...obj, value: normalizePrimitiveRecordOrder(data[value])};
+      });
     }
     return data;
   }
