@@ -97,18 +97,19 @@ class TezosNodeWriter {
   }
 
   static sendContractInvocationOperation(
-      String server,
-      SoftSigner signer,
-      KeyStoreModel keyStore,
-      List<String> contract,
-      List<int> amount,
-      int fee,
-      int storageLimit,
-      int gasLimit,
-      List<String> entrypoint,
-      List<String> parameters,
-      {TezosParameterFormat parameterFormat = TezosParameterFormat.Micheline,
-      offset = 54}) async {
+    String server,
+    SoftSigner signer,
+    KeyStoreModel keyStore,
+    List<String> contract,
+    List<int> amount,
+    int fee,
+    int storageLimit,
+    int gasLimit,
+    List<String> entrypoint,
+    List<String> parameters, {
+    var parameterFormat = TezosParameterFormat.Michelson,
+    offset = 54,
+  }) async {
     var counter = await TezosNodeReader.getCounterForAccount(
             server, keyStore.publicKeyHash) +
         1;
@@ -127,7 +128,7 @@ class TezosNodeWriter {
           gasLimit,
           entrypoint[i],
           parameters[i],
-          parameterFormat,
+          parameterFormat is List ? parameterFormat[i] : parameterFormat,
         ),
       );
     }

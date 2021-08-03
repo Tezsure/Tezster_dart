@@ -279,18 +279,19 @@ class TezsterDart {
   }
 
   static sendContractInvocationOperation(
-      String server,
-      SoftSigner signer,
-      KeyStoreModel keyStore,
-      List<String> contract,
-      List<int> amount,
-      int fee,
-      int storageLimit,
-      int gasLimit,
-      List<String> entrypoint,
-      List<String> parameters,
-      {TezosParameterFormat codeFormat = TezosParameterFormat.Micheline,
-      offset = 54}) async {
+    String server,
+    SoftSigner signer,
+    KeyStoreModel keyStore,
+    List<String> contract,
+    List<int> amount,
+    int fee,
+    int storageLimit,
+    int gasLimit,
+    List<String> entrypoint,
+    List<String> parameters, {
+    var codeFormat = TezosParameterFormat.Micheline,
+    offset = 54,
+  }) async {
     assert(server != null);
     assert(signer != null);
     assert(keyStore != null);
@@ -315,7 +316,7 @@ class TezsterDart {
         gasLimit,
         entrypoint,
         parameters,
-        parameterFormat: codeFormat ?? TezosParameterFormat.Micheline,
+        parameterFormat: codeFormat ?? TezosParameterFormat.Michelson,
         offset: offset ?? 54);
   }
 
