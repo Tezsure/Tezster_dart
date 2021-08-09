@@ -22,7 +22,11 @@ class TezosLanguageUtil {
           TezosLanguageUtil.primitiveRecordOrder.indexOf(k2));
 
       data = keys.fold({}, (obj, value) {
-        return {...obj, value: normalizePrimitiveRecordOrder(data[value])};
+        return {
+          ...obj,
+          value: normalizePrimitiveRecordOrder(
+              data[value] is int ? data[value].toString() : data[value])
+        };
       });
     }
     return data;

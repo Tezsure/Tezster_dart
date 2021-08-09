@@ -106,4 +106,10 @@ void main() {
     expect(keys[2], 'tz1Kx6NQZ2M4a9FssBswKyT25USCXWHcTbw7');
   });
 
+  test('s', () {
+    var data =
+        """{"prim":"Right","args":[{"prim":"Left","args":[{"prim":"Left","args":[{"prim":"Pair","args":[{"prim":"Pair","args":[{"int":331},{"int":101}]},{"string":"tz1QQpKV6gd6VvGeSVddpXv85Y7mSJ4MVLdc"}]}]}]}]}""";
+    var d = TezsterDart.normalizePrimitiveRecordOrder(data);
+    print(d);
+  });
 }
