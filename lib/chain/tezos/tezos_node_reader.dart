@@ -23,33 +23,33 @@ class TezosNodeReader {
     return response != null ? response.toString() : '';
   }
 
-  static Future<Map<dynamic, dynamic>> getBlockAtOffset(
+  static Future<Map<dynamic, dynamic>?> getBlockAtOffset(
       String server, int offset,
       {String chainid = 'main'}) async {
     if (offset <= 0) {
       return await getBlock(server);
     }
-    var head = await getBlock(server);
+    var head = await (getBlock(server) as Future<Map<dynamic, dynamic>>);
     var response = await HttpHelper.performGetRequest(
         server, 'chains/$chainid/blocks/${head['header']['level'] - offset}');
     return response;
   }
 
-  static Future<Map<dynamic, dynamic>> getBlock(String server,
+  static Future<Map<dynamic, dynamic>?> getBlock(String server,
       {String hash = 'head', String chainid = 'main'}) async {
     var response = await HttpHelper.performGetRequest(
         server, 'chains/$chainid/blocks/$hash');
     return response;
   }
 
-  static Future<Map<dynamic, dynamic>> getContractStorage(server, accountHash,
+  static Future<Map<dynamic, dynamic>?> getContractStorage(server, accountHash,
       {block = 'head', chainid = 'main'}) async {
-    return await HttpHelper.performGetRequest(server,
-        'chains/$chainid/blocks/$block/context/contracts/$accountHash/storage');
+    return await (HttpHelper.performGetRequest(server,
+        'chains/$chainid/blocks/$block/context/contracts/$accountHash/storage') as Future<Map<dynamic, dynamic>?>);
   }
 
   static getValueForBigMapKey(String server, String index, String key,
-      {String block, String chainid}) async {
+      {String? block, String? chainid}) async {
     return await HttpHelper.performGetRequest(server,
         'chains/$chainid/blocks/$block/context/big_maps/$index/$key');
   }

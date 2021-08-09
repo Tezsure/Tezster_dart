@@ -12,7 +12,7 @@ class GenerateKeys {
     String stringToHexString = hex.encode(uintToString.codeUnits);
     String finalStringToDecode = "06a19f" + stringToHexString;
     List<int> listOfHexDecodedInt = hex.decode(finalStringToDecode);
-    String publicKeyHash = bs58check.encode(listOfHexDecodedInt);
+    String publicKeyHash = bs58check.encode(listOfHexDecodedInt as Uint8List);
     return publicKeyHash;
   }
 
@@ -25,12 +25,12 @@ class GenerateKeys {
     String concatinatingHexStringWithHint = hint + stringToHexString;
     List<int> convertingHexStringToListOfInt =
         hex.decode(concatinatingHexStringWithHint);
-    String base58String = bs58check.encode(convertingHexStringToListOfInt);
+    String base58String = bs58check.encode(convertingHexStringToListOfInt as Uint8List);
     return base58String;
   }
 
   static Uint8List writeKeyWithHint(
-    String key,
+    String? key,
     String hint,
   ) {
     if (hint == 'edsk' ||
@@ -39,7 +39,7 @@ class GenerateKeys {
         hint == 'p2pk' ||
         hint == '2bf64e07' ||
         hint == '0d0f25d9') {
-      return bs58check.decode(key).sublist(4);
+      return bs58check.decode(key!).sublist(4);
     } else
       throw Exception("Unrecognized key hint, '$hint'");
   }

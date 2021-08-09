@@ -3,7 +3,7 @@ import 'dart:io';
 
 class HttpHelper {
   static Future<dynamic> performPostRequest(server, command, payload,
-      {Map<String, String> headers}) async {
+      {Map<String, String?>? headers}) async {
     HttpClient httpClient = new HttpClient();
     HttpClientRequest request = await httpClient.postUrl(
         command.isEmpty ? Uri.parse(server) : Uri.parse('$server/$command'));
@@ -12,7 +12,7 @@ class HttpHelper {
       request.add(utf8.encode(json.encode(payload)));
     } else {
       headers.entries.forEach(
-        (header) => request.headers.add(header.key, header.value),
+        (header) => request.headers.add(header.key, header.value!),
       );
       request.headers.add('body', json.encode(payload));
       request.add(utf8.encode(json.encode(payload)));

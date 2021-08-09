@@ -3,8 +3,8 @@ import 'dart:math';
 class MichelsonGrammarTokenizer {
   Map<String, dynamic> delimiters;
   List<GrammarResultModel> tokens = [];
-  var buffer;
-  int index;
+  late var buffer;
+  late int index;
   var line;
   var lastLineBreak;
 
@@ -223,9 +223,9 @@ class MichelsonGrammarTokenizer {
 }
 
 class GrammarResultModel {
-  String type;
+  String? type;
   String value;
-  int columnNumber;
+  int? columnNumber;
 
   GrammarResultModel(this.type, this.value);
 

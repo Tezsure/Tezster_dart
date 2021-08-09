@@ -1,22 +1,22 @@
 import 'package:tezster_dart/helper/constants.dart';
 
 class OperationModel {
-  String destination;
-  String amount;
+  String? destination;
+  String? amount;
   int storageLimit;
-  int gasLimit;
-  int counter;
-  String fee;
-  String source;
+  int? gasLimit;
+  int? counter;
+  String? fee;
+  String? source;
   String kind;
-  String publicKey;
-  String delegate;
-  Map<String, Object> script;
+  String? publicKey;
+  String? delegate;
+  Map<String, Object?>? script;
 
-  Map<String, dynamic> parameters;
+  Map<String, dynamic>? parameters;
 
-  String pkh;
-  String secret;
+  String? pkh;
+  String? secret;
 
   OperationModel({
     this.destination,

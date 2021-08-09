@@ -44,7 +44,7 @@ class _MyAppState extends State<MyApp> {
     // Accessing: private key ===> identity[0] | public key ===> identity[1] | public Key Hash ===> identity[2] all of type string.
 
     //Restore account from secret key
-    List<String> restoredKeys = TezsterDart.getKeysFromSecretKey(
+    List<String?> restoredKeys = TezsterDart.getKeysFromSecretKey(
         "edskRrDH2TF4DwKU1ETsUjyhxPC8aCTD6ko5YDguNkJjRb3PiBm8Upe4FGFmCrQqzSVMDLfFN22XrQXATcA3v41hWnAhymgQwc");
     print("Restored account keys ===> $restoredKeys");
     // restoredKeys ===> [privateKey, publicKey, publicKeyHash]
@@ -233,8 +233,8 @@ class _MyAppState extends State<MyApp> {
     );
 
     var faucetKeys = await TezsterDart.unlockFundraiserIdentity(
-        email: faucetKeyStore.email,
-        passphrase: faucetKeyStore.password,
+        email: faucetKeyStore.email!,
+        passphrase: faucetKeyStore.password!,
         mnemonic: faucetKeyStore.seed.join(' '));
     faucetKeyStore
       ..publicKey = faucetKeys[1]
@@ -244,7 +244,7 @@ class _MyAppState extends State<MyApp> {
         TezsterDart.writeKeyWithHint(faucetKeyStore.secretKey, 'edsk'));
     var activationOperationResult =
         await TezsterDart.sendIdentityActivationOperation(server,
-            activationOperationSigner, faucetKeyStore, faucetKeyStore.secret);
+            activationOperationSigner, faucetKeyStore, faucetKeyStore.secret!);
     print('${activationOperationResult['operationGroupID']}');
 
     //Reveal an account

@@ -5,11 +5,11 @@ import 'package:flutter/cupertino.dart';
 class PasswordGenerator {
 
   static String generatePassword(
-      {@required double length,
-      bool isWithLetters,
-      bool isWithUppercase,
-      bool isWithNumbers,
-      bool isWithSpecial}) {
+      {required double length,
+      required bool isWithLetters,
+      required bool isWithUppercase,
+      required bool isWithNumbers,
+      required bool isWithSpecial}) {
     String _lowerCaseLetters = "abcdefghijklmnopqrstuvwxyz";
     String _upperCaseLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     String _numbers = "0123456789";
