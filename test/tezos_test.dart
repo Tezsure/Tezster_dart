@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:tezster_dart/chain/tezos/tezos_language_util.dart';
 import 'package:tezster_dart/tezster_dart.dart';
 
 void main() {
@@ -108,8 +109,8 @@ void main() {
 
   test('s', () {
     var data =
-        """{"prim":"Right","args":[{"prim":"Left","args":[{"prim":"Left","args":[{"prim":"Pair","args":[{"prim":"Pair","args":[{"int":331},{"int":101}]},{"string":"tz1QQpKV6gd6VvGeSVddpXv85Y7mSJ4MVLdc"}]}]}]}]}""";
-    var d = TezsterDart.normalizePrimitiveRecordOrder(data);
+        """{"prim":"Right","args":[{"prim":"Left","args":[{"prim":"Left","args":[{"prim":"Pair","args":[{"prim":"Pair","args":[{"int":"331"},{"int":"99"}]},{"string":"tz1QQpKV6gd6VvGeSVddpXv85Y7mSJ4MVLdc"}]}]}]}]}""";
+    var d = TezosLanguageUtil.translateMichelineToHex(data);
     print(d);
   });
 }
