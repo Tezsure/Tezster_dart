@@ -240,8 +240,8 @@ class TezosNodeWriter {
 
   static Future<Map<String, Object?>> sendOperation(String server,
       List<OperationModel> operations, SoftSigner signer, int offset) async {
-    var blockHead = await (TezosNodeReader.getBlockAtOffset(server, offset) as Future<Map<dynamic, dynamic>>);
-    var blockHash = blockHead['hash'].toString().substring(0, 51);
+    var blockHead = await TezosNodeReader.getBlockAtOffset(server, offset);
+    var blockHash = blockHead!['hash'].toString().substring(0, 51);
     var forgedOperationGroup = forgeOperations(blockHash, operations);
     var opSignature = signer.signOperation(Uint8List.fromList(hex.decode(
         TezosConstants.OperationGroupWatermark + forgedOperationGroup)));

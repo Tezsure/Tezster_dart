@@ -16,6 +16,8 @@ import 'package:tezster_dart/chain/tezos/tezos_node_reader.dart';
 import 'package:tezster_dart/chain/tezos/tezos_node_writer.dart';
 import 'package:tezster_dart/helper/constants.dart';
 import 'package:tezster_dart/helper/http_helper.dart';
+import 'package:tezster_dart/michelson_parser/michelson_parser.dart';
+import 'package:tezster_dart/michelson_parser/parser/michelson_grammar.dart';
 import 'package:tezster_dart/reporting/tezos/tezos_conseil_client.dart';
 import 'package:tezster_dart/src/soft-signer/soft_signer.dart';
 import 'package:tezster_dart/tezster_dart.dart';
@@ -158,7 +160,8 @@ class TezsterDart {
     List<int> normalizedPassphrase = stringNormalize("$email" + "$passphrase");
     String normString = String.fromCharCodes(normalizedPassphrase);
     String p = "mnemonic" + normString;
-    Uint8List seed = PBKDF2(hashAlgorithm: sha512).generateKey(m, p, 2048, 32) as Uint8List;
+    Uint8List seed =
+        PBKDF2(hashAlgorithm: sha512).generateKey(m, p, 2048, 32) as Uint8List;
     KeyPair keyPair = Sodium.cryptoSignSeedKeypair(seed);
     String skKey = GenerateKeys.readKeysWithHint(keyPair.sk, '2bf64e07');
     String pkKey = GenerateKeys.readKeysWithHint(keyPair.pk, '0d0f25d9');
@@ -368,5 +371,15 @@ class TezsterDart {
     assert(key != null);
     return await TezosNodeReader.getValueForBigMapKey(server, index, key,
         block: 'head', chainid: 'main');
+  }
+
+  static void exp(String contract) async {
+    var block = 'head';
+    var chainid = 'main';
+    var server = "https://edonet.smartpy.io";
+    var res =await HttpHelper.performGetRequest(server,
+        'chains/$chainid/blocks/$block/context/contracts/$contract/script',returnString: true);
+    var script =MichelsonParser.preProcessMichelsonScript(res);
+    print(script);
   }
 }

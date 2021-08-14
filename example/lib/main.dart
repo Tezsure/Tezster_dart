@@ -266,7 +266,16 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    tezosWalletUtil();
+    // tezosWalletUtil();
+    readContract();
+  }
+
+  void readContract() async {
+    // var contractAddress = 'KT1RJ6PbjHpwc3M5rw5s2Nbmefwbuwbdxton';
+    // var contract = await TezsterDart.getContractStorage(
+    //        "https://edonet.smartpy.io", "KT1CoQ5cd6hkPCxeCj3N5uPWztKfjn4kqXVm");
+        // print(contract);
+        TezsterDart.exp("KT1CoQ5cd6hkPCxeCj3N5uPWztKfjn4kqXVm");
   }
 
   @override
@@ -277,9 +286,14 @@ class _MyAppState extends State<MyApp> {
         body: Padding(
           padding: EdgeInsets.all(8.0),
           child: Center(
-            child: Text(
-              "Welcome to Tezster_dart package.\n Please check the debug console for the outputs",
-              textAlign: TextAlign.center,
+            child: InkWell(
+              onTap: () {
+                readContract();
+              },
+              child: Text(
+                "Welcome to Tezster_dart package.\n Please check the debug console for the outputs",
+                textAlign: TextAlign.center,
+              ),
             ),
           ),
         ),
