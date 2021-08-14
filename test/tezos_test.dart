@@ -26,7 +26,7 @@ void main() {
   });
 
   test('Restore account from secret key', () {
-    List<String> keys =
+    List<String?> keys =
         TezsterDart.getKeysFromSecretKey(_keyStoreModel.secretKey);
     expect(keys[0], _keyStoreModel.secretKey);
     expect(keys[1], _keyStoreModel.publicKey);

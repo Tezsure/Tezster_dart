@@ -44,7 +44,7 @@ class _MyAppState extends State<MyApp> {
     // Accessing: private key ===> identity[0] | public key ===> identity[1] | public Key Hash ===> identity[2] all of type string.
 
     //Restore account from secret key
-    List<String> restoredKeys = TezsterDart.getKeysFromSecretKey(
+    List<String?> restoredKeys = TezsterDart.getKeysFromSecretKey(
         "edskRrDH2TF4DwKU1ETsUjyhxPC8aCTD6ko5YDguNkJjRb3PiBm8Upe4FGFmCrQqzSVMDLfFN22XrQXATcA3v41hWnAhymgQwc");
     print("Restored account keys ===> $restoredKeys");
     // restoredKeys ===> [privateKey, publicKey, publicKeyHash]
@@ -233,8 +233,8 @@ class _MyAppState extends State<MyApp> {
     );
 
     var faucetKeys = await TezsterDart.unlockFundraiserIdentity(
-        email: faucetKeyStore.email,
-        passphrase: faucetKeyStore.password,
+        email: faucetKeyStore.email!,
+        passphrase: faucetKeyStore.password!,
         mnemonic: faucetKeyStore.seed.join(' '));
     faucetKeyStore
       ..publicKey = faucetKeys[1]
@@ -244,7 +244,7 @@ class _MyAppState extends State<MyApp> {
         TezsterDart.writeKeyWithHint(faucetKeyStore.secretKey, 'edsk'));
     var activationOperationResult =
         await TezsterDart.sendIdentityActivationOperation(server,
-            activationOperationSigner, faucetKeyStore, faucetKeyStore.secret);
+            activationOperationSigner, faucetKeyStore, faucetKeyStore.secret!);
     print('${activationOperationResult['operationGroupID']}');
 
     //Reveal an account
@@ -266,7 +266,16 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    tezosWalletUtil();
+    // tezosWalletUtil();
+    readContract();
+  }
+
+  void readContract() async {
+    // var contractAddress = 'KT1RJ6PbjHpwc3M5rw5s2Nbmefwbuwbdxton';
+    // var contract = await TezsterDart.getContractStorage(
+    //        "https://edonet.smartpy.io", "KT1CoQ5cd6hkPCxeCj3N5uPWztKfjn4kqXVm");
+        // print(contract);
+        TezsterDart.exp("KT1CoQ5cd6hkPCxeCj3N5uPWztKfjn4kqXVm");
   }
 
   @override
@@ -277,9 +286,14 @@ class _MyAppState extends State<MyApp> {
         body: Padding(
           padding: EdgeInsets.all(8.0),
           child: Center(
-            child: Text(
-              "Welcome to Tezster_dart package.\n Please check the debug console for the outputs",
-              textAlign: TextAlign.center,
+            child: InkWell(
+              onTap: () {
+                readContract();
+              },
+              child: Text(
+                "Welcome to Tezster_dart package.\n Please check the debug console for the outputs",
+                textAlign: TextAlign.center,
+              ),
             ),
           ),
         ),

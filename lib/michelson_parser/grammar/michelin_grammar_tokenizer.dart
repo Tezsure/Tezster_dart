@@ -4,8 +4,8 @@ import 'michelson_grammar_tokenizer.dart';
 class MichelinGrammarTokenizer {
   Map<String, dynamic> delimiters;
   List<GrammarResultModel> tokens = [];
-  var buffer;
-  int index;
+  late var buffer;
+  late int index;
   var line;
   var lastLineBreak;
 

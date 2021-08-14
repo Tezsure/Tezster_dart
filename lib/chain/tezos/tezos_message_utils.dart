@@ -188,7 +188,7 @@ class TezosMessageUtils {
         .join('');
   }
 
-  static String writeString(value) {
+  static String? writeString(value) {
     var len = dataLength(value.length);
     var text = value
         .split('')
@@ -247,7 +247,7 @@ class TezosMessageUtils {
       case 'nat':
         return '0500' + writeInt(int.parse(value));
       case 'string':
-        return '0501' + writeString(value);
+        return '0501' + writeString(value)!;
       case 'key_hash':
         var address = writeAddress(value).substring(2);
         return '050a${dataLength(address.length / 2)}$address';
@@ -263,7 +263,7 @@ class TezosMessageUtils {
             return '05${TezosLanguageUtil.translateMichelineToHex(value)}';
           } else if (format == TezosParameterFormat.Michelson) {
             var micheline =
-                TezosLanguageUtil.translateMichelsonToMicheline(value);
+                TezosLanguageUtil.translateMichelsonToMicheline(value)!;
             return '05${TezosLanguageUtil.translateMichelineToHex(micheline)}';
           } else {
             throw new Exception('Unsupported format $format provided');

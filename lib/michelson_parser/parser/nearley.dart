@@ -6,15 +6,15 @@ import 'package:tezster_dart/michelson_parser/grammar/michelson_grammar_tokenize
 var fail = {};
 
 class Nearley {
-  NearleyGrammar grammar;
+  NearleyGrammar? grammar;
   var options;
 
   var lexer;
   var lexerState;
-  var table;
+  late var table;
 
-  int current;
-  var results;
+  late int current;
+  late var results;
 
   static NearleyGrammar fromCompiled(Map<String, dynamic> rules, {start}) {
     var lexer = rules['Lexer'];
@@ -33,15 +33,15 @@ class Nearley {
 
     options = {
       'keepHistory': false,
-      'lexer': grammar.lexer ?? new StreamLexer(),
+      'lexer': grammar!.lexer ?? new StreamLexer(),
     };
 
     lexer = options['lexer'];
     lexerState = null;
 
     var column = new Column(grammar, 0);
-    column.wants[grammar.start] = [];
-    column.predict(grammar.start);
+    column.wants![grammar!.start] = [];
+    column.predict(grammar!.start);
     column.process();
     table = [column];
     current = 0;
@@ -109,7 +109,7 @@ class Nearley {
 
   finish() {
     var considerations = [];
-    var start = this.grammar.start;
+    var start = this.grammar!.start;
     var column = this.table[this.table.length - 1];
     column.states.forEach((t) {
       if (t.rule.name == start &&
@@ -271,13 +271,13 @@ class Nearley {
 }
 
 class Column {
-  NearleyGrammar grammar;
+  NearleyGrammar? grammar;
   int index;
 
-  List<ColumnState> states;
-  Map wants;
-  List<ColumnState> scannable;
-  Map completed;
+  late List<ColumnState?> states;
+  Map? wants;
+  late List<ColumnState> scannable;
+  Map? completed;
 
   Column(this.grammar, this.index) {
     states = [];
@@ -287,10 +287,10 @@ class Column {
   }
 
   void predict(exp) {
-    var rules = grammar.byName[exp] ?? [];
+    var rules = grammar!.byName[exp] ?? [];
     for (var i = 0; i < rules.length; i++) {
       var r = rules[i];
-      var wantBy = wants[exp];
+      var wantBy = wants![exp];
       var s = new ColumnState(r, 0, index, wantBy);
       states.add(s);
     }
@@ -302,7 +302,7 @@ class Column {
     var _completed = this.completed;
 
     for (var w = 0; w < _states.length; w++) {
-      var state = _states[w];
+      var state = _states[w]!;
       if (state.isComplete) {
         state.finish();
         if (state.data != fail) {
@@ -315,8 +315,8 @@ class Column {
 
           if (state.reference == index) {
             var exp = state.rule.name;
-            this.completed[exp] = this.completed[exp] ?? [];
-            this.completed[exp].add(state);
+            this.completed![exp] = this.completed![exp] ?? [];
+            this.completed![exp].add(state);
           }
         }
       } else {
@@ -325,9 +325,9 @@ class Column {
           this.scannable.add(state);
         }
 
-        if (_wants[exp] != null) {
+        if (_wants![exp] != null) {
           _wants[exp].add(state);
-          if (_completed.containsKey(exp)) {
+          if (_completed!.containsKey(exp)) {
             var nulls = _completed[exp];
             for (var i = 0; i < nulls.length; i++) {
               var right = nulls[i];
@@ -354,10 +354,10 @@ class ColumnState {
   var reference;
   var data;
   var wantedBy;
-  var isComplete;
+  late var isComplete;
 
-  ColumnState left;
-  var right;
+  ColumnState? left;
+  late var right;
 
   ColumnState(this.rule, this.dot, this.reference, this.wantedBy) {
     data = [];
@@ -386,11 +386,11 @@ class ColumnState {
 
   List build() {
     var children = [];
-    var node = this;
+    ColumnState node = this;
     do {
       children.add(
           node.right is ColumnState ? node.right.data : node.right['data']);
-      node = node.left;
+      node = node.left!;
     } while (node.left != null);
     children = children.reversed.toList();
     return children;
@@ -399,23 +399,23 @@ class ColumnState {
 
 class NearleyError {
   var error;
-  int offset;
+  int? offset;
   var token;
   NearleyError(this.error);
 }
 
 class NearleyGrammar {
-  List<Rule> rules;
+  List<Rule>? rules;
   var start;
 
   var lexer;
-  var byName;
+  late var byName;
 
   NearleyGrammar(this.rules, this.start) {
     this.rules = rules;
-    this.start = start ?? this.rules[0].name;
+    this.start = start ?? this.rules![0].name;
     var byName = this.byName = {};
-    this.rules.forEach((rule) {
+    this.rules!.forEach((rule) {
       if (!byName.containsKey(rule.name)) {
         byName[rule.name] = [];
       }
@@ -458,7 +458,7 @@ class Rule {
 
 class StreamLexer {
   var buffer;
-  int index;
+  late int index;
   var line;
   var lastLineBreak;
 
@@ -503,7 +503,7 @@ class StreamLexer {
           " col " +
           col.toString() +
           ":\n\n";
-      var msg = List();
+      var msg = [];
       for (var i = 0; i < lines.length; i++) {
         var line = lines[i];
         msg.add(
