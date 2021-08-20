@@ -30,6 +30,7 @@ class HttpHelper {
     HttpClientResponse response = await request.close();
     String reply = await response.transform(utf8.decoder).join();
     httpClient.close();
-    return jsonDecode(reply);
+    if (reply.length > 0) return jsonDecode(reply);
+    return null;
   }
 }
