@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:tezster_dart/chain/tezos/tezos_language_util.dart';
+import 'package:tezster_dart/src/soft-signer/soft_signer.dart';
 import 'package:tezster_dart/tezster_dart.dart';
 
 void main() {
@@ -107,10 +108,14 @@ void main() {
     expect(keys[2], 'tz1Kx6NQZ2M4a9FssBswKyT25USCXWHcTbw7');
   });
 
-  test('s', () {
-    var data =
-        """{"prim":"Right","args":[{"prim":"Left","args":[{"prim":"Left","args":[{"prim":"Pair","args":[{"prim":"Pair","args":[{"int":"331"},{"int":"99"}]},{"string":"tz1QQpKV6gd6VvGeSVddpXv85Y7mSJ4MVLdc"}]}]}]}]}""";
-    var d = TezosLanguageUtil.translateMichelineToHex(data);
-    print(d);
+  test('Sign Payload', () async {
+    var keys = TezsterDart.getKeysFromSecretKey('');
+    // [skKey, pkKey, pkKeyHash]
+    SoftSigner signer =
+        TezsterDart.createSigner(TezsterDart.writeKeyWithHint(keys[0], 'edsk'));
+    print(TezsterDart.signPayload(
+        signer: signer,
+        payload:
+            '05010000007d54657a6f73205369676e6564204d6573736167653a20436f6e6669726d696e67206d79206964656e7469747920617320747a3158504171617861656e74706f38653239355737686a7236393673713958487a486a206f6e206f626a6b742e636f6d20617420323032312d31322d30395430363a33323a33382e3331355a'));
   });
 }

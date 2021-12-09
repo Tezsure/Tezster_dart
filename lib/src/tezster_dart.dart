@@ -114,6 +114,17 @@ class TezsterDart {
     );
   }
 
+  static String signPayload({
+    SoftSigner signer,
+    String payload,
+  }) {
+    var opSignature =
+        signer.signOperation(Uint8List.fromList(hex.decode(payload)));
+    var base58signature = TezosMessageUtils.readSignatureWithHint(
+        opSignature, signer.getSignerCurve());
+    return base58signature;
+  }
+
   static Future<List<String>> signOperationGroup({
     String privateKey,
     String forgedOperation,
