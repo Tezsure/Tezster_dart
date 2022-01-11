@@ -1,9 +1,28 @@
+import 'dart:io';
+import 'dart:typed_data';
+
+import 'package:blake2b/blake2b.dart';
+import 'package:blake2b/blake2b_hash.dart';
+import 'package:bs58check/bs58check.dart' as bs58check;
+import 'package:convert/convert.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:tezster_dart/chain/tezos/tezos_language_util.dart';
+import 'package:tezster_dart/chain/tezos/tezos_message_utils.dart';
 import 'package:tezster_dart/src/soft-signer/soft_signer.dart';
 import 'package:tezster_dart/tezster_dart.dart';
 
+class MyHttpOverrides extends HttpOverrides {
+  @override
+  HttpClient createHttpClient(SecurityContext context) {
+    return super.createHttpClient(context)
+      ..badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
+  }
+}
+
 void main() {
+  HttpOverrides.global = new MyHttpOverrides();
+
   String testPrivateKey =
       "edskRdVS5H9YCRAG8yqZkX2nUTbGcaDqjYgopkJwRuPUnYzCn3t9ZGksncTLYe33bFjq29pRhpvjQizCCzmugMGhJiXezixvdC";
   String testForgedOperation =
@@ -28,8 +47,9 @@ void main() {
   });
 
   test('Restore account from secret key', () {
-    List<String> keys =
-        TezsterDart.getKeysFromSecretKey(_keyStoreModel.secretKey);
+    List<String> keys = TezsterDart.getKeysFromSecretKey(
+        "edskRnzCiMnMiVWa3nK86kpFA639feEtYU8PCwXuG1t9kpPuNpnKECphv6yDT22Y23P1WQPe2Ng6ubXA9gYNhJJA2YUY43beFi");
+    print(keys);
     expect(keys[0], _keyStoreModel.secretKey);
     expect(keys[1], _keyStoreModel.publicKey);
     expect(keys[2], _keyStoreModel.publicKeyHash);
@@ -118,4 +138,257 @@ void main() {
         payload:
             '05010000007d54657a6f73205369676e6564204d6573736167653a20436f6e6669726d696e67206d79206964656e7469747920617320747a3158504171617861656e74706f38653239355737686a7236393673713958487a486a206f6e206f626a6b742e636f6d20617420323032312d31322d30395430363a33323a33382e3331355a'));
   });
+
+  /// Without code optimized
+  /// [1] -> 7712
+  /// [2] -> 8572
+  /// [3] -> 11292
+  /// [4] -> 9412
+  /// [5] -> 9057
+  /// (7712 + 8572 + 11292 + 9412 + 9057) / 5 = [9209]
+
+  /// With code optimized
+
+  test('Test_Txs_time', () async {
+    HttpOverrides.global = new MyHttpOverrides();
+    DateTime time = DateTime.now();
+    // print(TezosMessageUtils.writeInt(108));
+    KeyStoreModel keyStore = KeyStoreModel(
+        secretKey:
+            "edskRnzCiMnMiVWa3nK86kpFA639feEtYU8PCwXuG1t9kpPuNpnKECphv6yDT22Y23P1WQPe2Ng6ubXA9gYNhJJA2YUY43beFi",
+        publicKey: "edpkuAE2nMQBWvFCPBdWgnzP8LgEigLcm6yCxZ5F9H6b5WGMHEJpcs",
+        publicKeyHash: "tz1XPAqaxaentpo8e295W7hjr696sq9XHzHj");
+
+    var signer = await TezsterDart.createSigner(
+        TezsterDart.writeKeyWithHint(keyStore.secretKey, 'edsk'));
+    const server = 'https://tezos-prod.cryptonomic-infra.tech';
+
+    var result = await TezsterDart.sendTransactionOperation(
+      server,
+      signer,
+      keyStore,
+      'tz1USmQMoNCUUyk4BfeEGUyZRK2Bcc9zoK8C',
+      10,
+      1500,
+      // isKeyRevealed: false,
+    );
+    print(DateTime.now().difference(time).inMilliseconds);
+    print(result['operationGroupID']);
+    expect(true,
+        result['operationGroupID'] != null && result['operationGroupID'] != '');
+  });
+
+  // edsigtbeRGAZwMZnsAp5FkknxND1UoFdPzwJmChNue6qZnErNEeph1j5zRYAq1ohkW61qtP8hKWCpcovxYpXTm1Y4RM4hqkRtMe
+
+  test('demo', () {
+    var signGroup = [
+      4,
+      174,
+      109,
+      236,
+      158,
+      61,
+      200,
+      2,
+      213,
+      175,
+      248,
+      21,
+      174,
+      170,
+      167,
+      232,
+      232,
+      56,
+      64,
+      158,
+      182,
+      236,
+      210,
+      118,
+      153,
+      247,
+      28,
+      9,
+      104,
+      217,
+      195,
+      54,
+      108,
+      0,
+      128,
+      210,
+      17,
+      229,
+      59,
+      129,
+      53,
+      99,
+      45,
+      83,
+      145,
+      98,
+      25,
+      207,
+      201,
+      186,
+      115,
+      90,
+      34,
+      107,
+      252,
+      11,
+      207,
+      209,
+      245,
+      7,
+      204,
+      83,
+      240,
+      3,
+      10,
+      0,
+      0,
+      96,
+      151,
+      203,
+      60,
+      129,
+      111,
+      33,
+      66,
+      148,
+      12,
+      65,
+      36,
+      10,
+      245,
+      194,
+      196,
+      132,
+      76,
+      211,
+      146,
+      0,
+      187,
+      190,
+      212,
+      24,
+      68,
+      57,
+      112,
+      235,
+      242,
+      161,
+      81,
+      68,
+      35,
+      56,
+      80,
+      106,
+      160,
+      191,
+      81,
+      26,
+      240,
+      100,
+      200,
+      22,
+      98,
+      144,
+      247,
+      166,
+      191,
+      90,
+      135,
+      197,
+      118,
+      123,
+      252,
+      208,
+      56,
+      150,
+      210,
+      204,
+      30,
+      24,
+      135,
+      67,
+      210,
+      126,
+      169,
+      41,
+      49,
+      163,
+      81,
+      9,
+      76,
+      34,
+      91,
+      29,
+      202,
+      120,
+      34,
+      233,
+      83,
+      251,
+      120,
+      13
+    ];
+
+    print(signGroup.sublist(0, 32));
+    Uint8List blake2bHash =
+        Blake2bHash.hashWithDigestSize(256, Uint8List.fromList(signGroup));
+
+    String uintToString = String.fromCharCodes(blake2bHash);
+    String stringToHexString = hex.encode(uintToString.codeUnits);
+    String finalStringToDecode = stringToHexString;
+    List<int> listOfHexDecodedInt = hex.decode(finalStringToDecode);
+    String publicKeyHash = bs58check.encode(listOfHexDecodedInt);
+    print(publicKeyHash);
+    // print(Blake2bHash.hashWithDigestSize(256, Uint8List.fromList(signGroup))
+    //     .toList());
+    // print(
+    //   base58.encode(
+    //     Uint8List.fromList(
+    //       Blake2bHash.hashWithDigestSize(
+    //         256,
+    //         Uint8List.fromList(
+    //           base58
+    //                   .encode(
+    //                     Uint8List.fromList(
+    //                       "0x0574".codeUnits,
+    //                     ),
+    //                   )
+    //                   .codeUnits +
+    //               signGroup,
+    //         ),
+    //       ).toList(),
+    //     ),
+    //   ),
+    // );
+    // print("0x0574".codeUnits);
+    // print(base58.encode(Uint8List.fromList("0x0574".codeUnits)).codeUnits);
+    // var data = base58.decode(
+    //     "edsigtbeRGAZwMZnsAp5FkknxND1UoFdPzwJmChNue6qZnErNEeph1j5zRYAq1ohkW61qtP8hKWCpcovxYpXTm1Y4RM4hqkRtMe");
+    // var dd = hex.encode(String.fromCharCodes(
+    //   Blake2bHash.hashWithDigestSize(
+    //     256,
+    //     Uint8List.fromList(
+    //       "edsigtbeRGAZwMZnsAp5FkknxND1UoFdPzwJmChNue6qZnErNEeph1j5zRYAq1ohkW61qtP8hKWCpcovxYpXTm1Y4RM4hqkRtMe"
+    //           .codeUnits,
+    //     ),
+    //   ),
+    // ).codeUnits);
+    // print(dd);
+    // dd = "0x0574" + dd.substring(0, 32);
+    // print(dd);
+    // print(base58.encode(Uint8List.fromList(dd.codeUnits)));
+  });
 }
+// op4vK32Fv2GjA4oHf3ke7TEBoSULshAeJFE49c7cEFzsheUSS8U
+// 52GCuaMLRkmMwH1HtjvZBMkmNhM5zfosLgfujfQPQeXA
+// 55x4FTLxR9CjUW6jb9TG9jnXRN72q7TraKuExAQPE6ATh2eaPWEuBvh
+// Gp6FaZuPbnwXTbPgVNr2iwpkZcXNBVkWKkQXVQRbq2wE
+// 63piaifwbtbJS5q1yr6QMBVTNMtCmPTWhkFm3Kd5emoX1evnKEnfwh1GaLvN9EmQZq
+// 8Aru1KduKD7RbJHhCZBkMVzEvAtRkGKoZiRVxksYwyomh7Vc6sH3

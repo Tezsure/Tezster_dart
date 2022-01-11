@@ -210,7 +210,7 @@ class TezsterDart {
 
   static sendTransactionOperation(String server, SoftSigner signer,
       KeyStoreModel keyStore, String to, int amount, int fee,
-      {int offset = 54}) async {
+      {int offset = 54, bool isKeyRevealed = false}) async {
     assert(server != null);
     assert(signer != null);
     assert(keyStore != null);
@@ -223,7 +223,14 @@ class TezsterDart {
     assert(offset != null);
 
     return await TezosNodeWriter.sendTransactionOperation(
-        server, signer, keyStore, to, amount, fee);
+      server,
+      signer,
+      keyStore,
+      to,
+      amount,
+      fee,
+      isKeyRevealed: isKeyRevealed,
+    );
   }
 
   static sendDelegationOperation(String server, SoftSigner signer,
@@ -387,5 +394,54 @@ class TezsterDart {
     assert(key != null);
     return await TezosNodeReader.getValueForBigMapKey(server, index, key,
         block: 'head', chainid: 'main');
+  }
+
+  static injectOperation(String server, opPair) async {
+    assert(server != null);
+    assert(opPair != null);
+    return await TezosNodeWriter.injectOperation(server, opPair);
+  }
+
+  static preapplyContractInvocationOperation(
+    String server,
+    SoftSigner signer,
+    KeyStoreModel keyStore,
+    List<String> contract,
+    List<int> amount,
+    int fee,
+    int storageLimit,
+    int gasLimit,
+    List<String> entrypoint,
+    List<String> parameters, {
+    var codeFormat = TezosParameterFormat.Micheline,
+    offset = 54,
+  }) async {
+    assert(server != null);
+    assert(signer != null);
+    assert(keyStore != null);
+    assert(contract != null);
+    assert(keyStore.publicKeyHash != null);
+    assert(keyStore.publicKey != null);
+    assert(keyStore.secretKey != null);
+    assert(amount != null);
+    assert(entrypoint != null);
+    assert(parameters != null);
+    assert(fee != null);
+    assert(storageLimit != null);
+    assert(gasLimit != null);
+    return await TezosNodeWriter.sendContractInvocationOperation(
+        server,
+        signer,
+        keyStore,
+        contract,
+        amount,
+        fee,
+        storageLimit,
+        gasLimit,
+        entrypoint,
+        parameters,
+        parameterFormat: codeFormat ?? TezosParameterFormat.Michelson,
+        offset: offset ?? 54,
+        preapply : true);
   }
 }

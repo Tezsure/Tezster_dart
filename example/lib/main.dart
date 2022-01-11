@@ -266,7 +266,34 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    tezosWalletUtil();
+    // tezosWalletUtil();
+    testDemo();
+  }
+
+  testDemo() async {
+    DateTime time = DateTime.now();
+    // print(TezosMessageUtils.writeInt(108));
+    KeyStoreModel keyStore = KeyStoreModel(
+        secretKey:
+            "edskRnzCiMnMiVWa3nK86kpFA639feEtYU8PCwXuG1t9kpPuNpnKECphv6yDT22Y23P1WQPe2Ng6ubXA9gYNhJJA2YUY43beFi",
+        publicKey: "edpkuAE2nMQBWvFCPBdWgnzP8LgEigLcm6yCxZ5F9H6b5WGMHEJpcs",
+        publicKeyHash: "tz1XPAqaxaentpo8e295W7hjr696sq9XHzHj");
+
+    var signer = await TezsterDart.createSigner(
+        TezsterDart.writeKeyWithHint(keyStore.secretKey, 'edsk'));
+    const server = 'https://tezos-prod.cryptonomic-infra.tech';
+
+    var result = await TezsterDart.sendTransactionOperation(
+      server,
+      signer,
+      keyStore,
+      'tz1USmQMoNCUUyk4BfeEGUyZRK2Bcc9zoK8C',
+      10,
+      1500,
+      // isKeyRevealed: false,
+    );
+    print(DateTime.now().difference(time).inMilliseconds);
+    print(result['operationGroupID']);
   }
 
   @override
