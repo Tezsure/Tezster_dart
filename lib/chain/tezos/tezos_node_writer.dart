@@ -245,7 +245,7 @@ class TezosNodeWriter {
       String publicKeyHash,
       int accountOperationIndex,
       List<OperationModel> operations,
-      [bool isKeyRevealed]) async {
+      [bool isKeyRevealed = false]) async {
     isKeyRevealed = !isKeyRevealed
         ? await TezosNodeReader.isManagerKeyRevealedForAccount(
             server, publicKeyHash)
