@@ -151,8 +151,6 @@ void main() {
 
   test('Test_Txs_time', () async {
     HttpOverrides.global = new MyHttpOverrides();
-    DateTime time = DateTime.now();
-    // print(TezosMessageUtils.writeInt(108));
     KeyStoreModel keyStore = KeyStoreModel(
         secretKey:
             "edskRnzCiMnMiVWa3nK86kpFA639feEtYU8PCwXuG1t9kpPuNpnKECphv6yDT22Y23P1WQPe2Ng6ubXA9gYNhJJA2YUY43beFi",
@@ -170,10 +168,11 @@ void main() {
       'tz1USmQMoNCUUyk4BfeEGUyZRK2Bcc9zoK8C',
       10,
       1500,
-      // isKeyRevealed: false,
     );
-    print(DateTime.now().difference(time).inMilliseconds);
     print(result['operationGroupID']);
+    var opHash = result['operationGroupID'].toString().replaceAll('\n', '');
+    var status = await TezsterDart.getOperationStatus(server, opHash);
+    print(status);
     expect(true,
         result['operationGroupID'] != null && result['operationGroupID'] != '');
   });

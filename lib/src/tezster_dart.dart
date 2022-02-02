@@ -17,6 +17,7 @@ import 'package:tezster_dart/chain/tezos/tezos_node_reader.dart';
 import 'package:tezster_dart/chain/tezos/tezos_node_writer.dart';
 import 'package:tezster_dart/helper/constants.dart';
 import 'package:tezster_dart/helper/http_helper.dart';
+import 'package:tezster_dart/helper/operation_helper.dart';
 import 'package:tezster_dart/michelson_parser/michelson_parser.dart';
 import 'package:tezster_dart/reporting/tezos/tezos_conseil_client.dart';
 import 'package:tezster_dart/src/soft-signer/soft_signer.dart';
@@ -442,6 +443,17 @@ class TezsterDart {
         parameters,
         parameterFormat: codeFormat ?? TezosParameterFormat.Michelson,
         offset: offset ?? 54,
-        preapply : true);
+        preapply: true);
+  }
+
+  static Future<String> getOperationStatus(String server, String opHash) async {
+    assert(server != null);
+    assert(opHash != null);
+    return await OperationHelper().getOperationStatus(server, opHash);
+  }
+
+  static Future<String> getBlock(String server) async {
+    assert(server != null);
+    return await OperationHelper().getBlock(server);
   }
 }
