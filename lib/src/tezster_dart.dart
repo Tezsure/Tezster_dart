@@ -18,7 +18,6 @@ import 'package:tezster_dart/chain/tezos/tezos_node_writer.dart';
 import 'package:tezster_dart/helper/constants.dart';
 import 'package:tezster_dart/helper/http_helper.dart';
 import 'package:tezster_dart/helper/operation_helper.dart';
-import 'package:tezster_dart/michelson_parser/michelson_parser.dart';
 import 'package:tezster_dart/reporting/tezos/tezos_conseil_client.dart';
 import 'package:tezster_dart/src/soft-signer/soft_signer.dart';
 import 'package:tezster_dart/tezster_dart.dart';
@@ -288,8 +287,8 @@ class TezsterDart {
       gasLimit,
       code,
       storage,
-      codeFormat,
-      offset,
+      codeFormat: codeFormat,
+      offset: offset,
     );
   }
 
@@ -444,6 +443,51 @@ class TezsterDart {
         parameterFormat: codeFormat ?? TezosParameterFormat.Michelson,
         offset: offset ?? 54,
         preapply: true);
+  }
+
+  static preapplyContractOriginationOperation(
+    String server,
+    SoftSigner signer,
+    KeyStoreModel keyStore,
+    int amount,
+    String delegate,
+    int fee,
+    int storageLimit,
+    int gasLimit,
+    String code,
+    String storage, {
+    TezosParameterFormat codeFormat = TezosParameterFormat.Micheline,
+    int offset = 54,
+  }) async {
+    assert(server != null);
+    assert(signer != null);
+    assert(keyStore != null);
+    assert(keyStore.publicKeyHash != null);
+    assert(keyStore.publicKey != null);
+    assert(keyStore.secretKey != null);
+    assert(amount != null);
+    assert(fee != null);
+    assert(storageLimit != null);
+    assert(gasLimit != null);
+    assert(code != null);
+    assert(storage != null);
+    assert(codeFormat != null);
+    assert(offset != null);
+    return await TezosNodeWriter.sendContractOriginationOperation(
+      server,
+      signer,
+      keyStore,
+      amount,
+      delegate,
+      fee,
+      storageLimit,
+      gasLimit,
+      code,
+      storage,
+      codeFormat: codeFormat,
+      offset: offset,
+      preapply: true,
+    );
   }
 
   static Future<String> getOperationStatus(String server, String opHash) async {

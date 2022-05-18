@@ -85,18 +85,20 @@ class TezosNodeWriter {
   }
 
   static sendContractOriginationOperation(
-      String server,
-      SoftSigner signer,
-      KeyStoreModel keyStore,
-      int amount,
-      String delegate,
-      int fee,
-      int storageLimit,
-      int gasLimit,
-      String code,
-      String storage,
-      TezosParameterFormat codeFormat,
-      int offset) async {
+    String server,
+    SoftSigner signer,
+    KeyStoreModel keyStore,
+    int amount,
+    String delegate,
+    int fee,
+    int storageLimit,
+    int gasLimit,
+    String code,
+    String storage, {
+    TezosParameterFormat codeFormat = TezosParameterFormat.Michelson,
+    int offset = 54,
+    bool preapply,
+  }) async {
     var counter = await TezosNodeReader.getCounterForAccount(
             server, keyStore.publicKeyHash) +
         1;
@@ -113,7 +115,7 @@ class TezosNodeWriter {
         counter);
     var operations = await appendRevealOperation(server, keyStore.publicKey,
         keyStore.publicKeyHash, counter - 1, [operation]);
-    return sendOperation(server, operations, signer, offset);
+    return sendOperation(server, operations, signer, offset, null, preapply);
   }
 
   static sendContractInvocationOperation(
