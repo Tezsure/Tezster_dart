@@ -122,7 +122,30 @@ class MichelineGrammar {
     '"EMPTY_BIG_MAP"',
     '"APPLY"',
     '"chain_id"',
-    '"CHAIN_ID"'
+    '"CHAIN_ID"',
+    '"LEVEL"',
+    '"SELF_ADDRESS"',
+    '"never"',
+    '"NEVER"',
+    '"UNPAIR"',
+    '"VOTING_POWER"',
+    '"TOTAL_VOTING_POWER"',
+    '"KECCAK"',
+    '"SHA3"',
+    '"PAIRING_CHECK"',
+    '"bls12_381_g1"',
+    '"bls12_381_g2"',
+    '"bls12_381_fr"',
+    '"sapling_state"',
+    '"sapling_transaction"',
+    '"SAPLING_EMPTY_STATE"',
+    '"SAPLING_VERIFY_UPDATE"',
+    '"ticket"',
+    '"TICKET"',
+    '"READ_TICKET"',
+    '"SPLIT_TICKET"',
+    '"JOIN_TICKETS"',
+    '"GET_AND_UPDATE"',
   ];
   List languageKeywords;
 
@@ -159,7 +182,8 @@ class MichelineGrammar {
   String staticIntToHex(d) {
     final prefix = '00';
     final String text = getMapValue(d[6]);
-    final value =  TezosMessageUtils.writeSignedInt(int.parse(text.substring(1, text.length - 1)));
+    final value = TezosMessageUtils.writeSignedInt(
+        int.parse(text.substring(1, text.length - 1)));
     return prefix + value;
   }
 
