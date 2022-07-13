@@ -177,217 +177,31 @@ void main() {
         result['operationGroupID'] != null && result['operationGroupID'] != '');
   });
 
-  // edsigtbeRGAZwMZnsAp5FkknxND1UoFdPzwJmChNue6qZnErNEeph1j5zRYAq1ohkW61qtP8hKWCpcovxYpXTm1Y4RM4hqkRtMe
+  // [, edpktjBAyr2Zyns59K6VGuCkPY32PQdAGbe5fR3YvBML6gifZQkv1e, ]
 
-  test('demo', () {
-    var signGroup = [
-      4,
-      174,
-      109,
-      236,
-      158,
-      61,
-      200,
-      2,
-      213,
-      175,
-      248,
-      21,
-      174,
-      170,
-      167,
-      232,
-      232,
-      56,
-      64,
-      158,
-      182,
-      236,
-      210,
-      118,
-      153,
-      247,
-      28,
-      9,
-      104,
-      217,
-      195,
-      54,
-      108,
-      0,
-      128,
-      210,
-      17,
-      229,
-      59,
-      129,
-      53,
-      99,
-      45,
-      83,
-      145,
-      98,
-      25,
-      207,
-      201,
-      186,
-      115,
-      90,
-      34,
-      107,
-      252,
-      11,
-      207,
-      209,
-      245,
-      7,
-      204,
-      83,
-      240,
-      3,
+  test('GasFeeCalTest', () async {
+    KeyStoreModel keyStore = KeyStoreModel(
+      publicKeyHash: 'tz1U....9zoK8C',
+      secretKey: 'edskS8......rc',
+      publicKey: 'edp...Qkv1e',
+    );
+
+    var signer = await TezsterDart.createSigner(
+        TezsterDart.writeKeyWithHint(keyStore.secretKey, 'edsk'));
+
+    var server = '';
+
+    var result = await TezsterDart.sendTransactionOperation(
+      server,
+      signer,
+      keyStore,
+      'tz1X....Hj',
       10,
-      0,
-      0,
-      96,
-      151,
-      203,
-      60,
-      129,
-      111,
-      33,
-      66,
-      148,
-      12,
-      65,
-      36,
-      10,
-      245,
-      194,
-      196,
-      132,
-      76,
-      211,
-      146,
-      0,
-      187,
-      190,
-      212,
-      24,
-      68,
-      57,
-      112,
-      235,
-      242,
-      161,
-      81,
-      68,
-      35,
-      56,
-      80,
-      106,
-      160,
-      191,
-      81,
-      26,
-      240,
-      100,
-      200,
-      22,
-      98,
-      144,
-      247,
-      166,
-      191,
-      90,
-      135,
-      197,
-      118,
-      123,
-      252,
-      208,
-      56,
-      150,
-      210,
-      204,
-      30,
-      24,
-      135,
-      67,
-      210,
-      126,
-      169,
-      41,
-      49,
-      163,
-      81,
-      9,
-      76,
-      34,
-      91,
-      29,
-      202,
-      120,
-      34,
-      233,
-      83,
-      251,
-      120,
-      13
-    ];
+      1500,
+    );
 
-    print(signGroup.sublist(0, 32));
-    Uint8List blake2bHash =
-        Blake2bHash.hashWithDigestSize(256, Uint8List.fromList(signGroup));
-
-    String uintToString = String.fromCharCodes(blake2bHash);
-    String stringToHexString = hex.encode(uintToString.codeUnits);
-    String finalStringToDecode = stringToHexString;
-    List<int> listOfHexDecodedInt = hex.decode(finalStringToDecode);
-    String publicKeyHash = bs58check.encode(listOfHexDecodedInt);
-    print(publicKeyHash);
-    // print(Blake2bHash.hashWithDigestSize(256, Uint8List.fromList(signGroup))
-    //     .toList());
-    // print(
-    //   base58.encode(
-    //     Uint8List.fromList(
-    //       Blake2bHash.hashWithDigestSize(
-    //         256,
-    //         Uint8List.fromList(
-    //           base58
-    //                   .encode(
-    //                     Uint8List.fromList(
-    //                       "0x0574".codeUnits,
-    //                     ),
-    //                   )
-    //                   .codeUnits +
-    //               signGroup,
-    //         ),
-    //       ).toList(),
-    //     ),
-    //   ),
-    // );
-    // print("0x0574".codeUnits);
-    // print(base58.encode(Uint8List.fromList("0x0574".codeUnits)).codeUnits);
-    // var data = base58.decode(
-    //     "edsigtbeRGAZwMZnsAp5FkknxND1UoFdPzwJmChNue6qZnErNEeph1j5zRYAq1ohkW61qtP8hKWCpcovxYpXTm1Y4RM4hqkRtMe");
-    // var dd = hex.encode(String.fromCharCodes(
-    //   Blake2bHash.hashWithDigestSize(
-    //     256,
-    //     Uint8List.fromList(
-    //       "edsigtbeRGAZwMZnsAp5FkknxND1UoFdPzwJmChNue6qZnErNEeph1j5zRYAq1ohkW61qtP8hKWCpcovxYpXTm1Y4RM4hqkRtMe"
-    //           .codeUnits,
-    //     ),
-    //   ),
-    // ).codeUnits);
-    // print(dd);
-    // dd = "0x0574" + dd.substring(0, 32);
-    // print(dd);
-    // print(base58.encode(Uint8List.fromList(dd.codeUnits)));
+    print(result['operationGroupID']);
+    expect(true,
+        result['operationGroupID'] != null && result['operationGroupID'] != '');
   });
 }
-// op4vK32Fv2GjA4oHf3ke7TEBoSULshAeJFE49c7cEFzsheUSS8U
-// 52GCuaMLRkmMwH1HtjvZBMkmNhM5zfosLgfujfQPQeXA
-// 55x4FTLxR9CjUW6jb9TG9jnXRN72q7TraKuExAQPE6ATh2eaPWEuBvh
-// Gp6FaZuPbnwXTbPgVNr2iwpkZcXNBVkWKkQXVQRbq2wE
-// 63piaifwbtbJS5q1yr6QMBVTNMtCmPTWhkFm3Kd5emoX1evnKEnfwh1GaLvN9EmQZq
-// 8Aru1KduKD7RbJHhCZBkMVzEvAtRkGKoZiRVxksYwyomh7Vc6sH3
