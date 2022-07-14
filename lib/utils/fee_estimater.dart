@@ -128,7 +128,7 @@ class FeeEstimater {
       for (var internalOperation in internalOperations) {
         var result = internalOperation['result'];
         gas += int.parse(result['consumed_gas'] ?? '0');
-        storageCost += int.parse(result['paid_storage_size_diff' ?? '0']);
+        storageCost += int.parse(result['paid_storage_size_diff'] ?? '0');
         if (internalOperation['kind'] == 'origination') {
           storageCost += TezosConstants.EmptyAccountStorageBurn;
         }
