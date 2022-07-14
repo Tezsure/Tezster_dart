@@ -183,7 +183,7 @@ class MichelineGrammar {
     final prefix = '00';
     final String text = getMapValue(d[6]);
     final value = TezosMessageUtils.writeSignedInt(
-        int.parse(text.substring(1, text.length - 1)));
+       text.substring(1, text.length - 1));
     return prefix + value;
   }
 

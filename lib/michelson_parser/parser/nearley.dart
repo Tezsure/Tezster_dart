@@ -367,9 +367,14 @@ class ColumnState {
   void finish() {
     if (rule.postprocess != null) {
       try {
-        data = rule.postprocess(data);  
+        data = rule.postprocess(data);
       } catch (e) {
-        print("Error In ===> " + rule.name + "  " + rule.symbols.toString());
+        print("Error In ===> " +
+            rule.name +
+            "  " +
+            rule.symbols.toString() +
+            " " +
+            jsonEncode(data));
       }
     }
   }
