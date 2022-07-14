@@ -18,7 +18,10 @@ class FeeEstimater {
     var operationResources = [];
 
     for (var i = 0; i < operations.length; i++) {
-      var priorConsumedResources = {'gas': 0, 'storageCost': 0};
+      var priorConsumedResources = <String, dynamic>{
+        'gas': 0,
+        'storageCost': 0
+      };
 
       if (i > 0) {
         var priorTransactions = operations.sublist(0, i);
