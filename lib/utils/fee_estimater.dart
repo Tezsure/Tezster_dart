@@ -89,11 +89,11 @@ class FeeEstimater {
   estimateOperation(String server, String chainId,
       List<OperationModel> priorTransactions) async {
     var naiveOperationGasCap = math
-        .min((TezosConstants.BlockGasCap / operations.length).floor(),
+        .min((TezosConstants.BlockGasCap / priorTransactions.length).floor(),
             TezosConstants.OperationGasCap)
         .toString();
 
-    var localOperations = [...operations]
+    var localOperations = [...priorTransactions]
         .map((e) => e
           ..gasLimit = int.parse(naiveOperationGasCap)
           ..storageLimit = TezosConstants.OperationStorageCap)
@@ -143,7 +143,7 @@ class FeeEstimater {
 
     var validBranch = 'BMLxA4tQjiu1PT2x3dMiijgvMTQo8AVxkPBPpdtM8hCfiyiC1jz';
     var forgedOperationGroup =
-        TezosNodeWriter.forgeOperations(validBranch, operations);
+        TezosNodeWriter.forgeOperations(validBranch, priorTransactions);
     var operationSize = forgedOperationGroup.length / 2 + 64;
     var estimatedFee = staticFee +
         (gas / 10).ceil() +
