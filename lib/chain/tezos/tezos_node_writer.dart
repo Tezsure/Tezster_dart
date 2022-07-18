@@ -280,11 +280,9 @@ class TezosNodeWriter {
     var estimate = await feeEstimater.getEstimateOperationGroup();
     operations[0].fee = estimate['estimatedFee'].toString();
     for (var i = 0; i < operations.length; i++) {
-      operations[i].gasLimit = estimate['operationResources'][i]['gas'] +
-          TezosConstants.DefaultTransactionGasLimit;
-      operations[i].storageLimit = estimate['operationResources'][i]
-              ['storageCost'] +
-          TezosConstants.DefaultTransactionStorageLimit;
+      operations[i].gasLimit = estimate['operationResources'][i]['gas'];
+      operations[i].storageLimit =
+          estimate['operationResources'][i]['storageCost'];
     }
     return operations;
   }
