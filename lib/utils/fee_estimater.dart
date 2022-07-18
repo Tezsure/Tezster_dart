@@ -171,7 +171,7 @@ class FeeEstimater {
     var payload = {
       'operation': {
         'branch': fakeBranch,
-        'contents': operations,
+        'contents': localOperations,
         'signature': fake_signature
       }
     };
