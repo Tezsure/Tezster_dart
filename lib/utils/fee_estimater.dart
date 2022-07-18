@@ -7,6 +7,8 @@ import 'package:tezster_dart/helper/http_helper.dart';
 import 'package:tezster_dart/models/operation_model.dart';
 import 'dart:math' as math;
 
+import 'package:tezster_dart/tezster_dart.dart';
+
 class FeeEstimater {
   String server;
   String chainId;
@@ -107,8 +109,9 @@ class FeeEstimater {
         gas += int.parse(ele['metadata']['operation_result']['consumed_gas']
                 .toString()) ??
             0;
-        storageCost += int.parse(ele['metadata']['operation_result']
-                    ['paid_storage_size_diff']
+        storageCost += int.parse((ele['metadata']['operation_result']
+                        ['paid_storage_size_diff'] ??
+                    '0')
                 .toString()) ??
             0;
 
@@ -164,10 +167,10 @@ class FeeEstimater {
       List<OperationModel> localOperations) async {
     const fake_signature =
         'edsigu6xFLH2NpJ1VcYshpjW99Yc1TAL1m2XBqJyXrxcZQgBMo8sszw2zm626yjpA3pWMhjpsahLrWdmvX9cqhd4ZEUchuBuFYy';
-    const fake_branch = 'BL94i2ShahPx3BoNs6tJdXDdGeoJ9ukwujUA2P8WJwULYNdimmq';
+    var fakeBranch = await TezsterDart.getBlock(server);
     var payload = {
       'operation': {
-        'branch': fake_branch,
+        'branch': fakeBranch,
         'contents': operations,
         'signature': fake_signature
       }
