@@ -3,8 +3,9 @@ import 'package:tezster_dart/helper/http_helper.dart';
 class OperationHelper {
   /// Get operation status
   Future<String> getOperationStatus(String server, String oprationHash) async {
+    var blockHash = await getBlock(server);
     while (true) {
-      var status = await _getStatus(server, oprationHash);
+      var status = await _getStatus(server, oprationHash, blockHash);
       if (status != "Pending") {
         return status;
       }
@@ -13,9 +14,9 @@ class OperationHelper {
   }
 
   /// Get operation status
-  Future<String> _getStatus(String server, String opHash) async {
-    var block = await getBlock(server);
-    var operations = await getOperations(server, block);
+  Future<String> _getStatus(
+      String server, String opHash, String blockHash) async {
+    var operations = await getOperations(server, blockHash);
     var operation =
         operations.where((element) => element['hash'] == opHash).toList();
     if (operation == null || operation.isEmpty) {

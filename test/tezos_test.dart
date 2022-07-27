@@ -206,7 +206,7 @@ void main() {
         result['operationGroupID'] != null && result['operationGroupID'] != '');
   });
 
-  test('Michelson', (){
+  test('Michelson', () {
     // var code1 = """{"prim":"Pair","args":[[{"prim":"Elt","args":[{"int":"0"},{"prim":"Pair","args":[{"prim":"Pair","args":[{"string":"KT1Ji4hVDeQ5Ru7GW1Tna9buYSs3AppHLwj9"},{"int":"493449875825"}]},{"prim":"Pair","args":[{"string":"KT1XRPEPXbZK25r3Htzp2o1x7xdMMmfocKNW"},{"int":"0"}]}]}]},{"prim":"Elt","args":[{"int":"1"},{"prim":"Pair","args":[{"prim":"Pair","args":[{"string":"KT1TnrLFrdemNZ1AnnWNfi21rXg7eknS484C"},{"int":"809642331951"}]},{"prim":"Pair","args":[{"string":"KT1Xobej4mc6XgEjDoJoHtTKgbD1ELMvcQuL"},{"int":"0"}]}]}]},{"prim":"Elt","args":[{"int":"2"},{"prim":"Pair","args":[{"prim":"Pair","args":[{"string":"KT1EM6NjJdJXmz3Pj13pfu3MWVDwXEQnoH3N"},{"int":"18584958424417145000"}]},{"prim":"Pair","args":[{"string":"KT1GRSvLoikDsXujKgZPsGLX8k8VvR2Tq95b"},{"int":"0"}]}]}]}],{"prim":"Pair","args":[{"int":"500000"},{"string":"tz1USmQMoNCUUyk4BfeEGUyZRK2Bcc9zoK8C"}]}]}""";
     // var code2 = """[{"prim":"Pair","args":[{"string":"tz1USmQMoNCUUyk4BfeEGUyZRK2Bcc9zoK8C"},[{"prim":"Pair","args":[{"string":"KT1MEVCrGRCsoERXf6ahNLC4ik6J2vRH7Mm6"},{"prim":"Pair","args":[{"int":"2"},{"int":"500000"}]}]}]]}]""";
 
@@ -214,9 +214,7 @@ void main() {
     // print(michelin1);
 
     print(TezosMessageUtils.writeSignedInt('18584958424417145000'));
-
   });
-
 }
 
 
