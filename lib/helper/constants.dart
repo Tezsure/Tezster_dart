@@ -24,7 +24,7 @@ class TezosConstants {
 
   static const DefaultBakerVig = 200;
 
-  static const GasLimitPadding = 1000;
+  static const GasLimitPadding = 1010;
   static const StorageLimitPadding = 25;
 
    static const OperationStorageCap = 32768;
