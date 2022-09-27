@@ -1,14 +1,7 @@
 import 'dart:io';
-import 'dart:typed_data';
 
-import 'package:blake2b/blake2b.dart';
-import 'package:blake2b/blake2b_hash.dart';
-import 'package:bs58check/bs58check.dart' as bs58check;
-import 'package:convert/convert.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:tezster_dart/chain/tezos/tezos_language_util.dart';
 import 'package:tezster_dart/chain/tezos/tezos_message_utils.dart';
-import 'package:tezster_dart/michelson_parser/michelson_parser.dart';
 import 'package:tezster_dart/src/soft-signer/soft_signer.dart';
 import 'package:tezster_dart/tezster_dart.dart';
 
@@ -140,22 +133,12 @@ void main() {
             '05010000007d54657a6f73205369676e6564204d6573736167653a20436f6e6669726d696e67206d79206964656e7469747920617320747a3158504171617861656e74706f38653239355737686a7236393673713958487a486a206f6e206f626a6b742e636f6d20617420323032312d31322d30395430363a33323a33382e3331355a'));
   });
 
-  /// Without code optimized
-  /// [1] -> 7712
-  /// [2] -> 8572
-  /// [3] -> 11292
-  /// [4] -> 9412
-  /// [5] -> 9057
-  /// (7712 + 8572 + 11292 + 9412 + 9057) / 5 = [9209]
-
-  /// With code optimized
-
   test('Test_Txs_time', () async {
     HttpOverrides.global = new MyHttpOverrides();
     KeyStoreModel keyStore = KeyStoreModel(
         secretKey:
-            "edskRnzCiMnMiVWa3nK86kpFA639feEtYU8PCwXuG1t9kpPuNpnKECphv6yDT22Y23P1WQPe2Ng6ubXA9gYNhJJA2YUY43beFi",
-        publicKey: "edpkuAE2nMQBWvFCPBdWgnzP8LgEigLcm6yCxZ5F9H6b5WGMHEJpcs",
+            "",
+        publicKey: "",
         publicKeyHash: "tz1XPAqaxaentpo8e295W7hjr696sq9XHzHj");
 
     var signer = await TezsterDart.createSigner(
@@ -205,23 +188,4 @@ void main() {
     expect(true,
         result['operationGroupID'] != null && result['operationGroupID'] != '');
   });
-
-  test('Michelson', () {
-    // var code1 = """{"prim":"Pair","args":[[{"prim":"Elt","args":[{"int":"0"},{"prim":"Pair","args":[{"prim":"Pair","args":[{"string":"KT1Ji4hVDeQ5Ru7GW1Tna9buYSs3AppHLwj9"},{"int":"493449875825"}]},{"prim":"Pair","args":[{"string":"KT1XRPEPXbZK25r3Htzp2o1x7xdMMmfocKNW"},{"int":"0"}]}]}]},{"prim":"Elt","args":[{"int":"1"},{"prim":"Pair","args":[{"prim":"Pair","args":[{"string":"KT1TnrLFrdemNZ1AnnWNfi21rXg7eknS484C"},{"int":"809642331951"}]},{"prim":"Pair","args":[{"string":"KT1Xobej4mc6XgEjDoJoHtTKgbD1ELMvcQuL"},{"int":"0"}]}]}]},{"prim":"Elt","args":[{"int":"2"},{"prim":"Pair","args":[{"prim":"Pair","args":[{"string":"KT1EM6NjJdJXmz3Pj13pfu3MWVDwXEQnoH3N"},{"int":"18584958424417145000"}]},{"prim":"Pair","args":[{"string":"KT1GRSvLoikDsXujKgZPsGLX8k8VvR2Tq95b"},{"int":"0"}]}]}]}],{"prim":"Pair","args":[{"int":"500000"},{"string":"tz1USmQMoNCUUyk4BfeEGUyZRK2Bcc9zoK8C"}]}]}""";
-    // var code2 = """[{"prim":"Pair","args":[{"string":"tz1USmQMoNCUUyk4BfeEGUyZRK2Bcc9zoK8C"},[{"prim":"Pair","args":[{"string":"KT1MEVCrGRCsoERXf6ahNLC4ik6J2vRH7Mm6"},{"prim":"Pair","args":[{"int":"2"},{"int":"500000"}]}]}]]}]""";
-
-    // var michelin1 = MichelsonParser.translateMichelineToHex(code1);
-    // print(michelin1);
-
-    print(TezosMessageUtils.writeSignedInt('18584958424417145000'));
-  });
 }
-
-
-/**
- "{"prim":"Pair","args":[[{"prim":"Elt","args":[{"int":"0"},{"prim":"Pair","args":[{"prim":"Pair","args":[{"string":"KT1Ji4hVDeQ5Ru7GW1Tna9buYSs3AppHLwj9"},{"int":"493449875825"}]},{"prim":"Pair","args":[{"string":"KT1XRPEPXbZK25r3Htzp2o1x7xdMMmfocKNW"},{"int":"0"}]}]}]},{"prim":"Elt","args":[{"int":"1"},{"prim":"Pair","args":[{"prim":"Pair","args":[{"string":"KT1TnrLFrdemNZ1AnnWNfi21rXg7eknS484C"},{"int":"809642331951"}]},{"prim":"Pair","args":[{"string":"KT1Xobej4mc6XgEjDoJoHtTKgbD1ELMvcQuL"},{"int":"0"}]}]}]},{"prim":"Elt","args":[{"int":"2"},{"prim":"Pair","args":[{"prim":"Pair","args":[{"string":"KT1EM6NjJdJXmz3Pj13pfu3MWVDwXEQnoH3N"},{"int":"18584958424417145000"}]},{"prim":"Pair","args":[{"string":"KT1GRSvLoikDsXujKgZPsGLX8k8VvR2Tq95b"},{"int":"0"}]}]}]}],{"prim":"Pair","args":[{"int":"500000"},{"string":"tz1USmQMoNCUUyk4BfeEGUyZRK2Bcc9zoK8C"}]}]}"
- */
-
-/**
- "[{"prim":"Pair","args":[{"string":"tz1USmQMoNCUUyk4BfeEGUyZRK2Bcc9zoK8C"},[{"prim":"Pair","args":[{"string":"KT1MEVCrGRCsoERXf6ahNLC4ik6J2vRH7Mm6"},{"prim":"Pair","args":[{"int":"2"},{"int":"500000"}]}]}]]}]"
- */

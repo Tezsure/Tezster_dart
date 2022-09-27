@@ -13,6 +13,8 @@ class FeeEstimater {
   String server;
   String chainId;
   List<OperationModel> operations;
+  int GAS_BUFFER = 100;
+
 
   FeeEstimater(this.server, this.operations, {this.chainId = 'main'});
 
@@ -40,7 +42,7 @@ class FeeEstimater {
           priorConsumedResources['storageCost'];
 
       operationResources.add({
-        'gas': gasLimitDelta + TezosConstants.GasLimitPadding,
+        'gas': gasLimitDelta == GAS_BUFFER ? gasLimitDelta + TezosConstants.GasLimitPadding : gasLimitDelta,
         'storageCost': storageLimitDelta + TezosConstants.StorageLimitPadding
       });
     }
@@ -106,9 +108,9 @@ class FeeEstimater {
     var staticFee = 0;
     for (var ele in responseJSON['contents']) {
       try {
-        gas += int.parse(ele['metadata']['operation_result']['consumed_gas']
-                .toString()) ??
-            0;
+        gas += (int.parse(ele['metadata']['operation_result']['consumed_milligas']
+                .toString())~/1000 ??
+            0) + GAS_BUFFER;
         storageCost += int.parse((ele['metadata']['operation_result']
                         ['paid_storage_size_diff'] ??
                     '0')
@@ -133,7 +135,7 @@ class FeeEstimater {
 
       for (var internalOperation in internalOperations) {
         var result = internalOperation['result'];
-        gas += int.parse(result['consumed_gas'] ?? '0');
+        gas += (int.parse(result['consumed_milligas'] ?? '0')~/ 1000) + GAS_BUFFER;
         storageCost += int.parse(result['paid_storage_size_diff'] ?? '0');
         if (internalOperation['kind'] == 'origination') {
           storageCost += TezosConstants.EmptyAccountStorageBurn;
@@ -166,7 +168,7 @@ class FeeEstimater {
   dryRunOperation(String server, String chainId,
       List<OperationModel> localOperations) async {
     const fake_signature =
-        'edsigu6xFLH2NpJ1VcYshpjW99Yc1TAL1m2XBqJyXrxcZQgBMo8sszw2zm626yjpA3pWMhjpsahLrWdmvX9cqhd4ZEUchuBuFYy';
+        'edsigtkpiSSschcaCt9pUVrpNPf7TTcgvgDEDD6NCEHMy8NNQJCGnMfLZzYoQj74yLjo9wx6MPVV29CvVzgi7qEcEUok3k7AuMg';
     var fakeBranch = await TezsterDart.getBlock(server);
     var payload = {
       'operation': {
