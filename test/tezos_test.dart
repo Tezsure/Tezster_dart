@@ -154,8 +154,8 @@ void main() {
     HttpOverrides.global = new MyHttpOverrides();
     KeyStoreModel keyStore = KeyStoreModel(
         secretKey:
-            "edskRnzCiMnMiVWa3nK86kpFA639feEtYU8PCwXuG1t9kpPuNpnKECphv6yDT22Y23P1WQPe2Ng6ubXA9gYNhJJA2YUY43beFi",
-        publicKey: "edpkuAE2nMQBWvFCPBdWgnzP8LgEigLcm6yCxZ5F9H6b5WGMHEJpcs",
+            "",
+        publicKey: "",
         publicKeyHash: "tz1XPAqaxaentpo8e295W7hjr696sq9XHzHj");
 
     var signer = await TezsterDart.createSigner(
