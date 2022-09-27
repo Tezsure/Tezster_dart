@@ -23,7 +23,7 @@ class TezosMessageCodec {
   }
 
   static String encodeTransaction(OperationModel message) {
-    String hex = TezosMessageUtils.writeInt(108);
+    String hex = "6c"; // TezosMessageUtils.writeInt(108);
     hex += TezosMessageUtils.writeAddress(message.source).substring(2);
     hex += TezosMessageUtils.writeInt(int.parse(message.fee));
     hex += TezosMessageUtils.writeInt(message.counter);

@@ -1,3 +1,4 @@
+import 'package:tezster_dart/chain/tezos/tezos_message_utils.dart';
 import 'package:tezster_dart/michelson_parser/grammar/michelin_grammar_tokenizer.dart';
 
 class MichelineGrammar {
@@ -121,7 +122,30 @@ class MichelineGrammar {
     '"EMPTY_BIG_MAP"',
     '"APPLY"',
     '"chain_id"',
-    '"CHAIN_ID"'
+    '"CHAIN_ID"',
+    '"LEVEL"',
+    '"SELF_ADDRESS"',
+    '"never"',
+    '"NEVER"',
+    '"UNPAIR"',
+    '"VOTING_POWER"',
+    '"TOTAL_VOTING_POWER"',
+    '"KECCAK"',
+    '"SHA3"',
+    '"PAIRING_CHECK"',
+    '"bls12_381_g1"',
+    '"bls12_381_g2"',
+    '"bls12_381_fr"',
+    '"sapling_state"',
+    '"sapling_transaction"',
+    '"SAPLING_EMPTY_STATE"',
+    '"SAPLING_VERIFY_UPDATE"',
+    '"ticket"',
+    '"TICKET"',
+    '"READ_TICKET"',
+    '"SPLIT_TICKET"',
+    '"JOIN_TICKETS"',
+    '"GET_AND_UPDATE"',
   ];
   List languageKeywords;
 
@@ -158,7 +182,8 @@ class MichelineGrammar {
   String staticIntToHex(d) {
     final prefix = '00';
     final String text = getMapValue(d[6]);
-    final value = writeSignedInt(int.parse(text.substring(1, text.length - 1)));
+    final value = TezosMessageUtils.writeSignedInt(
+       text.substring(1, text.length - 1));
     return prefix + value;
   }
 
@@ -312,48 +337,48 @@ class MichelineGrammar {
     return output.substring(output.length - 8);
   }
 
-  String writeSignedInt(int value) {
-    if (value == 0) {
-      return '00';
-    }
-    final BigInt n = BigInt.from(value).abs();
-    final l = n.bitLength.toInt();
-    List arr = [];
-    BigInt v = n;
-    for (var i = 0; i < l; i += 7) {
-      BigInt byte = BigInt.zero;
-      if (i == 0) {
-        byte = v & BigInt.from(0x3f);
-        v = v >> 6;
-      } else {
-        byte = v & BigInt.from(0x7f);
-        v = v >> 7;
-      }
+  // String writeSignedInt(int value) {
+  //   if (value == 0) {
+  //     return '00';
+  //   }
+  //   final BigInt n = BigInt.from(value).abs();
+  //   final l = n.bitLength.toInt();
+  //   List arr = [];
+  //   BigInt v = n;
+  //   for (var i = 0; i < l; i += 7) {
+  //     BigInt byte = BigInt.zero;
+  //     if (i == 0) {
+  //       byte = v & BigInt.from(0x3f);
+  //       v = v >> 6;
+  //     } else {
+  //       byte = v & BigInt.from(0x7f);
+  //       v = v >> 7;
+  //     }
 
-      if (value < 0 && i == 0) {
-        byte = byte | BigInt.from(0x40);
-      }
+  //     if (value < 0 && i == 0) {
+  //       byte = byte | BigInt.from(0x40);
+  //     }
 
-      if (i + 7 < l) {
-        byte = byte | BigInt.from(0x80);
-      }
-      arr.add(byte.toInt());
-    }
+  //     if (i + 7 < l) {
+  //       byte = byte | BigInt.from(0x80);
+  //     }
+  //     arr.add(byte.toInt());
+  //   }
 
-    if (l % 7 == 0) {
-      arr[arr.length - 1] =
-          arr[arr.length - 1] == null ? 0x80 : arr[arr.length - 1];
-      arr.add(1);
-    }
+  //   if (l % 7 == 0) {
+  //     arr[arr.length - 1] =
+  //         arr[arr.length - 1] == null ? 0x80 : arr[arr.length - 1];
+  //     arr.add(1);
+  //   }
 
-    var output = arr.map((v) {
-      int newNum = int.parse(v.toString());
-      var str = '0' + newNum.toRadixString(16).toString();
-      str = str.substring(str.length - 2);
-      return str;
-    }).join('');
-    return output;
-  }
+  //   var output = arr.map((v) {
+  //     int newNum = int.parse(v.toString());
+  //     var str = '0' + newNum.toRadixString(16).toString();
+  //     str = str.substring(str.length - 2);
+  //     return str;
+  //   }).join('');
+  //   return output;
+  // }
 
   getMapValue(d) {
     return d is List ? d[0]['value'].toString() : d['value'];

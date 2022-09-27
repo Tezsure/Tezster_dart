@@ -157,7 +157,8 @@ class TezosMessageUtils {
     if (value == 0 || value == '0') {
       return '00';
     }
-    var n = BigInt.from(value).abs();
+    var n = value is int ? BigInt.from(value).abs() : BigInt.parse(value).abs();
+
     var l = n.bitLength;
     var arr = [];
     for (var i = 0; i < l; i += 7) {
@@ -169,7 +170,7 @@ class TezosMessageUtils {
         byte = n & BigInt.parse('0x7f');
         n = n >> 7;
       }
-      if (value < 0 && i == 0) {
+      if ((value is String ? value.contains('-') : value < 0) && i == 0) {
         byte = byte | BigInt.parse('0x40');
       }
       if (i + 7 < l) {
@@ -178,14 +179,21 @@ class TezosMessageUtils {
       arr.add(byte);
     }
     if (l % 7 == 0) {
-      arr[arr.length - 1] = arr[arr.length - 1] | 0x80;
+      arr[arr.length - 1] = arr[arr.length - 1] | BigInt.parse('0x80');
       arr.add(1);
     }
-    return arr
-        .map((w) => ('0' + w.toRadixString(16))
-            .substring(0, w.toRadixString(16).length - 2))
-        .toList()
-        .join('');
+    var output = arr.map((v) {
+      int newNum = int.parse(v.toString());
+      var str = '0' + newNum.toRadixString(16).toString();
+      str = str.substring(str.length - 2);
+      return str;
+    }).join('');
+    return output;
+    // return arr
+    //     .map((w) => ('0' + w.toRadixString(16))
+    //         .substring(0, w.toRadixString(16).length - 2))
+    //     .toList()
+    //     .join('');
   }
 
   static String writeString(value) {

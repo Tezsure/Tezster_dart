@@ -13,4 +13,19 @@ class TezosConstants {
   static const DefaultKeyRevealGasLimit = 1100;
 
   static const HeadBranchOffset = 54;
+
+  static const BlockGasCap = 5200000;
+  static const OperationGasCap = 1040000;
+
+  static const EmptyAccountStorageBurn = 257;
+
+  static const BaseOperationFee = 100;
+  static const StorageRate = 250;
+
+  static const DefaultBakerVig = 200;
+
+  static const GasLimitPadding = 1010;
+  static const StorageLimitPadding = 25;
+
+   static const OperationStorageCap = 32768;
 }
